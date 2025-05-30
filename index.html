@@ -42,7 +42,7 @@
     .select('*')
     .eq('codigo_usuario', codigo)
     .eq('contrasena', password)
-    .single();
+    .maybeSingle();
 
   if (error) {
     console.error("Error Supabase:", error.message);
