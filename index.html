@@ -32,8 +32,10 @@
 
     async function login(event) {
       event.preventDefault();
-      const codigo = document.querySelector('input[name="codigo"]').value;
-      const password = document.querySelector('input[name="contrasena"]').value;
+      const codigo = document.querySelector('input[name="codigo"]').value.trim().toUpperCase();
+      const password = document.querySelector('input[name="contrasena"]').value.trim();
+
+      console.log("Intentando login con código:", codigo);
 
       const { data, error } = await supabase
         .from('usuarios')
@@ -42,12 +44,19 @@
         .eq('contrasena', password)
         .single();
 
-      if (error || !data) {
+      if (error) {
+        console.error("Error Supabase:", error.message);
+        alert("Error del servidor: " + error.message);
+        return;
+      }
+
+      if (!data) {
         alert("Código de usuario o contraseña incorrectos");
         return;
       }
 
       // Autenticación exitosa
+      console.log("Login exitoso. Redirigiendo...");
       window.location.href = "Menu.html";
     }
 
@@ -67,5 +76,4 @@
   <div class="copyright">© 2025 ClaroCorp Inventario+ | Desarrollado por Samuel Guardia</div>
 </body>
 </html>
-
 
