@@ -28,37 +28,36 @@
   <script>
     const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI';
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    const client = supabase.createClient(supabaseUrl, supabaseKey);
 
     async function login(event) {
-      event.preventDefault();
-      const codigo = document.querySelector('input[name="codigo"]').value.trim().toUpperCase();
-      const password = document.querySelector('input[name="contrasena"]').value.trim();
+  event.preventDefault();
+  const codigo = document.querySelector('input[name="codigo"]').value.trim().toUpperCase();
+  const password = document.querySelector('input[name="contrasena"]').value.trim();
 
-      console.log("Intentando login con código:", codigo);
+  console.log("Intentando login con código:", codigo);
 
-      const { data, error } = await supabase
-        .from('usuarios')
-        .select('*')
-        .eq('codigo_usuario', codigo)
-        .eq('contrasena', password)
-        .single();
+  const { data, error } = await client
+    .from('usuarios')
+    .select('*')
+    .eq('codigo_usuario', codigo)
+    .eq('contrasena', password)
+    .single();
 
-      if (error) {
-        console.error("Error Supabase:", error.message);
-        alert("Error del servidor: " + error.message);
-        return;
-      }
+  if (error) {
+    console.error("Error Supabase:", error.message);
+    alert("Error del servidor: " + error.message);
+    return;
+  }
 
-      if (!data) {
-        alert("Código de usuario o contraseña incorrectos");
-        return;
-      }
+  if (!data) {
+    alert("Código de usuario o contraseña incorrectos");
+    return;
+  }
 
-      // Autenticación exitosa
-      console.log("Login exitoso. Redirigiendo...");
-      window.location.href = "Menu.html";
-    }
+  console.log("Login exitoso. Redirigiendo...");
+  window.location.href = "Menu.html";
+}
 
     function togglePassword() {
       const pass = document.getElementById("pass");
