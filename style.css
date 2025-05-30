@@ -1,4 +1,4 @@
-/*LOGIN DISEÑO*/
+	/*LOGIN DISEÑO*/
  
  body {
       margin: 0;
@@ -100,7 +100,7 @@
       opacity: 0.7;
     }
 	
-/*MENU DISEÑO*/
+	/*MENU DISEÑO*/
 	
 	    * {
       margin: 0;
@@ -141,44 +141,62 @@
     .menu a {
       text-decoration: none;
       color: white;
-      padding: 12px 20px;
+      padding: 10px 20px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       transition: background 0.3s;
     }
 
     .menu a:hover {
       background-color: #003366;
     }
+	
+	.menu a i {
+	  min-width: 24px;       /* Espacio reservado fijo */
+	  text-align: center;    /* Centrado dentro del espacio */
+	  font-size: 18px;       /* Tamaño uniforme */
+	  line-height: 1;
+	  display: inline-block; /* Asegura que se respete el ancho */
+	}
 
     .logout {
       text-align: center;
       padding: 10px 0;
+	  margin-top: 30px;
     }
 
     .logout a {
-      color: #ff4d4d;
+      color: #bdc3c7;
       font-size: 20px;
     }
+	
+	.logout a:hover {
+      color: #ff4d4d;
+    }
+	
 
     .topbar {
-      width: 100%;
+      width: 90%;
       background-color: #0051ba;
       color: white;
       padding: 15px;
       font-size: 18px;
+	  margin-left: 5%;
     }
 
     .content {
+	
       flex: 1;
       display: flex;
       flex-direction: column;
     }
 
     .main-content {
+	  width: 90%;
       flex: 1;
       padding: 20px;
-      background-color: #3b4a59;
-      color: white;
+      background-color: #e4e4e4;
+      color:#4d4c4c;
+	  margin-left: 5%;
     }
