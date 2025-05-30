@@ -1,44 +1,78 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Client Login</title>
+  <title>ClaroCorp+ Login</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
   <div class="login-container">
-    <h2>INICIAR SESION</h2>
-    <form onsubmit="event.preventDefault(); window.location.href='https://samuelg1996.github.io/clarocorp-inventario/Menu.html';">
+    <h2>INICIAR SESIÓN</h2>
+    <form onsubmit="login(event)">
       <div class="input-group">
         <img class="icon-left" src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" alt="user">
-        <input type="text" placeholder="Usuario" name="usuario" required>
+        <input type="text" placeholder="Código de usuario" name="codigo" required>
       </div>
-
       <div class="input-group">
         <img class="icon-left" src="https://cdn-icons-png.flaticon.com/512/3064/3064155.png" alt="lock">
         <input type="password" placeholder="Contraseña" name="contrasena" id="pass" required>
         <img class="icon-right" src="https://cdn-icons-png.flaticon.com/512/159/159604.png" alt="toggle" onclick="togglePassword()" id="eye-icon">
       </div>
-
-  <div class="options" style="display: flex; justify-content: space-between; align-items: center;">
-  <label><input type="checkbox"> Recordarme</label>
-  <input class="login-btn" type="submit" value="LOGIN">
+      <div class="options" style="display: flex; justify-content: space-between; align-items: center;">
+        <label><input type="checkbox"> Recordarme</label>
+        <input class="login-btn" type="submit" value="LOGIN">
+      </div>
+    </form>
   </div>
-  
+
   <script>
+    const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI';
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    async function login(event) {
+      event.preventDefault();
+      const codigo = document.querySelector('input[name="codigo"]').value;
+      const password = document.querySelector('input[name="contrasena"]').value;
+
+      const { data, error } = await supabase
+        .from('usuarios')
+        .select('email')
+        .eq('codigo_usuario', codigo)
+        .single();
+
+      if (error || !data) {
+        alert("Código de usuario no encontrado");
+        return;
+      }
+
+      const { error: loginError } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: password
+      });
+
+      if (loginError) {
+        alert("Contraseña incorrecta o cuenta inválida");
+      } else {
+        window.location.href = "Menu.html";
+      }
+    }
+
     function togglePassword() {
       const pass = document.getElementById("pass");
       const icon = document.getElementById("eye-icon");
       if (pass.type === "password") {
         pass.type = "text";
-        icon.src = "https://raw.githubusercontent.com/SamuelG1996/clarocorp-inventario/39a90c98a78e3950f8075bacf95f9335b61c3017/Imagenes/Ojo%20Cerrado(2).png";
+        icon.src = "https://raw.githubusercontent.com/SamuelG1996/clarocorp-inventario/main/Imagenes/Ojo%20Cerrado(2).png";
       } else {
         pass.type = "password";
-        icon.src = "https://raw.githubusercontent.com/SamuelG1996/clarocorp-inventario/d38b081a8659b938371adde1bd6360b037cac4de/Imagenes/Ojo%20Abierto.png";
+        icon.src = "https://raw.githubusercontent.com/SamuelG1996/clarocorp-inventario/main/Imagenes/Ojo%20Abierto.png";
       }
     }
   </script>
 
-  <div class="copyright">© 2025 ClaroCorp+ | Desarrollado por Samuel Guardia</div>
+  <div class="copyright">© 2025 ClaroCorp Inventario+ | Desarrollado por Samuel Guardia</div>
 </body>
 </html>
+
 
