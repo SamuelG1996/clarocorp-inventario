@@ -19,14 +19,11 @@
         <img class="icon-right" src="https://cdn-icons-png.flaticon.com/512/159/159604.png" alt="toggle" onclick="togglePassword()" id="eye-icon">
       </div>
 
-      <div class="options">
-        <label><input type="checkbox"> Recordarme</label>
-      </div>
-
-      <input class="login-btn" type="submit" value="Login">
-    </form>
+  <div class="options" style="display: flex; justify-content: space-between; align-items: center;">
+  <label><input type="checkbox"> Recordarme</label>
+  <input class="login-btn" type="submit" value="LOGIN">
   </div>
-
+  
   <script>
     function togglePassword() {
       const pass = document.getElementById("pass");
