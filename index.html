@@ -7,7 +7,7 @@
 <body>
   <div class="login-container">
     <h2>INICIAR SESION</h2>
-    <form onsubmit="event.preventDefault();">
+    <form onsubmit="event.preventDefault(); window.location.href='https://samuelg1996.github.io/clarocorp-inventario/Menu.html';">
       <div class="input-group">
         <img class="icon-left" src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" alt="user">
         <input type="text" placeholder="Usuario" name="usuario" required>
@@ -21,10 +21,9 @@
 
       <div class="options">
         <label><input type="checkbox"> Recordarme</label>
-	<form onsubmit="event.preventDefault(); window.location.href='https://samuelg1996.github.io/clarocorp-inventario/Menu.html';">
-	  <input class="login-btn" type="submit" value="Login">
-	</form>
       </div>
+
+      <input class="login-btn" type="submit" value="Login">
     </form>
   </div>
 
@@ -41,7 +40,8 @@
       }
     }
   </script>
-<div class="copyright">© 2025 ClaroCorp Inventario+ | Desarrollado por Samuel Guardia</div>
 
+  <div class="copyright">© 2025 ClaroCorp Inventario+ | Desarrollado por Samuel Guardia</div>
 </body>
 </html>
+
