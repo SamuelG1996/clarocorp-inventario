@@ -21,7 +21,9 @@
 
       <div class="options">
         <label><input type="checkbox"> Recordarme</label>
-        <input class="login-btn" type="submit" value="Login">
+	<form onsubmit="event.preventDefault(); window.location.href='Menu.html';">
+	  <input class="login-btn" type="submit" value="Login">
+	</form>
       </div>
     </form>
   </div>
