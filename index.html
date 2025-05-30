@@ -37,25 +37,18 @@
 
       const { data, error } = await supabase
         .from('usuarios')
-        .select('email')
+        .select('*')
         .eq('codigo_usuario', codigo)
+        .eq('contrasena', password)
         .single();
 
       if (error || !data) {
-        alert("Código de usuario no encontrado");
+        alert("Código de usuario o contraseña incorrectos");
         return;
       }
 
-      const { error: loginError } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: password
-      });
-
-      if (loginError) {
-        alert("Contraseña incorrecta o cuenta inválida");
-      } else {
-        window.location.href = "Menu.html";
-      }
+      // Autenticación exitosa
+      window.location.href = "Menu.html";
     }
 
     function togglePassword() {
