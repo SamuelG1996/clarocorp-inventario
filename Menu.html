@@ -9,17 +9,17 @@
   <script>
     const supabase = supabase.createClient('https://bsrtuievwjtzwejuxqee.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI');
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        window.location.href = 'index.html';
-      }
-    });
+	document.addEventListener('DOMContentLoaded', () => {
+	  const usuario = localStorage.getItem('codigo_usuario');
+	  if (!usuario) {
+		window.location.href = 'index.html';
+	  }
+	});
 
-    async function logout() {
-      await supabase.auth.signOut();
-      window.location.href = 'index.html';
-    }
+	function logout() {
+	  localStorage.removeItem('codigo_usuario');
+	  window.location.href = 'index.html';
+	}
   </script>
 </head>
 <body>
