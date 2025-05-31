@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>ClaroCorp+ - Stock Contratas</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <div class="sidebar">
+    <div>
+      <div class="logo">ClaroCorp+</div>
+      <div class="menu">
+        <a href="Stock.html"><i class="fas fa-box"></i> Inventario</a>
+        <a href="#"><i class="fas fa-warehouse"></i> Stock Claro</a>
+        <a href="#"><i class="fas fa-sync-alt"></i> Traspasos</a>
+        <a href="#"><i class="fas fa-truck"></i> Compras</a>
+        <a href="#"><i class="fas fa-chart-bar"></i> Reportes</a>
+        <a href="#"><i class="fas fa-user-tie"></i> Mi Perfil</a>
+        <a href="#"><i class="fas fa-gear"></i> Configuración</a>
+      </div>
+    </div>
+    <div class="logout">
+      <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </div>
+
+
+  <div class="content">
+    <div class="encabezado-stock">
+      <h2><i class="fas fa-box-open"></i> Visualización de Stock</h2>
+      <div class="acciones-tabla">
+        <button onclick="descargarExcel()">Descargar Excel</button>
+        <button onclick="copiarTabla()">Copiar</button>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Buscar por código, descripción, almacén, zona..." onkeyup="filtrarTabla()">
+    </div>
+
+    <table id="tablaStock">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Descripción</th>
+          <th>Centro</th>
+          <th>Almacén</th>
+          <th>Cantidad</th>
+          <th>Lote</th>
+          <th>Zona</th>
+          <th>Stock</th>
+          <th>Reserva</th>
+          <th>Disponible</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>4072977</td><td>Router Huawei AR651</td><td>P4A3</td><td>I104</td><td>5</td><td>VALORADO</td><td>Arequipa</td>
+          <td><input type="number" oninput="calcularDisponible(this)"></td>
+          <td><input type="number" oninput="calcularDisponible(this)"></td>
+          <td class="disponible">-</td>
+        </tr>
+        <tr>
+          <td>4060668</td><td>Router Cisco C1121</td><td>P4A3</td><td>I104</td><td>3</td><td>VALORADO</td><td>Arequipa</td>
+          <td><input type="number" oninput="calcularDisponible(this)"></td>
+          <td><input type="number" oninput="calcularDisponible(this)"></td>
+          <td class="disponible">-</td>
+        </tr>
+        <tr>
+          <td>4060668</td><td>Router Cisco C1121</td><td>P4A3</td><td>I108</td><td>8</td><td>VALORADO</td><td>Cusco</td>
+          <td><input type="number" oninput="calcularDisponible(this)"></td>
+          <td><input type="number" oninput="calcularDisponible(this)"></td>
+          <td class="disponible">-</td>
+        </tr>
+		 <tr>
+          <td>4060668</td><td>Router Cisco C1121</td><td>P4A3</td><td>I115</td><td>14</td><td>VALORADO</td><td>Lima</td>
+          <td><input type="number" oninput="calcularDisponible(this)"></td>
+          <td><input type="number" oninput="calcularDisponible(this)"></td>
+          <td class="disponible">-</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <script>
+	function filtrarTabla() {
+	  const input = document.getElementById("searchInput").value.toLowerCase().trim();
+	  const filtros = input.split(/\s+/); // separa por espacios
+	  const filas = document.querySelectorAll("#tablaStock tbody tr");
+
+	  filas.forEach(fila => {
+		const textoFila = [
+		  fila.cells[0].textContent,  // Código
+		  fila.cells[1].textContent,  // Descripción
+		  fila.cells[2].textContent,  // Centro
+		  fila.cells[3].textContent,  // Almacén
+		  fila.cells[6].textContent   // Zona
+		].join(" ").toLowerCase();
+
+		const coincide = filtros.every(f => textoFila.includes(f));
+		fila.style.display = coincide ? "" : "none";
+	  });
+    }
+
+    function calcularDisponible(input) {
+      const fila = input.parentElement.parentElement;
+      const stockInput = fila.cells[7].querySelector('input');
+      const reservaInput = fila.cells[8].querySelector('input');
+      const disponibleCell = fila.cells[9];
+
+      const stock = stockInput.value.trim();
+      const reserva = reservaInput.value.trim();
+
+      if (stock === "" || reserva === "") {
+        disponibleCell.textContent = "No calculable";
+      } else {
+        const resultado = parseInt(stock) - parseInt(reserva);
+        disponibleCell.textContent = isNaN(resultado) ? "Error" : resultado;
+      }
+    }
+  </script>
+
+
+<script>
+function descargarExcel() {
+  const tabla = document.getElementById("tablaStock");
+  let csv = [];
+
+  for (let fila of tabla.rows) {
+    let filaDatos = [];
+    for (let celda of fila.cells) {
+      if (celda.querySelector("input")) {
+        filaDatos.push(celda.querySelector("input").value || ""); // obtiene valor del input
+      } else {
+        filaDatos.push(celda.innerText);
+      }
+    }
+    csv.push(filaDatos.join(","));
+  }
+
+  const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + csv.join("\n");
+  const link = document.createElement("a");
+  link.setAttribute("href", encodeURI(csvContent));
+  link.setAttribute("download", "Stock_ClaroCorp.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+</script>
+
+<script>
+function copiarTabla() {
+  const tabla = document.getElementById("tablaStock");
+  let texto = "";
+
+  for (let fila of tabla.rows) {
+    let filaTexto = [];
+    for (let celda of fila.cells) {
+      if (celda.querySelector("input")) {
+        filaTexto.push(celda.querySelector("input").value || "");
+      } else {
+        filaTexto.push(celda.innerText);
+      }
+    }
+    texto += filaTexto.join("\t") + "\n";
+  }
+
+  navigator.clipboard.writeText(texto).then(() => {
+    alert("Tabla copiada al portapapeles");
+  }).catch(err => {
+    alert("Error al copiar: " + err);
+  });
+}
+</script>
+
+
+</body>
+</html>
