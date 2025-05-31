@@ -42,26 +42,23 @@ async function login(event) {
 
   const { data, error } = await client
     .from('usuarios')
-    .select('*')
-    .eq('codigo_usuario', codigo)
-    .eq('contrasena', password)
-    .maybeSingle();
+    .select('*');
 
-  console.log("Respuesta Supabase:", { data, error });
+  console.log("TODOS LOS USUARIOS:", data);
 
-  if (error) {
-    alert("Error del servidor: " + error.message);
-    return;
-  }
+  const user = data.find(u =>
+    u.codigo_usuario === codigo &&
+    u.contrasena === password
+  );
 
-  if (!data) {
+  if (!user) {
     alert("Código de usuario o contraseña incorrectos");
     return;
   }
 
+  alert("Login exitoso, redirigiendo...");
   window.location.href = "Menu.html";
 }
-
 function togglePassword() {
   const pass = document.getElementById("pass");
   const icon = document.getElementById("eye-icon");
