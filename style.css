@@ -342,10 +342,9 @@ td:nth-child(10) {
 /* FONDO BLANCO PARA EL CONTENIDO PRINCIPAL */
 .main-content {
   background-color: white;
+  width: 90%;
   padding: 20px;
-  margin-top: 80px; /* Para que no se monte con la sidebar */
   margin-left: 250px; /* Para que no se monte con la sidebar */
-  min-height: 100vh;
   box-sizing: border-box;
 }
 
