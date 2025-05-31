@@ -55,7 +55,7 @@ async function login(event) {
     alert("Código de usuario o contraseña incorrectos");
     return;
   }
-
+  localStorage.setItem('codigo_usuario', codigo);
   window.location.href = "Menu.html";
 }
 function togglePassword() {
