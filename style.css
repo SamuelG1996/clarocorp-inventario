@@ -312,3 +312,29 @@ td:nth-child(10) {
 }
 
 /* === FIN MÓDULO DE VISUALIZACIÓN DE STOCK === */
+
+/* ===ALERTA LOGIN INCORRECTO=== */
+.swal2-sm {
+  font-size: 14px;
+  padding: 1em;
+}
+
+.swal2-title-tight {
+  margin-top: 0.4em !important;
+  margin-bottom: 0.4em !important;
+  font-size: 18px;
+}
+
+.swal2-icon-compact {
+  margin-top: 0.3em !important;
+  margin-bottom: 0.2em !important;
+  width: 60px !important;
+  height: 60px !important;
+}
+
+.swal2-btn-sm {
+  font-size: 13px;
+  padding: 6px 20px;
+}
+
+/* ===FIN ALERTA LOGIN INCORRECTO=== */
