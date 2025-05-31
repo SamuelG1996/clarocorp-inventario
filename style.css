@@ -343,6 +343,7 @@ td:nth-child(10) {
 .main-content {
   background-color: white;
   padding: 20px;
+  margin-top: 80px; /* Para que no se monte con la sidebar */
   margin-left: 250px; /* Para que no se monte con la sidebar */
   min-height: 100vh;
   box-sizing: border-box;
