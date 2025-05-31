@@ -345,6 +345,7 @@ td:nth-child(10) {
   width: 90%;
   padding: 20px;
   margin-left: 5%;
+  color: black;
   box-sizing: border-box;
 }
 
