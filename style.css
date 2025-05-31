@@ -338,3 +338,25 @@ td:nth-child(10) {
 }
 
 /* ===FIN ALERTA LOGIN INCORRECTO=== */
+
+/* FONDO BLANCO PARA EL CONTENIDO PRINCIPAL */
+.main-content {
+  background-color: white;
+  padding: 20px;
+  margin-left: 250px; /* Para que no se monte con la sidebar */
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Título alineado arriba y con separación */
+.titulo-principal {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+/* FIN FONDO BLANCO PARA EL CONTENIDO PRINCIPAL */
+
+
+
