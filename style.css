@@ -1,202 +1,314 @@
-	/*LOGIN DISEÑO*/
- 
- body {
-      margin: 0;
-      font-family: 'Arial', sans-serif;
-      background-color: #1a2b3c;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+/*LOGIN DISEÑO*/
 
-    .login-container {
-      background-color: #2c3e50;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
-      width: 340px;
-      color: #ecf0f1;
-    }
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #1a2b3c;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
 
-    h2 {
-      text-align: center;
-      margin-bottom: 30px;
-      font-weight: normal;
-      letter-spacing: 1px;
-      color: #ecf0f1;
-    }
+.login-container {
+  background-color: #2c3e50;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  width: 340px;
+  color: #ecf0f1;
+}
 
-    .input-group {
-      position: relative;
-      margin-bottom: 20px;
-    }
+h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: normal;
+  letter-spacing: 1px;
+  color: #ecf0f1;
+}
 
-    .input-group input {
-      width: 100%;
-      padding: 12px 12px 12px 40px;
-      border: none;
-      border-radius: 4px;
-      background-color: #ecf0f1;
-      color: #2c3e50;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
 
-    .input-group img.icon-left {
-      position: absolute;
-      top: 50%;
-      left: 10px;
-      width: 18px;
-      height: 18px;
-      transform: translateY(-50%);
-      opacity: 0.6;
-    }
+.input-group input {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  border: none;
+  border-radius: 4px;
+  background-color: #ecf0f1;
+  color: #2c3e50;
+  font-size: 14px;
+  box-sizing: border-box;
+}
 
-    .input-group img.icon-right {
-      position: absolute;
-      top: 50%;
-      right: 10px;
-      width: 20px;
-      height: 20px;
-      transform: translateY(-50%);
-      cursor: pointer;
-    }
+.input-group img.icon-left {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  width: 18px;
+  height: 18px;
+  transform: translateY(-50%);
+  opacity: 0.6;
+}
 
-    .options {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 10px;
-    }
+.input-group img.icon-right {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
 
-    .options label {
-      font-size: 13px;
-      color: #ecf0f1;
-    }
+.options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
 
-    .login-btn {
-      background-color: #2ecc71;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-      text-transform: uppercase;
-    }
+.options label {
+  font-size: 13px;
+  color: #ecf0f1;
+}
 
-    .login-btn:hover {
-      background-color: #27ae60;
-    }
+.login-btn {
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.login-btn:hover {
+  background-color: #27ae60;
+}
+
+.copyright {
+  position: fixed;
+  bottom: 10px;
+  right: 15px;
+  font-size: 12px;
+  color: #bdc3c7;
+  font-family: 'Arial', sans-serif;
+  opacity: 0.7;
+}
+
+/*MENU DISEÑO*/
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  display: flex;
+  height: 100vh;
+  background-color: #3b4a59;
+}
+
+.sidebar {
+  width: 220px;
+  background-color: #002147;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: white;
+  padding: 20px 0;
+}
+
+.sidebar .logo {
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.menu a {
+  text-decoration: none;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background 0.3s;
+}
+
+.menu a:hover {
+  background-color: #003366;
+}
+
+.menu a i {
+  min-width: 24px;
+  text-align: center;
+  font-size: 18px;
+  line-height: 1;
+  display: inline-block;
+}
+
+.logout {
+  text-align: center;
+  padding: 10px 0;
+  margin-top: 30px;
+}
+
+.logout a {
+  color: #bdc3c7;
+  font-size: 20px;
+}
+
+.logout a:hover {
+  color: #ff4d4d;
+}
+
+.topbar {
+  width: 90%;
+  background-color: #0051ba;
+  color: white;
+  padding: 15px;
+  font-size: 18px;
+  margin-left: 5%;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* === MÓDULO DE VISUALIZACIÓN DE STOCK === */
+
+.content {
+  padding: 40px 30px;
+  align-items: center;
+  color: white;
+}
+
+.search-bar {
+  width: 90%;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: none;
+}
+
+table {
+  width: 90%;
+  background-color: white;
+  border-collapse: collapse;
+  color: black;
+}
+
+table, th, td {
+  border: 1px solid #ccc;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+input[type="number"] {
+  width: 80px;
+}
+
+/* Ocultar flechas de input number en Chrome y Firefox (opcional estético) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Centrado de los campos Stock y Reserva */
+td:nth-child(3),
+td:nth-child(4),
+td:nth-child(5),
+td:nth-child(6),
+td:nth-child(8) input,
+td:nth-child(9) input,
+td:nth-child(10) {
+  text-align: center;
+}
+
+/* Centrado de encabezados: */
+th:nth-child(5),
+th:nth-child(8),
+th:nth-child(9),
+th:nth-child(10),
+td:nth-child(5),
+td:nth-child(8) input,
+td:nth-child(9) input,
+td:nth-child(10) {
+  text-align: center;
+
+}
+
+/* Reducción de tamaño de texto en toda la tabla */
+#tablaStock th {
+  font-size: 15px;
+}
+
+#tablaStock td {
+  font-size: 14px;
+  }
+  
+.encabezado-stock {
+  width: 90%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.encabezado-stock h2 {
+  margin: 0;
+  font-size: 24px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 	
-	  .copyright {
-      position: fixed;
-      bottom: 10px;
-      right: 15px;
-      font-size: 12px;
-      color: #bdc3c7;
-      font-family: 'Arial', sans-serif;
-      opacity: 0.7;
-    }
-	
-	/*MENU DISEÑO*/
-	
-	    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
+.acciones-tabla button {
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  margin-left: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
 
-    body {
-      display: flex;
-      height: 100vh;
-      background-color: #3b4a59;
-    }
+.acciones-tabla button:hover {
+  background-color: #27ae60;
+}
 
-    .sidebar {
-      width: 220px;
-      background-color: #002147;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      color: white;
-      padding: 20px 0;
-    }
-
-    .sidebar .logo {
-      text-align: center;
-      margin-bottom: 30px;
-      font-weight: bold;
-      font-size: 16px;
-    }
-
-    .menu {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .menu a {
-      text-decoration: none;
-      color: white;
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transition: background 0.3s;
-    }
-
-    .menu a:hover {
-      background-color: #003366;
-    }
-	
-	.menu a i {
-	  min-width: 24px;       /* Espacio reservado fijo */
-	  text-align: center;    /* Centrado dentro del espacio */
-	  font-size: 18px;       /* Tamaño uniforme */
-	  line-height: 1;
-	  display: inline-block; /* Asegura que se respete el ancho */
-	}
-
-    .logout {
-      text-align: center;
-      padding: 10px 0;
-	  margin-top: 30px;
-    }
-
-    .logout a {
-      color: #bdc3c7;
-      font-size: 20px;
-    }
-	
-	.logout a:hover {
-      color: #ff4d4d;
-    }
-	
-
-    .topbar {
-      width: 90%;
-      background-color: #0051ba;
-      color: white;
-      padding: 15px;
-      font-size: 18px;
-	  margin-left: 5%;
-    }
-
-    .content {
-	
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .main-content {
-	  width: 90%;
-      flex: 1;
-      padding: 20px;
-      background-color: #e4e4e4;
-      color:#4d4c4c;
-	  margin-left: 5%;
-    }
+/* === FIN MÓDULO DE VISUALIZACIÓN DE STOCK === */
