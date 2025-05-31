@@ -344,7 +344,7 @@ td:nth-child(10) {
   background-color: white;
   width: 90%;
   padding: 20px;
-  margin-left: 250px; /* Para que no se monte con la sidebar */
+  margin-left: 5%;
   box-sizing: border-box;
 }
 
