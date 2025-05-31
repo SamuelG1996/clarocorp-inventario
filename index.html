@@ -5,6 +5,7 @@
 <title>ClaroCorp+ Login</title>
 <link href="style.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 <div class="login-container">
@@ -52,7 +53,14 @@ async function login(event) {
   );
 
   if (!user) {
-    alert("Código de usuario o contraseña incorrectos");
+	Swal.fire({
+	  icon: 'error',
+	  title: 'Acceso denegado',
+	  text: 'Código de usuario o contraseña incorrectos',
+	  background: '#1a1a1a',
+	  color: '#fff',
+	  confirmButtonColor: '#e74c3c'
+	});
     return;
   }
   localStorage.setItem('codigo_usuario', codigo);
@@ -71,4 +79,3 @@ function togglePassword() {
 }
 </script></body>
 </html>
-
