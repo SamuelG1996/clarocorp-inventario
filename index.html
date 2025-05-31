@@ -59,8 +59,15 @@ async function login(event) {
 	  text: 'Código de usuario o contraseña incorrectos',
 	  background: '#1a1a1a',
 	  color: '#fff',
-	  confirmButtonColor: '#e74c3c'
+	  confirmButtonColor: '#e74c3c',
+	  width: '300px', // 👈 más angosto
+	  customClass: {
+		title: 'swal2-title-sm',
+		popup: 'swal2-sm',
+		confirmButton: 'swal2-btn-sm'
+	  }
 	});
+
     return;
   }
   localStorage.setItem('codigo_usuario', codigo);
