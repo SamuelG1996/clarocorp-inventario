@@ -432,7 +432,7 @@ td:nth-child(10) {
 .perfil-content {
   background-color: #1a2b3c;
   padding: 30px;
-  margin-left: 250px;
+  margin-left: 5%;
   min-height: 100vh;
   box-sizing: border-box;
   color: white;
