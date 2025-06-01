@@ -359,8 +359,7 @@ td:nth-child(10) {
 
 /* FIN FONDO BLANCO PARA EL CONTENIDO PRINCIPAL */
 
-/* --- ESTILOS ESPECÍFICOS PARA MÓDULO PERFIL --- */
-/* --- PERFIL CENTRADO Y COMPACTO --- */
+/* --- ESTILOS GENERALES PARA MÓDULO PERFIL CENTRADO Y COMPACTO --- */
 .perfil-content {
   background-color: #1a2b3c;
   padding: 40px 0;
@@ -373,9 +372,8 @@ td:nth-child(10) {
 
 .perfil-box {
   background-color: #1a2b3c;
-  width: 100%;
-  max-width: 720px; /* Este valor limita el ancho total */
-  padding: 0 20px;
+  width: 95%;
+  max-width: 900px;
   color: white;
   font-size: 14px;
 }
@@ -401,7 +399,7 @@ td:nth-child(10) {
 }
 
 .perfil-box .grupo-form {
-  flex: 1 1 48%; /* solo dos columnas */
+  flex: 1 1 30%;
   display: flex;
   flex-direction: column;
   margin-bottom: 10px;
