@@ -192,32 +192,33 @@ function copiarTabla() {
     alert("Error al copiar: " + err);
   });
 }
-</script>
-
-<script>
-	// Recarga al volver a la pestaña
+	// Recarga al volver a la pestaña (tras suspensión o cambio de foco)
 	document.addEventListener("visibilitychange", () => {
 	  if (document.visibilityState === "visible") {
-	    location.reload(); // Refresca automáticamente
+		location.reload(); // Recarga la página
 	  }
 	});
-	
-	// Recarga automática si hay más de 30 minutos sin actividad
+
+	// Recarga automática si hay más de 30 minutos sin interacción
 	let lastActiveTime = Date.now();
-	
-	document.addEventListener("mousemove", () => lastActiveTime = Date.now());
-	document.addEventListener("keydown", () => lastActiveTime = Date.now());
-	
+
+	document.addEventListener("mousemove", () => {
+	  lastActiveTime = Date.now();
+	});
+	document.addEventListener("keydown", () => {
+	  lastActiveTime = Date.now();
+	});
+
 	setInterval(() => {
 	  const now = Date.now();
 	  const minutesInactive = (now - lastActiveTime) / 60000;
-	
-	  if (minutesInactive > 30) {
-	    location.reload();
-	  }
-	}, 60000); // Verifica cada minuto
-</script>
 
+	  if (minutesInactive > 30) {
+	  localStorage.removeItem('codigo_usuario');
+	  window.location.href = "index.html";
+	  }
+	}, 60000); // Revisa cada 1 minuto
+</script>
 
 </body>
 </html>
