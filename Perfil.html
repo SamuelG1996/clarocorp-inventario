@@ -31,80 +31,115 @@
   </div>
 
   <!-- CONTENIDO PRINCIPAL -->
-  <div class="main-content">
-    <h2 class="titulo-principal"><i class="fas fa-user-circle"></i> Mi Perfil</h2>
+  <div class="perfil-container">
+    <h2 class="perfil-titulo"><i class="fas fa-user-circle"></i> Mi Perfil</h2>
 
-    <form id="perfilForm">
-      <div><strong>Código de usuario:</strong> <span id="codigo_usuario"></span></div>
-      <div><strong>Nombres:</strong> <span id="nombres"></span></div>
-      <div><strong>Rol:</strong> <span id="rol"></span></div>
-      <div><strong>Empresa:</strong> <span id="empresa"></span></div>
-      <div>
-        <label>Correo electrónico:</label><br>
+    <form id="perfilForm" class="formulario-perfil">
+      <div class="grupo-form">
+        <label>Código de usuario</label>
+        <input type="text" id="codigo_usuario" disabled>
+      </div>
+      <div class="grupo-form">
+        <label>Nombres</label>
+        <input type="text" id="nombres" disabled>
+      </div>
+      <div class="grupo-form">
+        <label>Rol</label>
+        <input type="text" id="rol" disabled>
+      </div>
+      <div class="grupo-form">
+        <label>Empresa</label>
+        <input type="text" id="empresa" disabled>
+      </div>
+      <div class="grupo-form">
+        <label>Correo electrónico</label>
         <input type="email" id="correo">
       </div>
-      <div>
-        <label>Teléfono:</label><br>
+      <div class="grupo-form">
+        <label>Teléfono</label>
         <input type="text" id="telefono">
       </div>
-      <button type="button" onclick="guardarPerfil()">Guardar cambios</button>
+      <div class="form-boton">
+        <button type="button" onclick="guardarPerfil()">Guardar cambios</button>
+      </div>
     </form>
 
     <hr>
 
-    <h3>Cambiar Contraseña</h3>
-    <form id="passwordForm">
-      <div><label>Contraseña actual:</label><br><input type="password" id="actual"></div>
-      <div><label>Nueva contraseña:</label><br><input type="password" id="nueva"></div>
-      <div><label>Confirmar nueva contraseña:</label><br><input type="password" id="confirmacion"></div>
-      <button type="button" onclick="cambiarContrasena()">Actualizar contraseña</button>
+    <form id="passwordForm" class="formulario-perfil">
+      <h3 class="subtitulo">Cambiar Contraseña</h3>
+      <div class="grupo-form">
+        <label>Contraseña actual</label>
+        <input type="password" id="actual">
+      </div>
+      <div class="grupo-form">
+        <label>Nueva contraseña</label>
+        <input type="password" id="nueva">
+      </div>
+      <div class="grupo-form">
+        <label>Confirmar nueva contraseña</label>
+        <input type="password" id="confirmacion">
+      </div>
+      <div class="form-boton">
+        <button type="button" onclick="cambiarContrasena()">Actualizar contraseña</button>
+      </div>
     </form>
   </div>
 
-<script>
-  const supabase = supabase.createClient('https://bsrtuievwjtzwejuxqee.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...');
-  let usuarioActual = null;
+  <script>
+    const supabase = supabase.createClient(
+      'https://bsrtuievwjtzwejuxqee.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI'
+    );
+    let usuarioActual = null;
 
-  document.addEventListener('DOMContentLoaded', async () => {
-    const codigo = localStorage.getItem('codigo_usuario');
-    if (!codigo) return window.location.href = 'index.html';
+    document.addEventListener('DOMContentLoaded', async () => {
+      const codigo = localStorage.getItem('codigo_usuario');
+      if (!codigo) return window.location.href = 'index.html';
 
-    const { data } = await supabase.from('usuarios').select('*').eq('codigo_usuario', codigo).single();
-    if (data) {
-      usuarioActual = data;
-      document.getElementById('codigo_usuario').textContent = data.codigo_usuario;
-      document.getElementById('nombres').textContent = data.nombres;
-      document.getElementById('rol').textContent = data.rol;
-      document.getElementById('empresa').textContent = data.empresa;
-      document.getElementById('correo').value = data.correo || '';
-      document.getElementById('telefono').value = data.telefono || '';
+      const { data } = await supabase.from('usuarios').select('*').eq('codigo_usuario', codigo).single();
+      if (data) {
+        usuarioActual = data;
+        document.getElementById('codigo_usuario').value = data.codigo_usuario;
+        document.getElementById('nombres').value = data.nombres;
+        document.getElementById('rol').value = data.rol;
+        document.getElementById('empresa').value = data.empresa;
+        document.getElementById('correo').value = data.correo || '';
+        document.getElementById('telefono').value = data.telefono || '';
+      }
+    });
+
+    async function guardarPerfil() {
+      const correo = document.getElementById('correo').value.trim();
+      const telefono = document.getElementById('telefono').value.trim();
+      const { error } = await supabase
+        .from('usuarios')
+        .update({ correo, telefono })
+        .eq('codigo_usuario', usuarioActual.codigo_usuario);
+      alert(error ? 'Error al actualizar.' : 'Datos actualizados con éxito.');
     }
-  });
 
-  async function guardarPerfil() {
-    const correo = document.getElementById('correo').value.trim();
-    const telefono = document.getElementById('telefono').value.trim();
-    const { error } = await supabase.from('usuarios').update({ correo, telefono }).eq('codigo_usuario', usuarioActual.codigo_usuario);
-    alert(error ? 'Error al actualizar.' : 'Datos actualizados con éxito.');
-  }
+    async function cambiarContrasena() {
+      const actual = document.getElementById('actual').value.trim();
+      const nueva = document.getElementById('nueva').value.trim();
+      const confirmacion = document.getElementById('confirmacion').value.trim();
 
-  async function cambiarContrasena() {
-    const actual = document.getElementById('actual').value.trim();
-    const nueva = document.getElementById('nueva').value.trim();
-    const confirmacion = document.getElementById('confirmacion').value.trim();
+      if (nueva !== confirmacion) return alert('Las nuevas contraseñas no coinciden.');
+      if (actual !== usuarioActual.contrasena) return alert('La contraseña actual no es correcta.');
 
-    if (nueva !== confirmacion) return alert('Las nuevas contraseñas no coinciden.');
-    if (actual !== usuarioActual.contrasena) return alert('La contraseña actual no es correcta.');
+      const { error } = await supabase
+        .from('usuarios')
+        .update({ contrasena: nueva })
+        .eq('codigo_usuario', usuarioActual.codigo_usuario);
+      alert(error ? 'Error al cambiar la contraseña.' : 'Contraseña actualizada con éxito.');
+    }
 
-    const { error } = await supabase.from('usuarios').update({ contrasena: nueva }).eq('codigo_usuario', usuarioActual.codigo_usuario);
-    alert(error ? 'Error al cambiar la contraseña.' : 'Contraseña actualizada con éxito.');
-  }
-
-  function logout() {
-    localStorage.removeItem('codigo_usuario');
-    window.location.href = 'index.html';
-  }
-</script>
+    function logout() {
+      localStorage.removeItem('codigo_usuario');
+      window.location.href = 'index.html';
+    }
+  </script>
 
 </body>
 </html>
+
