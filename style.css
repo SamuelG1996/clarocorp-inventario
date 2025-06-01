@@ -392,15 +392,13 @@ td:nth-child(10) {
 }
 
 .perfil-content .grupo-form {
-  flex: 1 1 %;
-  display: flex;
-  flex-direction: column;
+  display: block;
   margin-bottom: 10px;
 }
 
 .perfil-content .grupo-form label {
-  display: inline-block; /* evita que ocupe todo el ancho */
-  max-width: fit-content; /* se ajusta al texto */
+  display: inline-block;
+  max-width: fit-content;
   font-weight: normal;
   font-size: 11.5px;
   margin-bottom: 3px;
