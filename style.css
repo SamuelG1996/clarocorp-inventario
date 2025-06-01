@@ -359,97 +359,81 @@ td:nth-child(10) {
 
 /* FIN FONDO BLANCO PARA EL CONTENIDO PRINCIPAL */
 
-/* MI PERFIL */
-.perfil-container {
-  width: 80%;
-  margin-left: 5&;
+/* --- ESTILOS ESPECÍFICOS PARA MÓDULO PERFIL --- */
+.perfil-content {
+  background-color: #1a2b3c;
   padding: 30px;
-  background-color: white;
+  margin-left: 220px;
+  min-height: 100vh;
   box-sizing: border-box;
+  color: white;
+  font-size: 14px;
 }
 
-.perfil-titulo {
-  font-size: 28px;
-  margin-bottom: 30px;
-  color: #2c3e50;
+.perfil-content .encabezado-stock {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+
+.perfil-content .encabezado-stock h2 {
+  font-size: 20px;
+  color: white;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.subtitulo {
-  font-size: 20px;
-  margin: 20px 0 10px;
-  color: #2c3e50;
-}
-
-.formulario-perfil {
+.perfil-content .formulario-perfil {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 16px;
 }
 
-.grupo-form {
+.perfil-content .grupo-form {
   flex: 1 1 45%;
   display: flex;
   flex-direction: column;
 }
 
-.grupo-form label {
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #2c3e50;
+.perfil-content .grupo-form label {
+  font-weight: normal;
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: #ecf0f1;
 }
 
-.grupo-form input {
-  padding: 10px;
-  font-size: 14px;
-  border: 1px solid #ccc;
+.perfil-content .grupo-form input {
+  padding: 6px 10px;
+  font-size: 13px;
+  border: 1px solid #bbb;
   border-radius: 4px;
 }
 
-.form-boton {
-  width: 80%;
+.perfil-content .form-boton {
+  width: 100%;
   margin-top: 10px;
 }
 
-.form-boton button {
+.perfil-content .form-boton button {
   background-color: #2ecc71;
   color: white;
-  padding: 10px 20px;
+  padding: 8px 16px;
   border: none;
   border-radius: 5px;
   font-weight: bold;
+  font-size: 13px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
-.form-boton button:hover {
+.perfil-content .form-boton button:hover {
   background-color: #27ae60;
 }
 
-.perfil-content {
-  background-color: #1a2b3c;
-  padding: 30px;
-  margin-left: 5%;
-  width: 80%;
-  box-sizing: border-box;
-  color: white;
-}
-
-.perfil-content .encabezado-stock h2 {
-  color: white;
-}
-
-.perfil-content .grupo-form label {
-  color: white;
-}
-
 .perfil-content .subtitulo {
-  color: white;
+  font-size: 16px;
+  margin: 15px 0 8px;
+  color: #ecf0f1;
 }
-
-
-/* FIN MI PERFIL */
-
-
