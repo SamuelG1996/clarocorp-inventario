@@ -397,6 +397,8 @@ td:nth-child(10) {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
+  margin-top: 26px;
+  margin-bottom: 30px;	
 }
 
 .perfil-box .grupo-form {
