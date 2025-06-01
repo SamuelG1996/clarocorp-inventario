@@ -429,6 +429,28 @@ td:nth-child(10) {
   background-color: #27ae60;
 }
 
+.perfil-content {
+  background-color: #1a2b3c;
+  padding: 30px;
+  margin-left: 250px;
+  min-height: 100vh;
+  box-sizing: border-box;
+  color: white;
+}
+
+.perfil-content .encabezado-stock h2 {
+  color: white;
+}
+
+.perfil-content .grupo-form label {
+  color: white;
+}
+
+.perfil-content .subtitulo {
+  color: white;
+}
+
+
 /* FIN MI PERFIL */
 
 
