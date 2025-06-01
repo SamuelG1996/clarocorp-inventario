@@ -74,7 +74,12 @@
 
 		return;
 	  }
-	  localStorage.setItem('codigo_usuario', codigo);
+	  localStorage.setItem('codigo_usuario', user.codigo_usuario);
+	localStorage.setItem('nombres', user.nombres);
+	localStorage.setItem('correo', user.correo);
+	localStorage.setItem('telefono', user.telefono);
+	localStorage.setItem('rol', user.rol);
+	localStorage.setItem('empresa', user.empresa);
 	  window.location.href = "Menu.html";
 	}
 	function togglePassword() {
