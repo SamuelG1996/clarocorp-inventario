@@ -109,12 +109,12 @@
 
       if (data) {
         usuarioActual = data;
-        document.getElementById('codigo_usuario').value = data.codigo_usuario;
-        document.getElementById('nombres').value = data.nombres;
-        document.getElementById('rol').value = data.rol;
-        document.getElementById('empresa').value = data.empresa;
-        document.getElementById('correo').value = data.correo || '';
-        document.getElementById('telefono').value = data.telefono || '';
+      document.getElementById('codigo_usuario').value = localStorage.getItem('codigo_usuario') || '';
+      document.getElementById('nombres').value = localStorage.getItem('nombres') || '';
+      document.getElementById('correo').value = localStorage.getItem('correo') || '';
+      document.getElementById('telefono').value = localStorage.getItem('telefono') || '';
+      document.getElementById('rol').value = localStorage.getItem('rol') || '';
+      document.getElementById('empresa').value = localStorage.getItem('empresa') || '';
       }
     });
 
