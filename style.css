@@ -392,7 +392,9 @@ td:nth-child(10) {
 }
 
 .perfil-content .grupo-form {
-  display: block;
+  flex: 0 1 auto;
+  display: flex;
+  flex-direction: column;
   margin-bottom: 10px;
 }
 
