@@ -50,6 +50,30 @@
       <p>Bienvenido, selecciona una opción del menú lateral.</p>
     </div>
   </div>
+  
+  <script>
+	// Recarga al volver a la pestaña
+	document.addEventListener("visibilitychange", () => {
+	  if (document.visibilityState === "visible") {
+		location.reload(); // Refresca automáticamente
+	  }
+	});
 
+	// Recarga automática si hay más de 30 minutos sin actividad
+	let lastActiveTime = Date.now();
+
+	document.addEventListener("mousemove", () => lastActiveTime = Date.now());
+	document.addEventListener("keydown", () => lastActiveTime = Date.now());
+
+	setInterval(() => {
+	  const now = Date.now();
+	  const minutesInactive = (now - lastActiveTime) / 60000;
+
+	  if (minutesInactive > 30) {
+		location.reload();
+	  }
+	}, 60000); // Verifica cada minuto
+</script>
+  
 </body>
 </html>
