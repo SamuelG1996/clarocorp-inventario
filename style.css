@@ -440,3 +440,20 @@ td:nth-child(10) {
   margin: 15px 0 8px;
   color: #ecf0f1;
 }
+
+.perfil-content {
+  background-color: #1a2b3c;
+  padding: 30px;
+  margin-left: 220px; /* respeta el ancho de la sidebar */
+  min-height: 100vh;
+  box-sizing: border-box;
+  color: white;
+  font-size: 14px;
+  display: flex;
+  justify-content: center; /* centra el contenido interior */
+}
+
+.perfil-box {
+  width: 70%; /* aquí defines tu ancho deseado */
+  max-width: 1000px;
+}
