@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>ClaroCorp+ || Mi Perfil</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div>
+      <div class="logo">
+        <a href="Menu.html" style="text-decoration: none; color: inherit;">ClaroCorp+</a>
+      </div>
+      <div class="menu">
+        <a href="Stock.html"><i class="fas fa-box"></i> Stock Contrata</a>
+        <a href="#"><i class="fas fa-warehouse"></i> Stock Claro</a>
+        <a href="#"><i class="fas fa-sync-alt"></i> Traspasos</a>
+        <a href="#"><i class="fas fa-truck"></i> Compras</a>
+        <a href="#"><i class="fas fa-chart-bar"></i> Reportes</a>
+        <a href="Perfil.html"><i class="fas fa-user-tie"></i> Mi Perfil</a>
+        <a href="#"><i class="fas fa-gear"></i> Configuración</a>
+      </div>
+    </div>
+    <div class="logout">
+      <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </div>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <div class="main-content">
+    <h2 class="titulo-principal"><i class="fas fa-user-circle"></i> Mi Perfil</h2>
+
+    <form id="perfilForm">
+      <div><strong>Código de usuario:</strong> <span id="codigo_usuario"></span></div>
+      <div><strong>Nombres:</strong> <span id="nombres"></span></div>
+      <div><strong>Rol:</strong> <span id="rol"></span></div>
+      <div><strong>Empresa:</strong> <span id="empresa"></span></div>
+      <div>
+        <label>Correo electrónico:</label><br>
+        <input type="email" id="correo">
+      </div>
+      <div>
+        <label>Teléfono:</label><br>
+        <input type="text" id="telefono">
+      </div>
+      <button type="button" onclick="guardarPerfil()">Guardar cambios</button>
+    </form>
+
+    <hr>
+
+    <h3>Cambiar Contraseña</h3>
+    <form id="passwordForm">
+      <div><label>Contraseña actual:</label><br><input type="password" id="actual"></div>
+      <div><label>Nueva contraseña:</label><br><input type="password" id="nueva"></div>
+      <div><label>Confirmar nueva contraseña:</label><br><input type="password" id="confirmacion"></div>
+      <button type="button" onclick="cambiarContrasena()">Actualizar contraseña</button>
+    </form>
+  </div>
+
+<script>
+  const supabase = supabase.createClient('https://bsrtuievwjtzwejuxqee.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...');
+  let usuarioActual = null;
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const codigo = localStorage.getItem('codigo_usuario');
+    if (!codigo) return window.location.href = 'index.html';
+
+    const { data } = await supabase.from('usuarios').select('*').eq('codigo_usuario', codigo).single();
+    if (data) {
+      usuarioActual = data;
+      document.getElementById('codigo_usuario').textContent = data.codigo_usuario;
+      document.getElementById('nombres').textContent = data.nombres;
+      document.getElementById('rol').textContent = data.rol;
+      document.getElementById('empresa').textContent = data.empresa;
+      document.getElementById('correo').value = data.correo || '';
+      document.getElementById('telefono').value = data.telefono || '';
+    }
+  });
+
+  async function guardarPerfil() {
+    const correo = document.getElementById('correo').value.trim();
+    const telefono = document.getElementById('telefono').value.trim();
+    const { error } = await supabase.from('usuarios').update({ correo, telefono }).eq('codigo_usuario', usuarioActual.codigo_usuario);
+    alert(error ? 'Error al actualizar.' : 'Datos actualizados con éxito.');
+  }
+
+  async function cambiarContrasena() {
+    const actual = document.getElementById('actual').value.trim();
+    const nueva = document.getElementById('nueva').value.trim();
+    const confirmacion = document.getElementById('confirmacion').value.trim();
+
+    if (nueva !== confirmacion) return alert('Las nuevas contraseñas no coinciden.');
+    if (actual !== usuarioActual.contrasena) return alert('La contraseña actual no es correcta.');
+
+    const { error } = await supabase.from('usuarios').update({ contrasena: nueva }).eq('codigo_usuario', usuarioActual.codigo_usuario);
+    alert(error ? 'Error al cambiar la contraseña.' : 'Contraseña actualizada con éxito.');
+  }
+
+  function logout() {
+    localStorage.removeItem('codigo_usuario');
+    window.location.href = 'index.html';
+  }
+</script>
+
+</body>
+</html>
