@@ -2,89 +2,120 @@
 
 <html>
 <head>
-<title>ClaroCorp+ || Login</title>
-<link href="style.css" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<title>ClaroCorp+ || Login</title>
+	<link href="style.css" rel="stylesheet"/>
+	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+
 <body>
-<div class="login-container">
-<h2></h2>
-<form onsubmit="login(event)">
-<div class="input-group">
-<img alt="user" class="icon-left" src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png"/>
-<input name="codigo" placeholder="Código de usuario" required="" type="text"/>
-</div>
-<div class="input-group">
-<img alt="lock" class="icon-left" src="https://cdn-icons-png.flaticon.com/512/3064/3064155.png"/>
-<input id="pass" name="contrasena" placeholder="Contraseña" required="" type="password"/>
-<img alt="toggle" class="icon-right" id="eye-icon" onclick="togglePassword()" src="https://cdn-icons-png.flaticon.com/512/159/159604.png"/>
-</div>
-<div class="options" style="display: flex; justify-content: space-between; align-items: center;">
-<label><input type="checkbox"/> Recordarme</label>
-<input class="login-btn" type="submit" value="LOGIN"/>
-</div>
-</form>
-</div>
+	<div class="login-container">
+	<h2></h2>
+	<form onsubmit="login(event)">
+		<div class="input-group">
+		<img alt="user" class="icon-left" src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png"/>
+		<input name="codigo" placeholder="Código de usuario" required="" type="text"/>
+		</div>
+		<div class="input-group">
+		<img alt="lock" class="icon-left" src="https://cdn-icons-png.flaticon.com/512/3064/3064155.png"/>
+		<input id="pass" name="contrasena" placeholder="Contraseña" required="" type="password"/>
+		<img alt="toggle" class="icon-right" id="eye-icon" onclick="togglePassword()" src="https://cdn-icons-png.flaticon.com/512/159/159604.png"/>
+		</div>
+		<div class="options" style="display: flex; justify-content: space-between; align-items: center;">
+		<label><input type="checkbox"/> Recordarme</label>
+		<input class="login-btn" type="submit" value="LOGIN"/>
+		</div>
+	</form>
+	</div>
 
-<div class="copyright">© 2025 ClaroCorp+ | Desarrollado por Samuel Guardia</div>
-<script>
-const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI';
-const client = supabase.createClient(supabaseUrl, supabaseKey);
+	<div class="copyright">© 2025 ClaroCorp+ | Desarrollado por Samuel Guardia</div>
 
-async function login(event) {
-  event.preventDefault();
-  const codigo = document.querySelector('input[name="codigo"]').value.trim().toUpperCase();
-  const password = document.querySelector('input[name="contrasena"]').value.trim();
+	<script>
+	const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co';
+	const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI';
+	const client = supabase.createClient(supabaseUrl, supabaseKey);
 
-  console.log("Código enviado:", codigo);
-  console.log("Contraseña enviada:", password);
+	async function login(event) {
+	  event.preventDefault();
+	  const codigo = document.querySelector('input[name="codigo"]').value.trim().toUpperCase();
+	  const password = document.querySelector('input[name="contrasena"]').value.trim();
 
-  const { data, error } = await client
-    .from('usuarios')
-    .select('*');
+	  console.log("Código enviado:", codigo);
+	  console.log("Contraseña enviada:", password);
 
-  console.log("TODOS LOS USUARIOS:", data);
+	  const { data, error } = await client
+		.from('usuarios')
+		.select('*');
 
-  const user = data.find(u =>
-    u.codigo_usuario === codigo &&
-    u.contrasena === password
-  );
+	  console.log("TODOS LOS USUARIOS:", data);
 
-  if (!user) {
-	Swal.fire({
-	  icon: 'error',
-	  title: 'Acceso Denegado',
-	  text: 'Código de usuario o contraseña incorrectos',
-	  background: '#1a1a1a',
-	  color: '#fff',
-	  confirmButtonColor: '#e74c3c',
-	  width: '25%',
-	  maxWidth: '300px',
-	  customClass: {
-	    popup: 'swal2-sm',
-	    title: 'swal2-title-tight',
-	    icon: 'swal2-icon-compact',
-	    confirmButton: 'swal2-btn-sm'
+	  const user = data.find(u =>
+		u.codigo_usuario === codigo &&
+		u.contrasena === password
+	  );
+
+	  if (!user) {
+		Swal.fire({
+		  icon: 'error',
+		  title: 'Acceso Denegado',
+		  text: 'Código de usuario o contraseña incorrectos',
+		  background: '#1a1a1a',
+		  color: '#fff',
+		  confirmButtonColor: '#e74c3c',
+		  width: '25%',
+		  maxWidth: '300px',
+		  customClass: {
+			popup: 'swal2-sm',
+			title: 'swal2-title-tight',
+			icon: 'swal2-icon-compact',
+			confirmButton: 'swal2-btn-sm'
+		  }
+		});
+
+		return;
+	  }
+	  localStorage.setItem('codigo_usuario', codigo);
+	  window.location.href = "Menu.html";
+	}
+	function togglePassword() {
+	  const pass = document.getElementById("pass");
+	  const icon = document.getElementById("eye-icon");
+	  if (pass.type === "password") {
+		pass.type = "text";
+		icon.src = "https://raw.githubusercontent.com/SamuelG1996/clarocorp-inventario/main/Imagenes/Ojo%20Cerrado(2).png";
+	  } else {
+		pass.type = "password";
+		icon.src = "https://raw.githubusercontent.com/SamuelG1996/clarocorp-inventario/main/Imagenes/Ojo%20Abierto.png";
+	  }
+	}
+
+
+	// Recarga al volver a la pestaña (tras suspensión o cambio de foco)
+	document.addEventListener("visibilitychange", () => {
+	  if (document.visibilityState === "visible") {
+		location.reload(); // Recarga la página
 	  }
 	});
 
-    return;
-  }
-  localStorage.setItem('codigo_usuario', codigo);
-  window.location.href = "Menu.html";
-}
-function togglePassword() {
-  const pass = document.getElementById("pass");
-  const icon = document.getElementById("eye-icon");
-  if (pass.type === "password") {
-    pass.type = "text";
-    icon.src = "https://raw.githubusercontent.com/SamuelG1996/clarocorp-inventario/main/Imagenes/Ojo%20Cerrado(2).png";
-  } else {
-    pass.type = "password";
-    icon.src = "https://raw.githubusercontent.com/SamuelG1996/clarocorp-inventario/main/Imagenes/Ojo%20Abierto.png";
-  }
-}
-</script></body>
+	// Recarga automática si hay más de 30 minutos sin interacción
+	let lastActiveTime = Date.now();
+
+	document.addEventListener("mousemove", () => {
+	  lastActiveTime = Date.now();
+	});
+	document.addEventListener("keydown", () => {
+	  lastActiveTime = Date.now();
+	});
+
+	setInterval(() => {
+	  const now = Date.now();
+	  const minutesInactive = (now - lastActiveTime) / 60000;
+
+	  if (minutesInactive > 30) {
+		location.reload();
+	  }
+	}, 60000); // Revisa cada 1 minuto
+</script>
+
+</body>
 </html>
