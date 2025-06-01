@@ -31,8 +31,10 @@
   </div>
 
   <!-- CONTENIDO PRINCIPAL -->
-  <div class="perfil-container">
-    <h2 class="perfil-titulo"><i class="fas fa-user-circle"></i> Mi Perfil</h2>
+  <div class="main-content">
+    <div class="encabezado-stock">
+      <h2><i class="fas fa-user-circle"></i> Mi Perfil</h2>
+    </div>
 
     <form id="perfilForm" class="formulario-perfil">
       <div class="grupo-form">
@@ -97,7 +99,12 @@
       const codigo = localStorage.getItem('codigo_usuario');
       if (!codigo) return window.location.href = 'index.html';
 
-      const { data } = await supabase.from('usuarios').select('*').eq('codigo_usuario', codigo).single();
+      const { data } = await supabase
+        .from('usuarios')
+        .select('*')
+        .eq('codigo_usuario', codigo)
+        .single();
+
       if (data) {
         usuarioActual = data;
         document.getElementById('codigo_usuario').value = data.codigo_usuario;
@@ -139,7 +146,7 @@
       window.location.href = 'index.html';
     }
   </script>
-
 </body>
 </html>
+
 
