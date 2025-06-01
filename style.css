@@ -399,7 +399,7 @@ td:nth-child(10) {
 }
 
 .perfil-box .grupo-form {
-  flex: 1 1 30%;
+  flex: 0;
   display: flex;
   flex-direction: column;
   margin-bottom: 10px;
