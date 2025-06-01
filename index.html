@@ -112,7 +112,8 @@
 	  const minutesInactive = (now - lastActiveTime) / 60000;
 
 	  if (minutesInactive > 30) {
-		location.reload();
+	  localStorage.removeItem('codigo_usuario');
+	  window.location.href = "index.html";
 	  }
 	}, 60000); // Revisa cada 1 minuto
 </script>
