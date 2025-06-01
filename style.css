@@ -361,12 +361,11 @@ td:nth-child(10) {
 
 /* MI PERFIL */
 .perfil-container {
-  width: 90%;
-  margin-left: 250px;
+  width: 80%;
+  margin-left: 5&;
   padding: 30px;
   background-color: white;
   box-sizing: border-box;
-  min-height: 100vh;
 }
 
 .perfil-titulo {
@@ -410,7 +409,7 @@ td:nth-child(10) {
 }
 
 .form-boton {
-  width: 100%;
+  width: 80%;
   margin-top: 10px;
 }
 
