@@ -433,7 +433,7 @@ td:nth-child(10) {
   background-color: #1a2b3c;
   padding: 30px;
   margin-left: 5%;
-  min-height: 100vh;
+  width: 80%;
   box-sizing: border-box;
   color: white;
 }
