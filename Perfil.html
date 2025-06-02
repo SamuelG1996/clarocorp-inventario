@@ -114,11 +114,13 @@ const supabaseClient = createClient(
         return;
       }
 
+      console.log("Valores a actualizar:", correo, telefono);
+
       const {  data: updatedData, error: updateError } = await supabaseClient
-        .from("usuarios")
-        .update({ email: correo, telefono })
-        .eq("codigo_usuario", codigo_usuario)
-        .select(); // 👈 Esto asegura que te devuelve todos los campos
+      .from("usuarios")
+      .update({ email: correo, telefono })
+      .eq("codigo_usuario", codigo_usuario)
+      .select();
 
   console.log("RESULTADO DE UPDATE:", updatedData);
   console.log("ERROR UPDATE:", updateError);
