@@ -120,8 +120,8 @@ const supabaseClient = createClient(
       .eq("codigo_usuario", codigo_usuario)
       .single();
 
-    console.log("📦 DATOS CARGADOS:", data);
-    console.log("❌ ERROR:", error);
+    //console.log("📦 DATOS CARGADOS:", data);
+    //console.log("❌ ERROR:", error);
 
     if (data) {
       document.getElementById("codigo_usuario").value = data.codigo_usuario;
@@ -141,10 +141,10 @@ const supabaseClient = createClient(
   const confirmar_contrasena = document.getElementById("confirmar_contrasena").value;
   const codigo_usuario = localStorage.getItem("codigo_usuario");
 
-  console.log("📤 INTENTANDO GUARDAR:");
-  console.log("Correo:", correo);
-  console.log("Teléfono:", telefono);
-  console.log("Código Usuario:", codigo_usuario);
+  //console.log("📤 INTENTANDO GUARDAR:");
+  //console.log("Correo:", correo);
+  //console.log("Teléfono:", telefono);
+  //console.log("Código Usuario:", codigo_usuario);
 
   if (!correo || !telefono) {
     Swal.fire({
@@ -189,8 +189,8 @@ const supabaseClient = createClient(
       })
       .eq("codigo_usuario", codigo_usuario);
 
-    console.log("🟢 UPDATE CON CONTRASEÑA:", updateData);
-    console.log("🔴 ERROR:", updateError);
+    //console.log("🟢 UPDATE CON CONTRASEÑA:", updateData);
+    //console.log("🔴 ERROR:", updateError);
   } else {
     const { data: updateData, error: updateError } = await supabaseClient
       .from("usuarios")
@@ -200,8 +200,8 @@ const supabaseClient = createClient(
       })
       .eq("codigo_usuario", codigo_usuario);
 
-    console.log("🟢 UPDATE SIN CONTRASEÑA:", updateData);
-    console.log("🔴 ERROR:", updateError);
+    //console.log("🟢 UPDATE SIN CONTRASEÑA:", updateData);
+    //console.log("🔴 ERROR:", updateError);
   }
 
   Swal.fire({
