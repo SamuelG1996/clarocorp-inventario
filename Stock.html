@@ -195,7 +195,9 @@
       });
     }
 
-    await cargarStockContrata();
+   (async () => {
+  await cargarStockContrata();
+})();
 
     window.addEventListener("message", async (event) => {
       if (event.data?.type === "GUARDAR_DATOS_STOCK") {
