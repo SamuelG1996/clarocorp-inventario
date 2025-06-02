@@ -99,49 +99,46 @@ const supabaseClient = createClient(
 );
 
     document.addEventListener("DOMContentLoaded", async () => {
-      const codigo_usuario = localStorage.getItem("codigo_usuario");
-      if (!codigo_usuario) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Sesión no válida',
-          text: 'Por favor inicia sesión nuevamente.',
-          background: '#1a1a1a',
-          color: '#fff',
-          confirmButtonColor: '#e74c3c'
-        }).then(() => {
-          window.location.href = "index.html";
-        });
-        return;
-      }
-
-      console.log("Valores a actualizar:", correo, telefono);
-
-      const {  data: updatedData, error: updateError } = await supabaseClient
-      .from("usuarios")
-      .update({ email: correo, telefono })
-      .eq("codigo_usuario", codigo_usuario)
-      .select();
-
-  console.log("RESULTADO DE UPDATE:", updatedData);
-  console.log("ERROR UPDATE:", updateError);
-      
-      if (error || !data) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudo cargar la información del usuario.',
-        });
-        return;
-      }
-
-      document.getElementById("codigo_usuario").value = data.codigo_usuario;
-      document.getElementById("nombres").value = data.nombre;
-      document.getElementById("rol").value = data.rol;
-      document.getElementById("empresa").value = data.empresa;
-      document.getElementById("correo").value = data.email || "";
-      document.getElementById("telefono").value = data.telefono || "";
+  const codigo_usuario = localStorage.getItem("codigo_usuario");
+  if (!codigo_usuario) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Sesión no válida',
+      text: 'Por favor inicia sesión nuevamente.',
+      background: '#1a1a1a',
+      color: '#fff',
+      confirmButtonColor: '#e74c3c'
+    }).then(() => {
+      window.location.href = "index.html";
     });
+    return;
+  }
 
+  const { data, error } = await supabaseClient
+    .from("usuarios")
+    .select("*")
+    .eq("codigo_usuario", codigo_usuario)
+    .single();
+
+  console.log("RESPUESTA SUPABASE:", data);
+  console.log("ERROR:", error);
+
+  if (error || !data) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No se pudo cargar la información del usuario.',
+    });
+    return;
+  }
+
+  document.getElementById("codigo_usuario").value = data.codigo_usuario;
+  document.getElementById("nombres").value = data.nombre;
+  document.getElementById("rol").value = data.rol;
+  document.getElementById("empresa").value = data.empresa;
+  document.getElementById("correo").value = data.email || "";
+  document.getElementById("telefono").value = data.telefono || "";
+});
     async function guardarCambios() {
       const correo = document.getElementById("correo").value.trim();
       const telefono = document.getElementById("telefono").value.trim();
