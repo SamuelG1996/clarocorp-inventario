@@ -311,6 +311,14 @@ td:nth-child(10) {
   background-color: #27ae60;
 }
 
+td[contenteditable="true"] {
+  text-align: center;
+}
+
+td:nth-child(10) {
+  text-align: center;
+}
+
 /* === FIN MÓDULO DE VISUALIZACIÓN DE STOCK === */
 
 /* ===ALERTA LOGIN INCORRECTO=== */
