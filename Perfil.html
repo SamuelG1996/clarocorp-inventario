@@ -120,8 +120,8 @@ const supabaseClient = createClient(
         .eq("codigo_usuario", codigo_usuario)
         .single();
 
-      console.log("RESPUESTA SUPABASE:", data);
-      console.log("ERROR:", error);
+  console.log("RESULTADO DE UPDATE:", updatedData);
+  console.log("ERROR UPDATE:", updateError);
       
       if (error || !data) {
         Swal.fire({
