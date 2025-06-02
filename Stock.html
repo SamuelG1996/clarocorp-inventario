@@ -5,14 +5,14 @@
   <title>ClaroCorp+ || Stock Contratas</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-	<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
   <div class="sidebar">
     <div>
       <div class="logo">
-      	<a href="Menu.html" style="text-decoration: none; color: inherit;">ClaroCorp+</a>
+        <a href="Menu.html" style="text-decoration: none; color: inherit;">ClaroCorp+</a>
       </div>
       <div class="menu">
         <a href="Stock.html"><i class="fas fa-box"></i> Stock Contrata</a>
@@ -25,10 +25,9 @@
       </div>
     </div>
     <div class="logout">
-      <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i></a>
+      <a href="index.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i></a>
     </div>
   </div>
-
 
   <div class="content">
     <div class="encabezado-stock">
@@ -43,237 +42,167 @@
       <input type="text" id="searchInput" placeholder="Buscar por código, descripción, almacén, zona..." onkeyup="filtrarTabla()">
     </div>
 
-<div class="tabla-contenedor">
-    <table id="tablaStock">
-      <thead>
-        <tr>
-          <th>Código</th>
-          <th>Descripción</th>
-          <th>Centro</th>
-          <th>Almacén</th>
-          <th>Cantidad</th>
-          <th>Lote</th>
-          <th>Zona</th>
-          <th>Stock</th>
-          <th>Reserva</th>
-          <th>Disponible</th>
-        </tr>
-      </thead>
-       <tbody id="stock-body">
-	
-       </tbody>
-    </table>
+    <div class="tabla-contenedor">
+      <table id="tablaStock">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descripción</th>
+            <th>Centro</th>
+            <th>Almacén</th>
+            <th>Cantidad</th>
+            <th>Lote</th>
+            <th>Zona</th>
+            <th>Stock</th>
+            <th>Reserva</th>
+            <th>Disponible</th>
+          </tr>
+        </thead>
+        <tbody id="stock-body"></tbody>
+      </table>
+    </div>
   </div>
-</div>
 
   <script>
-	function filtrarTabla() {
-	  const input = document.getElementById("searchInput").value.toLowerCase().trim();
-	  const filtros = input.split(/\s+/); // separa por espacios
-	  const filas = document.querySelectorAll("#tablaStock tbody tr");
+    function filtrarTabla() {
+      const input = document.getElementById("searchInput").value.toLowerCase().trim();
+      const filtros = input.split(/\s+/);
+      const filas = document.querySelectorAll("#tablaStock tbody tr");
 
-	  filas.forEach(fila => {
-		const textoFila = [
-		  fila.cells[0].textContent,  // Código
-		  fila.cells[1].textContent,  // Descripción
-		  fila.cells[2].textContent,  // Centro
-		  fila.cells[3].textContent,  // Almacén
-		  fila.cells[6].textContent   // Zona
-		].join(" ").toLowerCase();
+      filas.forEach(fila => {
+        const textoFila = [
+          fila.cells[0].textContent,
+          fila.cells[1].textContent,
+          fila.cells[2].textContent,
+          fila.cells[3].textContent,
+          fila.cells[6].textContent
+        ].join(" ").toLowerCase();
 
-		const coincide = filtros.every(f => textoFila.includes(f));
-		fila.style.display = coincide ? "" : "none";
-	  });
+        const coincide = filtros.every(f => textoFila.includes(f));
+        fila.style.display = coincide ? "" : "none";
+      });
     }
 
-    function calcularDisponible(input) {
-      const fila = input.parentElement.parentElement;
-      const stockInput = fila.cells[7].querySelector('input');
-      const reservaInput = fila.cells[8].querySelector('input');
-      const disponibleCell = fila.cells[9];
+    function logout() {
+      localStorage.removeItem("codigo_usuario");
+      window.location.href = "index.html";
+    }
 
-      const stock = stockInput.value.trim();
-      const reserva = reservaInput.value.trim();
+    function copiarTabla() {
+      const tabla = document.getElementById("tablaStock");
+      let texto = "";
 
-      if (stock === "" || reserva === "") {
-        disponibleCell.textContent = "No calculable";
-      } else {
-        const resultado = parseInt(stock) - parseInt(reserva);
-        disponibleCell.textContent = isNaN(resultado) ? "Error" : resultado;
+      for (let fila of tabla.rows) {
+        let filaTexto = [];
+        for (let celda of fila.cells) {
+          filaTexto.push(celda.innerText || "");
+        }
+        texto += filaTexto.join("\t") + "\n";
       }
+
+      navigator.clipboard.writeText(texto).then(() => {
+        alert("Tabla copiada al portapapeles");
+      }).catch(err => {
+        alert("Error al copiar: " + err);
+      });
+    }
+
+    function descargarExcel() {
+      const tabla = document.getElementById("tablaStock");
+      let data = [];
+
+      for (let fila of tabla.rows) {
+        let filaDatos = [];
+        for (let celda of fila.cells) {
+          filaDatos.push(celda.innerText || "");
+        }
+        data.push(filaDatos);
+      }
+
+      const hoja = XLSX.utils.aoa_to_sheet(data);
+      const libro = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(libro, hoja, "Stock");
+      XLSX.writeFile(libro, "Stock_ClaroCorp.xlsx");
     }
   </script>
 
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-<script>
-function descargarExcel() {
-  const tabla = document.getElementById("tablaStock");
+    const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co'
+    const supabaseKey = 'TU_KEY_PUBLICA'
+    const supabase = createClient(supabaseUrl, supabaseKey)
 
-  // Crear una matriz de datos
-  const data = [];
-  for (let fila of tabla.rows) {
-    const filaDatos = [];
-    for (let celda of fila.cells) {
-      filaDatos.push(celda.innerText || celda.textContent);
+    function formatearNumero(valor) {
+      const numero = parseFloat(valor);
+      if (isNaN(numero)) return valor;
+      return Number.isInteger(numero) ? numero.toString() : numero.toFixed(2);
     }
-    data.push(filaDatos);
-  }
 
-  // Convertir a hoja de cálculo
-  const hoja = XLSX.utils.aoa_to_sheet(data);
-  const libro = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(libro, hoja, "Stock");
+    function recalcularDisponibleDesdeTabla(fila) {
+      const stockTexto = fila.cells[7].innerText.trim();
+      const reservaTexto = fila.cells[8].innerText.trim();
+      const celdaDisponible = fila.cells[9];
 
-  // Descargar como archivo .xlsx
-  XLSX.writeFile(libro, "Stock_ClaroCorp.xlsx");
-}
-</script>
+      const stock = parseFloat(stockTexto);
+      const reserva = parseFloat(reservaTexto);
 
-<script>
-function copiarTabla() {
-  const tabla = document.getElementById("tablaStock");
-  let texto = "";
-
-  for (let fila of tabla.rows) {
-    let filaTexto = [];
-    for (let celda of fila.cells) {
-      if (celda.querySelector("input")) {
-        filaTexto.push(celda.querySelector("input").value || "");
+      if (!isNaN(stock) && !isNaN(reserva)) {
+        celdaDisponible.innerText = formatearNumero(stock - reserva);
       } else {
-        filaTexto.push(celda.innerText);
+        celdaDisponible.innerText = "No calculable";
       }
     }
-    texto += filaTexto.join("\t") + "\n";
-  }
 
-  navigator.clipboard.writeText(texto).then(() => {
-    alert("Tabla copiada al portapapeles");
-  }).catch(err => {
-    alert("Error al copiar: " + err);
-  });
-}
-	// Recarga al volver a la pestaña (tras suspensión o cambio de foco)
-	document.addEventListener("visibilitychange", () => {
-	  if (document.visibilityState === "visible") {
-		location.reload(); // Recarga la página
-	  }
-	});
+    async function cargarStockContrata() {
+      const empresaUsuario = localStorage.getItem("empresa")
+      const rolUsuario = localStorage.getItem("rol")
 
-	// Recarga automática si hay más de 30 minutos sin interacción
-	let lastActiveTime = Date.now();
+      let query = supabase.from("stock_contrata").select("*")
+      if (rolUsuario === "Contratista") {
+        query = query.eq("empresa", empresaUsuario)
+      }
 
-	document.addEventListener("mousemove", () => {
-	  lastActiveTime = Date.now();
-	});
-	document.addEventListener("keydown", () => {
-	  lastActiveTime = Date.now();
-	});
+      const { data, error } = await query
+      if (error) {
+        console.error("Error cargando stock:", error.message)
+        return
+      }
 
-	setInterval(() => {
-	  const now = Date.now();
-	  const minutesInactive = (now - lastActiveTime) / 60000;
+      const tbody = document.getElementById("stock-body")
+      tbody.innerHTML = ""
 
-	  if (minutesInactive > 30) {
-	  localStorage.removeItem('codigo_usuario');
-	  window.location.href = "index.html";
-	  }
-	}, 60000); // Revisa cada 1 minuto
-</script>
-<script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+      data.forEach((item) => {
+        const disponible = item.stock_real != null && item.stock_reservado != null
+          ? item.stock_real - item.stock_reservado
+          : "No calculable"
 
-// Credenciales de Supabase
-const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI'
-const supabase = createClient(supabaseUrl, supabaseKey)
+        const fila = `
+          <tr>
+            <td>${item.codigo}</td>
+            <td>${item.descripcion}</td>
+            <td>${item.centro}</td>
+            <td>${item.almacen}</td>
+            <td>${formatearNumero(item.cantidad_sap)}</td>
+            <td>${item.lote}</td>
+            <td>${item.zona}</td>
+            <td contenteditable="true">${formatearNumero(item.stock_real ?? "")}</td>
+            <td contenteditable="true">${formatearNumero(item.stock_reservado ?? "")}</td>
+            <td>${formatearNumero(disponible)}</td>
+          </tr>
+        `;
+        tbody.insertAdjacentHTML("beforeend", fila)
+      })
 
-// Obtenemos datos del usuario logueado desde localStorage
-const empresaUsuario = localStorage.getItem("empresa")
-const rolUsuario = localStorage.getItem("rol")
+      document.querySelectorAll('#stock-body td[contenteditable="true"]').forEach((celda) => {
+        celda.addEventListener('input', () => {
+          const fila = celda.parentElement;
+          recalcularDisponibleDesdeTabla(fila);
+        });
+      });
+    }
 
-// Función para cargar los datos del stock
-async function cargarStockContrata() {
-  let query = supabase.from("stock_contrata").select("*")
-
-  // Si el rol es Contratista, filtra por empresa
-  if (rolUsuario === "Contratista") {
-    query = query.eq("empresa", empresaUsuario)
-  }
-
-  const { data, error } = await query
-
-  if (error) {
-    console.error("Error cargando stock:", error.message)
-    return
-  }
-
-  const tbody = document.getElementById("stock-body")
-  tbody.innerHTML = ""
-
-  data.forEach((item) => {
-    const disponible = item.stock_real != null && item.stock_reservado != null
-      ? item.stock_real - item.stock_reservado
-      : "No calculable"
-
-const fila = `
-  <tr>
-    <td>${item.codigo}</td>
-    <td>${item.descripcion}</td>
-<td>${item.centro}</td>
-    <td>${item.almacen}</td>
-    <td>${formatearNumero(item.cantidad_sap)}</td>
-    <td>${item.lote}</td>
-    <td>${item.zona}</td>
-    <td contenteditable="true">${formatearNumero(item.stock_real ?? "")}</td>
-    <td contenteditable="true">${formatearNumero(item.stock_reservado ?? "")}</td>
-    <td>${
-      item.stock_real != null && item.stock_reservado != null
-        ? formatearNumero(item.stock_real - item.stock_reservado)
-        : "No calculable"
-    }</td>
-  </tr>
-`;
-    tbody.insertAdjacentHTML("beforeend", fila)
-  })
-}
-function formatearNumero(valor) {
-  const numero = parseFloat(valor);
-  if (isNaN(numero)) return valor; // Si no es número, lo devuelve tal cual
-
-  return Number.isInteger(numero) ? numero.toString() : numero.toFixed(2);
-}
-
-document.querySelectorAll('#stock-body td[contenteditable="true"]').forEach((celda) => {
-  celda.addEventListener('input', () => {
-    const fila = celda.parentElement;
-    recalcularDisponibleDesdeTabla(fila);
-  });
-});
-	
-cargarStockContrata()
-
-function logout() {
-  localStorage.removeItem("codigo_usuario");
-  window.location.href = "index.html";
-}
-
-function recalcularDisponibleDesdeTabla(fila) {
-  const stockTexto = fila.cells[7].innerText.trim();
-  const reservaTexto = fila.cells[8].innerText.trim();
-  const celdaDisponible = fila.cells[9];
-
-  const stock = parseFloat(stockTexto);
-  const reserva = parseFloat(reservaTexto);
-
-  if (!isNaN(stock) && !isNaN(reserva)) {
-    celdaDisponible.innerText = formatearNumero(stock - reserva);
-  } else {
-    celdaDisponible.innerText = "No calculable";
-  }
-}	
-
-</script>
-
-	
+    cargarStockContrata()
+  </script>
 </body>
 </html>
