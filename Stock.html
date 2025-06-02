@@ -193,26 +193,39 @@
         });
       });
     }
+   await cargarStockContrata();
+    window.guardarCambios = async function () {
+      const filas = document.querySelectorAll("#stock-body tr");
+      let cambiosRealizados = 0;
 
-    window.addEventListener("message", async (event) => {
-      if (event.data?.type === "GUARDAR_DATOS_STOCK") {
-        const updates = event.data.payload;
+      for (const fila of filas) {
+        const codigo = fila.cells[0].innerText.trim();
+        const stockReal = parseFloat(fila.cells[7].innerText.trim());
+        const stockReservado = parseFloat(fila.cells[8].innerText.trim());
 
-        const resultados = await Promise.all(
-          updates.map(async ({ codigo, stock_real, stock_reservado }) => {
-            return await supabase
-              .from("stock_contrata")
-              .update({ stock_real, stock_reservado })
-              .eq("codigo", codigo);
-          })
-        );
+        if (!isNaN(stockReal) || !isNaN(stockReservado)) {
+          const { error } = await supabase
+            .from("stock_contrata")
+            .update({
+              stock_real: isNaN(stockReal) ? null : stockReal,
+              stock_reservado: isNaN(stockReservado) ? null : stockReservado,
+            })
+            .eq("codigo", codigo);
 
-        alert("Cambios guardados correctamente en la base de datos.");
-        cargarStockContrata();
+          if (!error) {
+            cambiosRealizados++;
+          } else {
+            console.error(`Error al guardar ${codigo}:`, error.message);
+          }
+        }
       }
-    });
 
-    cargarStockContrata();
+      if (cambiosRealizados > 0) {
+        alert(`Se guardaron ${cambiosRealizados} cambios correctamente.`);
+      } else {
+        alert("No se realizó ningún cambio.");
+      }
+    };
   </script>
 
 </body>
