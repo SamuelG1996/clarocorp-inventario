@@ -454,7 +454,7 @@ td:nth-child(10) {
 /* --- ESTILOS GENERALES PARA MÓDULO STOCK --- */
 
 .tabla-contenedor {
-  max-height: 442px; /* ajusta según lo que te acomode */
+  max-height: 450px; /* ajusta según lo que te acomode */
   overflow-y: auto;
   border: 1px solid #ccc;
 }
