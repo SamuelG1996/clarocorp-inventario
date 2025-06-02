@@ -270,11 +270,11 @@ td:nth-child(10) {
 
 /* Reducción de tamaño de texto en toda la tabla */
 #tablaStock th {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 #tablaStock td {
-  font-size: 13px;
+  font-size: 12px;
   }
   
 .encabezado-stock {
