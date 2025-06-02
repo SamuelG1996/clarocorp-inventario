@@ -92,10 +92,11 @@
 </form>
 
   <script>
-    const supabase = supabase.createClient(
-      'https://bsrtuievwjtzwejuxqee.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI'
-    );
+    const { createClient } = supabase;
+const supabaseClient = createClient(
+  'https://bsrtuievwjtzwejuxqee.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI'
+);
 
     document.addEventListener("DOMContentLoaded", async () => {
       const codigo_usuario = localStorage.getItem("codigo_usuario");
@@ -113,7 +114,7 @@
         return;
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from("usuarios")
         .select("*")
         .eq("codigo_usuario", codigo_usuario)
@@ -157,7 +158,7 @@
       }
 
       if (contrasena_actual || nueva_contrasena || confirmar_contrasena) {
-        const actual = await supabase
+        const actual = await supabaseClient
           .from("usuarios")
           .select("contrasena")
           .eq("codigo_usuario", codigo_usuario)
@@ -181,12 +182,12 @@
           return;
         }
 
-        await supabase
+        await supabaseClient
           .from("usuarios")
           .update({ email: correo, telefono, contrasena: nueva_contrasena })
           .eq("codigo_usuario", codigo_usuario);
       } else {
-        await supabase
+        await supabaseClient
           .from("usuarios")
           .update({ email: correo, telefono })
           .eq("codigo_usuario", codigo_usuario);
