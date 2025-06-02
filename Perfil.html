@@ -98,60 +98,48 @@ const supabaseClient = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI'
 );
 
-    document.addEventListener("DOMContentLoaded", async () => {
-  const codigo_usuario = localStorage.getItem("codigo_usuario");
-  if (!codigo_usuario) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Sesión no válida',
-      text: 'Por favor inicia sesión nuevamente.',
-      background: '#1a1a1a',
-      color: '#fff',
-      confirmButtonColor: '#e74c3c'
-    }).then(() => {
-      window.location.href = "index.html";
-    });
-    return;
-  }
+      document.addEventListener("DOMContentLoaded", async () => {
+    const codigo_usuario = localStorage.getItem("codigo_usuario");
+    if (!codigo_usuario) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Sesión no válida',
+        text: 'Por favor inicia sesión nuevamente.',
+        background: '#1a1a1a',
+        color: '#fff',
+        confirmButtonColor: '#e74c3c'
+      }).then(() => {
+        window.location.href = "index.html";
+      });
+      return;
+    }
 
-  const { data, error } = await supabaseClient
-    .from("usuarios")
-    .select("*")
-    .eq("codigo_usuario", codigo_usuario)
-    .single();
+    const { data, error } = await supabaseClient
+      .from("usuarios")
+      .select("*")
+      .eq("codigo_usuario", codigo_usuario)
+      .single();
 
-  console.log("RESPUESTA SUPABASE:", data);
-  console.log("ERROR:", error);
+    console.log("📦 DATOS CARGADOS:", data);
+    console.log("❌ ERROR:", error);
 
-  if (error || !data) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'No se pudo cargar la información del usuario.',
-    });
-    return;
-  }
+    if (data) {
+      document.getElementById("codigo_usuario").value = data.codigo_usuario;
+      document.getElementById("nombres").value = data.nombre;
+      document.getElementById("rol").value = data.rol;
+      document.getElementById("empresa").value = data.empresa;
+      document.getElementById("correo").value = data.email || "";
+      document.getElementById("telefono").value = data.telefono || "";
+    }
+  });
 
-  document.getElementById("codigo_usuario").value = data.codigo_usuario;
-  document.getElementById("nombres").value = data.nombre;
-  document.getElementById("rol").value = data.rol;
-  document.getElementById("empresa").value = data.empresa;
-  document.getElementById("correo").value = data.email || "";
-  document.getElementById("telefono").value = data.telefono || "";
-});
-      async function guardarCambios() {
+  async function guardarCambios() {
     const correo = document.getElementById("correo").value.trim();
     const telefono = document.getElementById("telefono").value.trim();
-    const contrasena_actual = document.getElementById("contrasena_actual")?.value || "";
-    const nueva_contrasena = document.getElementById("nueva_contrasena")?.value || "";
-    const confirmar_contrasena = document.getElementById("confirmar_contrasena")?.value || "";
+    const contrasena_actual = document.getElementById("contrasena_actual").value;
+    const nueva_contrasena = document.getElementById("nueva_contrasena").value;
+    const confirmar_contrasena = document.getElementById("confirmar_contrasena").value;
     const codigo_usuario = localStorage.getItem("codigo_usuario");
-
-    console.log("➡️ Guardando cambios...");
-    console.log("📧 Correo:", correo);
-    console.log("📞 Teléfono:", telefono);
-    console.log("🔑 Contraseña actual:", contrasena_actual);
-    console.log("👤 Código usuario:", codigo_usuario);
 
     if (!correo || !telefono) {
       Swal.fire({
@@ -163,7 +151,6 @@ const supabaseClient = createClient(
     }
 
     try {
-      // Si hay intento de cambiar contraseña
       if (contrasena_actual || nueva_contrasena || confirmar_contrasena) {
         const actual = await supabaseClient
           .from("usuarios")
@@ -171,9 +158,7 @@ const supabaseClient = createClient(
           .eq("codigo_usuario", codigo_usuario)
           .single();
 
-        console.log("🧾 Contraseña actual Supabase:", actual.data?.contrasena);
-
-        if (!actual || !actual.data || actual.data.contrasena !== contrasena_actual) {
+        if (!actual.data || actual.data.contrasena !== contrasena_actual) {
           Swal.fire({
             icon: 'error',
             title: 'Contraseña incorrecta',
@@ -196,18 +181,16 @@ const supabaseClient = createClient(
           .update({ email: correo, telefono, contrasena: nueva_contrasena })
           .eq("codigo_usuario", codigo_usuario);
 
-        console.log("✅ UPDATE + contraseña:", updated);
-        console.log("❌ ERROR UPDATE:", updateError);
-
+        console.log("🔁 Actualización con contraseña:", updated);
+        console.log("❌ Error:", updateError);
       } else {
-        // Solo actualizar correo y teléfono
         const { data: updated, error: updateError } = await supabaseClient
           .from("usuarios")
           .update({ email: correo, telefono })
           .eq("codigo_usuario", codigo_usuario);
 
-        console.log("✅ UPDATE solo datos:", updated);
-        console.log("❌ ERROR UPDATE:", updateError);
+        console.log("🔁 Actualización sin contraseña:", updated);
+        console.log("❌ Error:", updateError);
       }
 
       Swal.fire({
@@ -216,7 +199,7 @@ const supabaseClient = createClient(
         text: 'Cambios actualizados correctamente.',
       });
     } catch (e) {
-      console.error("❗Error inesperado:", e);
+      console.error("🚨 Error inesperado:", e);
     }
   }
     function logout() {
