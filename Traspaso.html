@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>ClaroCorp+ || Traspasos</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+  <div class="sidebar">
+    <div>
+      <div class="logo">
+        <a href="Menu.html" style="text-decoration: none; color: inherit;">ClaroCorp+</a>
+      </div>
+      <div class="menu">
+        <a href="Stock.html"><i class="fas fa-box"></i> Stock Contrata</a>
+        <a href="#"><i class="fas fa-warehouse"></i> Stock Claro</a>
+        <a href="Traspasos.html" class="active"><i class="fas fa-sync-alt"></i> Traspasos</a>
+        <a href="#"><i class="fas fa-truck"></i> Compras</a>
+        <a href="#"><i class="fas fa-chart-bar"></i> Reportes</a>
+        <a href="Perfil.html"><i class="fas fa-user-tie"></i> Mi Perfil</a>
+        <a href="#"><i class="fas fa-gear"></i> Configuración</a>
+      </div>
+    </div>
+    <div class="logout">
+      <a href="index.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="encabezado-stock">
+      <h2><i class="fas fa-sync-alt"></i> Solicitudes de Traspaso</h2>
+      <div class="acciones-tabla">
+        <button onclick="nuevaSolicitud()"><i class="fas fa-plus-circle"></i> Nueva Solicitud</button>
+        <button onclick="eliminarSeleccionados()"><i class="fas fa-trash"></i> Eliminar Seleccionados</button>
+      </div>
+    </div>
+
+    <div class="tabla-contenedor">
+      <table id="tablaTraspasos">
+        <thead>
+          <tr>
+            <th><input type="checkbox" onclick="toggleTodos(this)"></th>
+            <th>ID</th>
+            <th>Código</th>
+            <th>Descripción</th>
+            <th>Cantidad</th>
+            <th>UMB</th>
+            <th>Lote</th>
+            <th>Almacén Origen</th>
+            <th>Centro Origen</th>
+            <th>Contrata Origen</th>
+            <th>Almacén Destino</th>
+            <th>Centro Destino</th>
+            <th>Contrata Destino</th>
+            <th>Guía Remisión</th>
+            <th>Tipo Material</th>
+            <th>Área Solicitante</th>
+            <th>Solicitante</th>
+            <th>Contabilizado</th>
+            <th>Estado</th>
+            <th>Comentarios</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Aquí se insertarán dinámicamente las solicitudes -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+
+    function toggleTodos(checkbox) {
+      document.querySelectorAll('#tablaTraspasos tbody input[type="checkbox"]').forEach(cb => {
+        cb.checked = checkbox.checked;
+      });
+    }
+
+    function nuevaSolicitud() {
+      alert("Aquí se abrirá el formulario para nueva solicitud.");
+    }
+
+    function eliminarSeleccionados() {
+      alert("Aquí se eliminarán las solicitudes seleccionadas.");
+    }
+  </script>
+
+</body>
+</html>
