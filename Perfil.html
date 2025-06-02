@@ -175,15 +175,21 @@ const supabaseClient = createClient(
           });
           return;
         }
-
+    
+    console.log("📤 INTENTANDO GUARDAR:");
+    console.log("Correo:", correo);
+    console.log("Teléfono:", telefono);
+    console.log("Código Usuario:", codigo_usuario);
+        
   const { data: updated, error: updateError } = await supabaseClient
     .from("usuarios")
     .update({ email: correo, telefono: telefono })
     .eq("codigo_usuario", codigo_usuario)
     .select();  // <= esto te devuelve el objeto actualizado
   
-  console.log("🔁 Actualización sin contraseña:", updated);
-  console.log("❌ Error:", updateError);
+
+console.log("🟢 DATA DEL UPDATE:", updateData);
+console.log("🔴 ERROR DEL UPDATE:", updateError);
       } else {
         const { data: updated, error: updateError } = await supabaseClient
           .from("usuarios")
