@@ -239,11 +239,17 @@ const fila = `
   })
 }
 function formatearNumero(valor) {
-  return (typeof valor === "number" && valor % 1 === 0)
-    ? valor.toFixed(0)
-    : valor; // Si tiene decimales reales, lo deja tal cual
+  const numero = parseFloat(valor);
+  if (isNaN(numero)) return valor; // Si no es número, lo devuelve tal cual
+
+  return Number.isInteger(numero) ? numero.toString() : numero.toFixed(2);
 }
 cargarStockContrata()
+
+function logout() {
+  localStorage.removeItem("codigo_usuario");
+  window.location.href = "index.html";
+}
 
 </script>
 
