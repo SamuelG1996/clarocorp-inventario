@@ -98,6 +98,7 @@
     );
     document.addEventListener("DOMContentLoaded", async () => {
       const codigo_usuario = localStorage.getItem("codigo_usuario");
+      console.log("CÓDIGO DEL USUARIO:", codigo_usuario);
       if (!codigo_usuario) {
         Swal.fire({
           icon: 'warning',
@@ -118,6 +119,10 @@
         .eq("codigo_usuario", codigo_usuario)
         .single();
 
+      //La consulta no encontró coincidencias o Hubo un error de conexión o configuración.
+      console.log("DATOS DEL USUARIO:", data);
+      console.log("ERROR:", error)
+      
       if (error || !data) {
         Swal.fire({
           icon: 'error',
