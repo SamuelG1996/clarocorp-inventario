@@ -312,9 +312,9 @@ td:nth-child(10) {
 }
 
 td[contenteditable="true"] {
-  text-align: center;
+  text-align: center !important;
+  vertical-align: middle;
 }
-
 td:nth-child(10) {
   text-align: center;
 }
