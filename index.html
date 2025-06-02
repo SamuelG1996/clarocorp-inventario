@@ -43,18 +43,14 @@
 	  console.log("Código enviado:", codigo);
 	  console.log("Contraseña enviada:", password);
 
-	  const { data, error } = await client
-		.from('usuarios')
-		.select('*');
-
-	  console.log("TODOS LOS USUARIOS:", data);
-
-	  const user = data.find(u =>
-		u.codigo_usuario === codigo &&
-		u.contrasena === password
-	  );
-
-	  if (!user) {
+	 const { data, error } = await client
+	  .from('usuarios')
+	  .select('*')
+	  .eq('codigo_usuario', codigo)
+	  .eq('contrasena', password)
+	  .single();
+	
+	if (error || !data) {
 		Swal.fire({
 		  icon: 'error',
 		  title: 'Acceso Denegado',
@@ -74,13 +70,14 @@
 
 		return;
 	  }
-	  localStorage.setItem('codigo_usuario', user.codigo_usuario);
-	localStorage.setItem('nombres', user.nombres);
-	localStorage.setItem('correo', user.correo);
-	localStorage.setItem('telefono', user.telefono);
-	localStorage.setItem('rol', user.rol);
-	localStorage.setItem('empresa', user.empresa);
-	  window.location.href = "Menu.html";
+		localStorage.setItem('codigo_usuario', data.codigo_usuario);
+		localStorage.setItem('nombres', data.nombres);
+		localStorage.setItem('correo', data.correo);
+		localStorage.setItem('telefono', data.telefono);
+		localStorage.setItem('rol', data.rol);
+		localStorage.setItem('empresa', data.empresa);
+		window.location.href = "Menu.html";
+		
 	}
 	function togglePassword() {
 	  const pass = document.getElementById("pass");
