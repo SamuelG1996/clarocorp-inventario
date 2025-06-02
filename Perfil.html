@@ -5,6 +5,7 @@
   <title>ClaroCorp+ || Mi Perfil</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
@@ -32,74 +33,66 @@
 
   <!-- CONTENIDO PRINCIPAL -->
   <div class="perfil-content">
-     <div class="perfil-box">
-    <div class="encabezado-stock">
-      <h2><i class="fas fa-user-circle"></i> Mi Perfil</h2>
-    </div>
+    <div class="perfil-box">
+      <div class="encabezado-stock">
+        <h2><i class="fas fa-user-circle"></i> Mi Perfil</h2>
+      </div>
 
-    <form id="perfilForm" class="formulario-perfil">
-      <div class="grupo-form">
-        <label>Código de usuario</label>
-        <input type="text" id="codigo_usuario" disabled>
-      </div>
-      <div class="grupo-form">
-        <label>Nombres</label>
-        <input type="text" id="nombres" disabled>
-      </div>
-      <div class="grupo-form">
-        <label>Rol</label>
-        <input type="text" id="rol" disabled>
-      </div>
-      <div class="grupo-form">
-        <label>Empresa</label>
-        <input type="text" id="empresa" disabled>
-      </div>
-      <div class="grupo-form">
-        <label>Correo electrónico</label>
-        <input type="email" id="correo">
-      </div>
-      <div class="grupo-form">
-        <label>Teléfono</label>
-        <input type="text" id="telefono">
-      </div>
-      <div class="form-boton">
-        <button type="button" onclick="guardarCambios()">Guardar cambios</button>
-        
-      </div>
-    </form>
+      <form id="perfilForm" class="formulario-perfil">
+        <div class="grupo-form">
+          <label>Código de usuario</label>
+          <input type="text" id="codigo_usuario" disabled>
+        </div>
+        <div class="grupo-form">
+          <label>Nombres</label>
+          <input type="text" id="nombres" disabled>
+        </div>
+        <div class="grupo-form">
+          <label>Rol</label>
+          <input type="text" id="rol" disabled>
+        </div>
+        <div class="grupo-form">
+          <label>Empresa</label>
+          <input type="text" id="empresa" disabled>
+        </div>
+        <div class="grupo-form">
+          <label>Correo electrónico</label>
+          <input type="email" id="correo">
+        </div>
+        <div class="grupo-form">
+          <label>Teléfono</label>
+          <input type="text" id="telefono">
+        </div>
+        <div class="form-boton">
+          <button type="button" onclick="guardarCambios()">Guardar cambios</button>
+        </div>
+      </form>
 
-    <hr>
-  
+      <hr>
+
       <form id="passwordForm" class="formulario-perfil">
-    <h3 class="subtitulo">Cambiar Contraseña:</h3>
-  
-    <div class="grupo-form">
-      <label>Contraseña actual</label>
-      <input type="password" id="contrasena_actual">
+        <h3 class="subtitulo">Cambiar Contraseña:</h3>
+        <label>Contraseña actual</label>
+        <input type="password" id="contrasena_actual">
+        <label>Nueva contraseña</label>
+        <input type="password" id="nueva_contrasena">
+        <label>Confirmar nueva contraseña</label>
+        <input type="password" id="confirmar_contrasena">
+        <div class="form-boton">
+          <button type="button" onclick="guardarCambios()">Actualizar contraseña</button>
+        </div>
+      </form>
     </div>
-    <div class="grupo-form">
-      <label>Nueva contraseña</label>
-      <input type="password" id="nueva_contrasena">
-    </div>
-    <div class="grupo-form">
-      <label>Confirmar nueva contraseña</label>
-      <input type="password" id="confirmar_contrasena">
-    </div>
-  
-    <div class="form-boton">
-      <button type="button" onclick="guardarCambios()">Actualizar contraseña</button>
-    </div>
-  </form>
   </div>
-   </div>
+
   <script>
     const supabase = supabase.createClient(
       'https://bsrtuievwjtzwejuxqee.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI'
     );
+
     document.addEventListener("DOMContentLoaded", async () => {
       const codigo_usuario = localStorage.getItem("codigo_usuario");
-      console.log("CÓDIGO DEL USUARIO:", codigo_usuario);
       if (!codigo_usuario) {
         Swal.fire({
           icon: 'warning',
@@ -120,10 +113,6 @@
         .eq("codigo_usuario", codigo_usuario)
         .single();
 
-      //La consulta no encontró coincidencias o Hubo un error de conexión o configuración.
-      console.log("DATOS DEL USUARIO:", data);
-      console.log("ERROR:", error)
-      
       if (error || !data) {
         Swal.fire({
           icon: 'error',
@@ -140,8 +129,8 @@
       document.getElementById("correo").value = data.email || "";
       document.getElementById("telefono").value = data.telefono || "";
     });
-    
-       async function guardarCambios() {
+
+    async function guardarCambios() {
       const correo = document.getElementById("correo").value.trim();
       const telefono = document.getElementById("telefono").value.trim();
       const contrasena_actual = document.getElementById("contrasena_actual").value;
@@ -158,14 +147,14 @@
         return;
       }
 
-      const actual = await supabase
-        .from("usuarios")
-        .select("contrasena")
-        .eq("codigo_usuario", codigo_usuario)
-        .single();
+      if (contrasena_actual || nueva_contrasena || confirmar_contrasena) {
+        const actual = await supabase
+          .from("usuarios")
+          .select("contrasena")
+          .eq("codigo_usuario", codigo_usuario)
+          .single();
 
-  if (contrasena_actual || nueva_contrasena || confirmar_contrasena) {
-    if (!actual || !actual.data || actual.data.contrasena !== contrasena_actual) {
+        if (!actual || !actual.data || actual.data.contrasena !== contrasena_actual) {
           Swal.fire({
             icon: 'error',
             title: 'Contraseña incorrecta',
@@ -208,5 +197,3 @@
   </script>
 </body>
 </html>
-
-
