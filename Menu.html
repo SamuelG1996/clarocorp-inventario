@@ -43,7 +43,7 @@
       <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i></a>
     </div>
   </div>
-
+  <p id="saludo" style="color: white; font-size: 16px; margin-left: 20px;"></p>
   <div class="content">
     <div class="topbar">Comunicados</div>
     <div class="main-content">
@@ -52,14 +52,14 @@
   </div>
   
   <script>
-	// Recarga al volver a la pestaña
+	// RECARGA AL VOLVER A LA PESTAÑA
 	document.addEventListener("visibilitychange", () => {
 	  if (document.visibilityState === "visible") {
 		location.reload(); // Refresca automáticamente
 	  }
 	});
 
-	// Recarga automática si hay más de 30 minutos sin actividad
+	// RECARGA AUTOMATICA SI HAY MAS DE 30 MINUTOS DE INACTIVIDAD
 	let lastActiveTime = Date.now();
 
 	document.addEventListener("mousemove", () => lastActiveTime = Date.now());
@@ -74,6 +74,13 @@
 	  window.location.href = "index.html";
 	  }
 	}, 60000); // Verifica cada minuto
+
+	/*MENSAJE DE BIENVENIDA*/
+	  const nombre = localStorage.getItem('nombres');
+	  if (nombre) {
+	    document.getElementById('saludo').textContent = `Bienvenido, ${nombre}`;
+	  }
+	 /*FIN DE MENSAJE DE BIENVENIDA*/ 
   </script>
   
 </body>
