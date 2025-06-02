@@ -217,28 +217,32 @@ async function cargarStockContrata() {
       ? item.stock_real - item.stock_reservado
       : "No calculable"
 
-    const fila = `
+const fila = `
   <tr>
     <td>${item.codigo}</td>
     <td>${item.descripcion}</td>
     <td>${item.centro}</td>
     <td>${item.almacen}</td>
-    <td>${item.cantidad_sap}</td>
+    <td>${formatearNumero(item.cantidad_sap)}</td>
     <td>${item.lote}</td>
     <td>${item.zona}</td>
-    <td contenteditable="true">${item.stock_real ?? ""}</td>
-    <td contenteditable="true">${item.stock_reservado ?? ""}</td>
+    <td contenteditable="true">${formatearNumero(item.stock_real ?? "")}</td>
+    <td contenteditable="true">${formatearNumero(item.stock_reservado ?? "")}</td>
     <td>${
       item.stock_real != null && item.stock_reservado != null
-        ? item.stock_real - item.stock_reservado
+        ? formatearNumero(item.stock_real - item.stock_reservado)
         : "No calculable"
     }</td>
   </tr>
-`
+`;
     tbody.insertAdjacentHTML("beforeend", fila)
   })
 }
-
+function formatearNumero(valor) {
+  return (typeof valor === "number" && valor % 1 === 0)
+    ? valor.toFixed(0)
+    : valor; // Si tiene decimales reales, lo deja tal cual
+}
 cargarStockContrata()
 
 </script>
