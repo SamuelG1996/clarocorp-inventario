@@ -324,7 +324,7 @@ td, th {
 }
 
 td:nth-child(2), th:nth-child(2) {
-  max-width: 220px; /* ajusta según tu diseño */
+  max-width: 240px; /* ajusta según tu diseño */
 }
 
 /* === FIN MÓDULO DE VISUALIZACIÓN DE STOCK === */
