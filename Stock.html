@@ -64,6 +64,7 @@
   </div>
 
 <script>
+<script>
 function filtrarTabla() {
   const input = document.getElementById("searchInput").value.toLowerCase().trim();
   const filtros = input.split(/\s+/);
@@ -71,11 +72,10 @@ function filtrarTabla() {
 
   filas.forEach(fila => {
     const textoFila = [
-      fila.cells[0].textContent,
-      fila.cells[1].textContent,
-      fila.cells[2].textContent,
-      fila.cells[3].textContent,
-      fila.cells[6].textContent
+      fila.cells[0].textContent, // Código
+      fila.cells[1].textContent, // Descripción
+      fila.cells[3].textContent, // Almacén
+      fila.cells[6].textContent  // Zona
     ].join(" ").toLowerCase();
 
     const coincide = filtros.every(f => textoFila.includes(f));
