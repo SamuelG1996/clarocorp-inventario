@@ -319,21 +319,13 @@ td:nth-child(10) {
   text-align: center;
 }
 
-td:nth-child(2), th:nth-child(2) {
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+td, th {
+  word-wrap: break-word;
+  white-space: normal;
 }
 
-td:nth-child(2):hover::after {
-  content: attr(title);
-  position: absolute;
-  background: #fff;
-  color: #000;
-  padding: 5px;
-  border: 1px solid #ccc;
-  z-index: 10;
+td:nth-child(2), th:nth-child(2) {
+  max-width: 220px; /* ajusta según tu diseño */
 }
 
 /* === FIN MÓDULO DE VISUALIZACIÓN DE STOCK === */
