@@ -62,9 +62,22 @@
     </div>
 
     <div class="campos-unicos">
-      <label>Tipo de Material:<br><input type="text" id="tipoMaterial" required></label><br><br>
-      <label>Área Solicitante:<br><input type="text" id="areaSolicitante" required></label><br><br>
-      <label>Datos del Solicitante:<br><input type="text" id="datosSolicitante" required></label><br><br>
+      <label>Tipo de Material:<br>
+      <select id="tipoMaterial" required>
+        <option value="">Seleccionar</option>
+        <option value="PINT">PINT</option>
+        <option value="PEXT">PEXT</option>
+      </select>
+      </label>
+     
+      <label>Área Solicitante:<br>
+      <input type="text" id="areaSolicitante" value="APROVISIONAMIENTO Y SOPORTE OPERATIVO" disabled required>
+      </label>
+      
+      <label>Datos del Solicitante:<br>
+      <input type="text" id="datosSolicitante" value="CLAUDIA HENRIQUEZ" disabled required>
+      </label>
+      
       <label>Guía de Remisión (PDF, JPG, PNG):<br><input type="file" id="guiaRemision" accept=".pdf,.jpg,.jpeg,.png" required></label>
     </div>
 
