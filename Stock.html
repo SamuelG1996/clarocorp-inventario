@@ -68,38 +68,14 @@
           <th>Cantidad</th>
           <th>Lote</th>
           <th>Zona</th>
-	  <th>Empresa</th>
           <th>Stock</th>
           <th>Reserva</th>
           <th>Disponible</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>4072977</td><td>Router Huawei AR651</td><td>P4A3</td><td>I104</td><td>5</td><td>No Valorado</td><td>Arequipa</td><td>Desysweb</td>
-          <td><input type="number" oninput="calcularDisponible(this)"></td>
-          <td><input type="number" oninput="calcularDisponible(this)"></td>
-          <td class="disponible">-</td>
-        </tr>
-        <tr>
-          <td>4060668</td><td>Router Cisco C1121</td><td>P4A3</td><td>I104</td><td>3</td><td>Valorado</td><td>Arequipa</td><td>Desysweb</td>
-          <td><input type="number" oninput="calcularDisponible(this)"></td>
-          <td><input type="number" oninput="calcularDisponible(this)"></td>
-          <td class="disponible">-</td>
-        </tr>
-        <tr>
-          <td>4060668</td><td>Router Cisco C1121</td><td>P4A3</td><td>I108</td><td>8</td><td>Valorado</td><td>Cusco</td><td>Desysweb</td>
-          <td><input type="number" oninput="calcularDisponible(this)"></td>
-          <td><input type="number" oninput="calcularDisponible(this)"></td>
-          <td class="disponible">-</td>
-        </tr>
-		 <tr>
-          <td>4060668</td><td>Router Cisco C1121</td><td>P4A3</td><td>I115</td><td>14</td><td>Valorado</td><td>Lima</td><td>Desysweb</td>
-          <td><input type="number" oninput="calcularDisponible(this)"></td>
-          <td><input type="number" oninput="calcularDisponible(this)"></td>
-          <td class="disponible">-</td>
-        </tr>
-      </tbody>
+       <tbody id="stock-body">
+	           //Aquí se llenarán los datos desde Supabase
+       </tbody>
     </table>
   </div>
 
@@ -220,6 +196,67 @@ function copiarTabla() {
 	  }
 	}, 60000); // Revisa cada 1 minuto
 </script>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
+// Credenciales de Supabase
+const supabaseUrl = 'https://xxxxxxxx.supabase.co'
+const supabaseKey = 'public-anon-key'
+const supabase = createClient(supabaseUrl, supabaseKey)
+
+// Obtenemos datos del usuario logueado desde localStorage
+const empresaUsuario = localStorage.getItem("empresa")
+const rolUsuario = localStorage.getItem("rol")
+
+// Función para cargar los datos del stock
+async function cargarStockContrata() {
+  let query = supabase.from("stock_contrata").select("*")
+
+  // Si el rol es Contratista, filtra por empresa
+  if (rolUsuario === "Contratista") {
+    query = query.eq("empresa", empresaUsuario)
+  }
+
+  const { data, error } = await query
+
+  if (error) {
+    console.error("Error cargando stock:", error.message)
+    return
+  }
+
+  const tbody = document.getElementById("stock-body")
+  tbody.innerHTML = ""
+
+  data.forEach((item) => {
+    const disponible = item.stock_real != null && item.stock_reservado != null
+      ? item.stock_real - item.stock_reservado
+      : "No calculable"
+
+    const fila = `
+  <tr>
+    <td>${item.codigo}</td>
+    <td>${item.descripcion}</td>
+    <td>${item.centro}</td>
+    <td>${item.almacen}</td>
+    <td>${item.cantidad_sap}</td>
+    <td>${item.lote}</td>
+    <td>${item.zona}</td>
+    <td contenteditable="true">${item.stock_real ?? ""}</td>
+    <td contenteditable="true">${item.stock_reservado ?? ""}</td>
+    <td>${
+      item.stock_real != null && item.stock_reservado != null
+        ? item.stock_real - item.stock_reservado
+        : "No calculable"
+    }</td>
+  </tr>
+`
+    tbody.insertAdjacentHTML("beforeend", fila)
+  })
+}
+
+cargarStockContrata()
+</script>
+
+	
 </body>
 </html>
