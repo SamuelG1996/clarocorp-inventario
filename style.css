@@ -450,3 +450,23 @@ td:nth-child(10) {
   margin: 15px 0 8px;
   color: #ecf0f1;
 }
+
+/* --- ESTILOS GENERALES PARA MÓDULO STOCK --- */
+
+.tabla-contenedor {
+  max-height: 500px; /* ajusta según lo que te acomode */
+  overflow-y: auto;
+  border: 1px solid #ccc;
+}
+
+.tabla-contenedor table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-contenedor th {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 2;
+}
