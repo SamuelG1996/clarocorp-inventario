@@ -176,13 +176,14 @@ const supabaseClient = createClient(
           return;
         }
 
-        const { data: updated, error: updateError } = await supabaseClient
-          .from("usuarios")
-          .update({ email: correo, telefono, contrasena: nueva_contrasena })
-          .eq("codigo_usuario", codigo_usuario);
-
-        console.log("🔁 Actualización con contraseña:", updated);
-        console.log("❌ Error:", updateError);
+  const { data: updated, error: updateError } = await supabaseClient
+    .from("usuarios")
+    .update({ email: correo, telefono: telefono })
+    .eq("codigo_usuario", codigo_usuario)
+    .select();  // <= esto te devuelve el objeto actualizado
+  
+  console.log("🔁 Actualización sin contraseña:", updated);
+  console.log("❌ Error:", updateError);
       } else {
         const { data: updated, error: updateError } = await supabaseClient
           .from("usuarios")
