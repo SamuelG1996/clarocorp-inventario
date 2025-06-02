@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
@@ -216,11 +217,25 @@
           }
         }
 
-        if (errores.length > 0) {
-          alert("Se produjeron errores:\n" + errores.join("\n"));
-        } else {
-          alert("Cambios guardados correctamente en la base de datos.");
-        }
+      if (errores.length > 0) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al guardar',
+          html: 'Se produjeron errores:<br>' + errores.join('<br>'),
+          confirmButtonColor: '#d33'
+        });
+      } else {
+        Swal.fire({
+          icon: 'success',
+          title: '¡Guardado!',
+          text: 'Cambios guardados correctamente en la base de datos.',
+          showConfirmButton: false,
+          timer: 2500,
+          timerProgressBar: true,
+          position: 'bottom-end',
+          toast: true
+        });
+      }
 
         cargarStockContrata();
       }
