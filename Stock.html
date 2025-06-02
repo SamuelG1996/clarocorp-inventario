@@ -34,7 +34,7 @@
       <h2><i class="fas fa-box-open"></i> Visualización de Stock</h2>
       <div class="acciones-tabla">
         <button onclick="descargarExcel()">Descargar Excel</button>
-        <button onclick="copiarTabla()">Copiar</button>
+        <button onclick="guardarCambios()()">Grabar</button>
       </div>
     </div>
 
@@ -88,24 +88,6 @@
       window.location.href = "index.html";
     }
 
-    function copiarTabla() {
-      const tabla = document.getElementById("tablaStock");
-      let texto = "";
-
-      for (let fila of tabla.rows) {
-        let filaTexto = [];
-        for (let celda of fila.cells) {
-          filaTexto.push(celda.innerText || "");
-        }
-        texto += filaTexto.join("\t") + "\n";
-      }
-
-      navigator.clipboard.writeText(texto).then(() => {
-        alert("Tabla copiada al portapapeles");
-      }).catch(err => {
-        alert("Error al copiar: " + err);
-      });
-    }
 
     function descargarExcel() {
       const tabla = document.getElementById("tablaStock");
@@ -204,5 +186,34 @@
 
     cargarStockContrata()
   </script>
+
+<script>
+function guardarCambios() {
+  const filas = document.querySelectorAll("#stock-body tr");
+
+  const updates = [];
+
+  filas.forEach(fila => {
+    const codigo = fila.cells[0].innerText.trim();
+    const stockReal = parseFloat(fila.cells[7].innerText.trim());
+    const stockReservado = parseFloat(fila.cells[8].innerText.trim());
+
+    // Solo guarda si hay al menos un número válido
+    if (!isNaN(stockReal) || !isNaN(stockReservado)) {
+      updates.push({ codigo, stock_real: stockReal, stock_reservado: stockReservado });
+    }
+  });
+
+  if (updates.length === 0) {
+    alert("No hay cambios válidos para guardar.");
+    return;
+  }
+
+  // Importar la función desde el módulo principal
+  window.postMessage({ type: "GUARDAR_DATOS_STOCK", payload: updates }, "*");
+}
+</script>
+
+  
 </body>
 </html>
