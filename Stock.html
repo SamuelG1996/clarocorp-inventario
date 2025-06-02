@@ -242,12 +242,35 @@ function formatearNumero(valor) {
 
   return Number.isInteger(numero) ? numero.toString() : numero.toFixed(2);
 }
+
+document.querySelectorAll('#stock-body td[contenteditable="true"]').forEach((celda) => {
+  celda.addEventListener('input', () => {
+    const fila = celda.parentElement;
+    recalcularDisponibleDesdeTabla(fila);
+  });
+});
+	
 cargarStockContrata()
 
 function logout() {
   localStorage.removeItem("codigo_usuario");
   window.location.href = "index.html";
 }
+
+function recalcularDisponibleDesdeTabla(fila) {
+  const stockTexto = fila.cells[7].innerText.trim();
+  const reservaTexto = fila.cells[8].innerText.trim();
+  const celdaDisponible = fila.cells[9];
+
+  const stock = parseFloat(stockTexto);
+  const reserva = parseFloat(reservaTexto);
+
+  if (!isNaN(stock) && !isNaN(reserva)) {
+    celdaDisponible.innerText = formatearNumero(stock - reserva);
+  } else {
+    celdaDisponible.innerText = "No calculable";
+  }
+}	
 
 </script>
 
