@@ -139,29 +139,39 @@ const supabaseClient = createClient(
   document.getElementById("correo").value = data.email || "";
   document.getElementById("telefono").value = data.telefono || "";
 });
-    async function guardarCambios() {
-      const correo = document.getElementById("correo").value.trim();
-      const telefono = document.getElementById("telefono").value.trim();
-      const contrasena_actual = document.getElementById("contrasena_actual").value;
-      const nueva_contrasena = document.getElementById("nueva_contrasena").value;
-      const confirmar_contrasena = document.getElementById("confirmar_contrasena").value;
-      const codigo_usuario = localStorage.getItem("codigo_usuario");
+      async function guardarCambios() {
+    const correo = document.getElementById("correo").value.trim();
+    const telefono = document.getElementById("telefono").value.trim();
+    const contrasena_actual = document.getElementById("contrasena_actual")?.value || "";
+    const nueva_contrasena = document.getElementById("nueva_contrasena")?.value || "";
+    const confirmar_contrasena = document.getElementById("confirmar_contrasena")?.value || "";
+    const codigo_usuario = localStorage.getItem("codigo_usuario");
 
-      if (!correo || !telefono) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Campos vacíos',
-          text: 'Correo y teléfono no pueden estar vacíos.',
-        });
-        return;
-      }
+    console.log("➡️ Guardando cambios...");
+    console.log("📧 Correo:", correo);
+    console.log("📞 Teléfono:", telefono);
+    console.log("🔑 Contraseña actual:", contrasena_actual);
+    console.log("👤 Código usuario:", codigo_usuario);
 
+    if (!correo || !telefono) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos vacíos',
+        text: 'Correo y teléfono no pueden estar vacíos.',
+      });
+      return;
+    }
+
+    try {
+      // Si hay intento de cambiar contraseña
       if (contrasena_actual || nueva_contrasena || confirmar_contrasena) {
         const actual = await supabaseClient
           .from("usuarios")
           .select("contrasena")
           .eq("codigo_usuario", codigo_usuario)
           .single();
+
+        console.log("🧾 Contraseña actual Supabase:", actual.data?.contrasena);
 
         if (!actual || !actual.data || actual.data.contrasena !== contrasena_actual) {
           Swal.fire({
@@ -181,15 +191,23 @@ const supabaseClient = createClient(
           return;
         }
 
-        await supabaseClient
+        const { data: updated, error: updateError } = await supabaseClient
           .from("usuarios")
           .update({ email: correo, telefono, contrasena: nueva_contrasena })
           .eq("codigo_usuario", codigo_usuario);
+
+        console.log("✅ UPDATE + contraseña:", updated);
+        console.log("❌ ERROR UPDATE:", updateError);
+
       } else {
-        await supabaseClient
+        // Solo actualizar correo y teléfono
+        const { data: updated, error: updateError } = await supabaseClient
           .from("usuarios")
           .update({ email: correo, telefono })
           .eq("codigo_usuario", codigo_usuario);
+
+        console.log("✅ UPDATE solo datos:", updated);
+        console.log("❌ ERROR UPDATE:", updateError);
       }
 
       Swal.fire({
@@ -197,8 +215,10 @@ const supabaseClient = createClient(
         title: 'Guardado',
         text: 'Cambios actualizados correctamente.',
       });
+    } catch (e) {
+      console.error("❗Error inesperado:", e);
     }
-
+  }
     function logout() {
       localStorage.clear();
       window.location.href = "index.html";
