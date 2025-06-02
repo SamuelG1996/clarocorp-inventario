@@ -153,20 +153,25 @@
     }
 
     async function cargarStockContrata() {
-      const empresaUsuario = localStorage.getItem("empresa");
-      const rolUsuario = localStorage.getItem("rol");
-
-      let query = supabase.from("stock_contrata").select("*");
-      if (rolUsuario === "Contratista") {
-        query = query.eq("empresa", empresaUsuario);
-      }
-
-      const { data, error } = await query;
-      if (error) {
-        console.error("Error cargando stock:", error.message);
-        return;
-      }
-
+    document.getElementById("loader").style.display = "flex"; // Muestra el loader
+  
+    const empresaUsuario = localStorage.getItem("empresa");
+    const rolUsuario = localStorage.getItem("rol");
+  
+    let query = supabase.from("stock_contrata").select("*");
+    if (rolUsuario === "Contratista") {
+      query = query.eq("empresa", empresaUsuario);
+    }
+  
+    const { data, error } = await query;
+  
+    document.getElementById("loader").style.display = "none"; // Oculta el loader
+  
+    if (error) {
+      console.error("Error cargando stock:", error.message);
+      return;
+    }
+      
       const tbody = document.getElementById("stock-body");
       tbody.innerHTML = "";
 
