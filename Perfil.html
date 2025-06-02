@@ -163,8 +163,8 @@
         .eq("codigo_usuario", codigo_usuario)
         .single();
 
-      if (contrasena_actual || nueva_contrasena || confirmar_contrasena) {
-        if (actual.data.contrasena !== contrasena_actual) {
+  if (contrasena_actual || nueva_contrasena || confirmar_contrasena) {
+    if (!actual || !actual.data || actual.data.contrasena !== contrasena_actual) {
           Swal.fire({
             icon: 'error',
             title: 'Contraseña incorrecta',
