@@ -34,7 +34,7 @@
       <h2><i class="fas fa-box-open"></i> Visualización de Stock</h2>
       <div class="acciones-tabla">
         <button onclick="descargarExcel()">Descargar Excel</button>
-        <button onclick="guardarCambios()()">Grabar</button>
+        <button onclick="guardarCambios()">Grabar</button>
       </div>
     </div>
 
@@ -63,128 +63,138 @@
     </div>
   </div>
 
-  <script>
-    function filtrarTabla() {
-      const input = document.getElementById("searchInput").value.toLowerCase().trim();
-      const filtros = input.split(/\s+/);
-      const filas = document.querySelectorAll("#tablaStock tbody tr");
+<script>
+function filtrarTabla() {
+  const input = document.getElementById("searchInput").value.toLowerCase().trim();
+  const filtros = input.split(/\s+/);
+  const filas = document.querySelectorAll("#tablaStock tbody tr");
 
-      filas.forEach(fila => {
-        const textoFila = [
-          fila.cells[0].textContent,
-          fila.cells[1].textContent,
-          fila.cells[2].textContent,
-          fila.cells[3].textContent,
-          fila.cells[6].textContent
-        ].join(" ").toLowerCase();
+  filas.forEach(fila => {
+    const textoFila = [
+      fila.cells[0].textContent,
+      fila.cells[1].textContent,
+      fila.cells[2].textContent,
+      fila.cells[3].textContent,
+      fila.cells[6].textContent
+    ].join(" ").toLowerCase();
 
-        const coincide = filtros.every(f => textoFila.includes(f));
-        fila.style.display = coincide ? "" : "none";
-      });
+    const coincide = filtros.every(f => textoFila.includes(f));
+    fila.style.display = coincide ? "" : "none";
+  });
+}
+
+function guardarCambios() {
+  const filas = document.querySelectorAll("#stock-body tr");
+  const updates = [];
+
+  filas.forEach(fila => {
+    const codigo = fila.cells[0].innerText.trim();
+    const stockReal = parseFloat(fila.cells[7].innerText.trim());
+    const stockReservado = parseFloat(fila.cells[8].innerText.trim());
+
+    if (!isNaN(stockReal) || !isNaN(stockReservado)) {
+      updates.push({ codigo, stock_real: stockReal, stock_reservado: stockReservado });
     }
+  });
 
-    function logout() {
-      localStorage.removeItem("codigo_usuario");
-      window.location.href = "index.html";
-    }
+  if (updates.length === 0) {
+    alert("No hay cambios válidos para guardar.");
+    return;
+  }
 
+  window.postMessage({ type: "GUARDAR_DATOS_STOCK", payload: updates }, "*");
+}
 
-    function descargarExcel() {
-      const tabla = document.getElementById("tablaStock");
-      let data = [];
+function descargarExcel() {
+  const tabla = document.getElementById("tablaStock");
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.table_to_sheet(tabla);
+  XLSX.utils.book_append_sheet(wb, ws, "Stock");
+  XLSX.writeFile(wb, "Stock_ClaroCorp.xlsx");
+}
 
-      for (let fila of tabla.rows) {
-        let filaDatos = [];
-        for (let celda of fila.cells) {
-          filaDatos.push(celda.innerText || "");
-        }
-        data.push(filaDatos);
-      }
+function logout() {
+  localStorage.removeItem("codigo_usuario");
+  window.location.href = "index.html";
+}
+</script>
 
-      const hoja = XLSX.utils.aoa_to_sheet(data);
-      const libro = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(libro, hoja, "Stock");
-      XLSX.writeFile(libro, "Stock_ClaroCorp.xlsx");
-    }
-  </script>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+const supabase = createClient(supabaseUrl, supabaseKey)
 
-    const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co'
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI'
-    const supabase = createClient(supabaseUrl, supabaseKey)
+function formatearNumero(valor) {
+  const numero = parseFloat(valor);
+  if (isNaN(numero)) return valor;
+  return Number.isInteger(numero) ? numero.toString() : numero.toFixed(2);
+}
 
-    function formatearNumero(valor) {
-      const numero = parseFloat(valor);
-      if (isNaN(numero)) return valor;
-      return Number.isInteger(numero) ? numero.toString() : numero.toFixed(2);
-    }
+function recalcularDisponibleDesdeTabla(fila) {
+  const stockTexto = fila.cells[7].innerText.trim();
+  const reservaTexto = fila.cells[8].innerText.trim();
+  const celdaDisponible = fila.cells[9];
 
-    function recalcularDisponibleDesdeTabla(fila) {
-      const stockTexto = fila.cells[7].innerText.trim();
-      const reservaTexto = fila.cells[8].innerText.trim();
-      const celdaDisponible = fila.cells[9];
+  const stock = parseFloat(stockTexto);
+  const reserva = parseFloat(reservaTexto);
 
-      const stock = parseFloat(stockTexto);
-      const reserva = parseFloat(reservaTexto);
+  if (!isNaN(stock) && !isNaN(reserva)) {
+    celdaDisponible.innerText = formatearNumero(stock - reserva);
+  } else {
+    celdaDisponible.innerText = "No calculable";
+  }
+}
 
-      if (!isNaN(stock) && !isNaN(reserva)) {
-        celdaDisponible.innerText = formatearNumero(stock - reserva);
-      } else {
-        celdaDisponible.innerText = "No calculable";
-      }
-    }
+async function cargarStockContrata() {
+  const empresaUsuario = localStorage.getItem("empresa");
+  const rolUsuario = localStorage.getItem("rol");
 
-    async function cargarStockContrata() {
-      const empresaUsuario = localStorage.getItem("empresa")
-      const rolUsuario = localStorage.getItem("rol")
+  let query = supabase.from("stock_contrata").select("*");
+  if (rolUsuario === "Contratista") {
+    query = query.eq("empresa", empresaUsuario);
+  }
 
-      let query = supabase.from("stock_contrata").select("*")
-      if (rolUsuario === "Contratista") {
-        query = query.eq("empresa", empresaUsuario)
-      }
+  const { data, error } = await query;
+  if (error) {
+    console.error("Error cargando stock:", error.message);
+    return;
+  }
 
-      const { data, error } = await query
-      if (error) {
-        console.error("Error cargando stock:", error.message)
-        return
-      }
+  const tbody = document.getElementById("stock-body");
+  tbody.innerHTML = "";
 
-      const tbody = document.getElementById("stock-body")
-      tbody.innerHTML = ""
+  data.forEach((item) => {
+    const disponible = item.stock_real != null && item.stock_reservado != null
+      ? item.stock_real - item.stock_reservado
+      : "No calculable";
 
-      data.forEach((item) => {
-        const disponible = item.stock_real != null && item.stock_reservado != null
-          ? item.stock_real - item.stock_reservado
-          : "No calculable"
+    const fila = `
+      <tr>
+        <td>${item.codigo}</td>
+        <td>${item.descripcion}</td>
+        <td>${item.centro}</td>
+        <td>${item.almacen}</td>
+        <td>${formatearNumero(item.cantidad_sap)}</td>
+        <td>${item.lote}</td>
+        <td>${item.zona}</td>
+        <td contenteditable="true">${formatearNumero(item.stock_real ?? "")}</td>
+        <td contenteditable="true">${formatearNumero(item.stock_reservado ?? "")}</td>
+        <td>${formatearNumero(disponible)}</td>
+      </tr>
+    `;
+    tbody.insertAdjacentHTML("beforeend", fila);
+  });
 
-        const fila = `
-          <tr>
-            <td>${item.codigo}</td>
-            <td>${item.descripcion}</td>
-            <td>${item.centro}</td>
-            <td>${item.almacen}</td>
-            <td>${formatearNumero(item.cantidad_sap)}</td>
-            <td>${item.lote}</td>
-            <td>${item.zona}</td>
-            <td contenteditable="true">${formatearNumero(item.stock_real ?? "")}</td>
-            <td contenteditable="true">${formatearNumero(item.stock_reservado ?? "")}</td>
-            <td>${formatearNumero(disponible)}</td>
-          </tr>
-        `;
-        tbody.insertAdjacentHTML("beforeend", fila)
-      })
+  document.querySelectorAll('#stock-body td[contenteditable="true"]').forEach((celda) => {
+    celda.addEventListener('input', () => {
+      const fila = celda.parentElement;
+      recalcularDisponibleDesdeTabla(fila);
+    });
+  });
+}
 
-      document.querySelectorAll('#stock-body td[contenteditable="true"]').forEach((celda) => {
-        celda.addEventListener('input', () => {
-          const fila = celda.parentElement;
-          recalcularDisponibleDesdeTabla(fila);
-        });
-      });
-    }
-
-// Escuchar mensaje desde el DOM (puente entre script normal y módulo ESM)
 window.addEventListener("message", async (event) => {
   if (event.data?.type === "GUARDAR_DATOS_STOCK") {
     const updates = event.data.payload;
@@ -199,37 +209,12 @@ window.addEventListener("message", async (event) => {
     );
 
     alert("Cambios guardados correctamente en Supabase.");
-    
-    cargarStockContrata()
-  </script>
-
-<script>
-function guardarCambios() {
-  const filas = document.querySelectorAll("#stock-body tr");
-
-  const updates = [];
-
-  filas.forEach(fila => {
-    const codigo = fila.cells[0].innerText.trim();
-    const stockReal = parseFloat(fila.cells[7].innerText.trim());
-    const stockReservado = parseFloat(fila.cells[8].innerText.trim());
-
-    // Solo guarda si hay al menos un número válido
-    if (!isNaN(stockReal) || !isNaN(stockReservado)) {
-      updates.push({ codigo, stock_real: stockReal, stock_reservado: stockReservado });
-    }
-  });
-
-  if (updates.length === 0) {
-    alert("No hay cambios válidos para guardar.");
-    return;
+    cargarStockContrata();
   }
+});
 
-  // Importar la función desde el módulo principal
-  window.postMessage({ type: "GUARDAR_DATOS_STOCK", payload: updates }, "*");
-}
+cargarStockContrata();
 </script>
 
-  
 </body>
 </html>
