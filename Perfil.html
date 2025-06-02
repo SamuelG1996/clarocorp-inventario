@@ -134,81 +134,82 @@ const supabaseClient = createClient(
   });
 
   async function guardarCambios() {
-    const correo = document.getElementById("correo").value.trim();
-    const telefono = document.getElementById("telefono").value.trim();
-    const contrasena_actual = document.getElementById("contrasena_actual").value;
-    const nueva_contrasena = document.getElementById("nueva_contrasena").value;
-    const confirmar_contrasena = document.getElementById("confirmar_contrasena").value;
-    const codigo_usuario = localStorage.getItem("codigo_usuario");
+  const correo = document.getElementById("correo").value.trim();
+  const telefono = document.getElementById("telefono").value.trim();
+  const contrasena_actual = document.getElementById("contrasena_actual").value;
+  const nueva_contrasena = document.getElementById("nueva_contrasena").value;
+  const confirmar_contrasena = document.getElementById("confirmar_contrasena").value;
+  const codigo_usuario = localStorage.getItem("codigo_usuario");
 
-    if (!correo || !telefono) {
+  console.log("📤 INTENTANDO GUARDAR:");
+  console.log("Correo:", correo);
+  console.log("Teléfono:", telefono);
+  console.log("Código Usuario:", codigo_usuario);
+
+  if (!correo || !telefono) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Campos vacíos',
+      text: 'Correo y teléfono no pueden estar vacíos.',
+    });
+    return;
+  }
+
+  if (contrasena_actual || nueva_contrasena || confirmar_contrasena) {
+    const actual = await supabaseClient
+      .from("usuarios")
+      .select("contrasena")
+      .eq("codigo_usuario", codigo_usuario)
+      .single();
+
+    if (!actual || !actual.data || actual.data.contrasena !== contrasena_actual) {
       Swal.fire({
-        icon: 'warning',
-        title: 'Campos vacíos',
-        text: 'Correo y teléfono no pueden estar vacíos.',
+        icon: 'error',
+        title: 'Contraseña incorrecta',
+        text: 'La contraseña actual no es válida.',
       });
       return;
     }
 
-    try {
-      if (contrasena_actual || nueva_contrasena || confirmar_contrasena) {
-        const actual = await supabaseClient
-          .from("usuarios")
-          .select("contrasena")
-          .eq("codigo_usuario", codigo_usuario)
-          .single();
-
-        if (!actual.data || actual.data.contrasena !== contrasena_actual) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Contraseña incorrecta',
-            text: 'La contraseña actual no es válida.',
-          });
-          return;
-        }
-
-        if (nueva_contrasena !== confirmar_contrasena) {
-          Swal.fire({
-            icon: 'error',
-            title: 'No coinciden',
-            text: 'La nueva contraseña no coincide con la confirmación.',
-          });
-          return;
-        }
-    
-    console.log("📤 INTENTANDO GUARDAR:");
-    console.log("Correo:", correo);
-    console.log("Teléfono:", telefono);
-    console.log("Código Usuario:", codigo_usuario);
-        
-  const { data: updated, error: updateError } = await supabaseClient
-    .from("usuarios")
-    .update({ email: correo, telefono: telefono })
-    .eq("codigo_usuario", codigo_usuario)
-    .select();  // <= esto te devuelve el objeto actualizado
-  
-
-console.log("🟢 DATA DEL UPDATE:", updateData);
-console.log("🔴 ERROR DEL UPDATE:", updateError);
-      } else {
-        const { data: updated, error: updateError } = await supabaseClient
-          .from("usuarios")
-          .update({ email: correo, telefono })
-          .eq("codigo_usuario", codigo_usuario);
-
-        console.log("🔁 Actualización sin contraseña:", updated);
-        console.log("❌ Error:", updateError);
-      }
-
+    if (nueva_contrasena !== confirmar_contrasena) {
       Swal.fire({
-        icon: 'success',
-        title: 'Guardado',
-        text: 'Cambios actualizados correctamente.',
+        icon: 'error',
+        title: 'No coinciden',
+        text: 'La nueva contraseña no coincide con la confirmación.',
       });
-    } catch (e) {
-      console.error("🚨 Error inesperado:", e);
+      return;
     }
+
+    const { data: updateData, error: updateError } = await supabaseClient
+      .from("usuarios")
+      .update({
+        email: correo,
+        telefono: telefono,
+        contrasena: nueva_contrasena
+      })
+      .eq("codigo_usuario", codigo_usuario);
+
+    console.log("🟢 UPDATE CON CONTRASEÑA:", updateData);
+    console.log("🔴 ERROR:", updateError);
+  } else {
+    const { data: updateData, error: updateError } = await supabaseClient
+      .from("usuarios")
+      .update({
+        email: correo,
+        telefono: telefono
+      })
+      .eq("codigo_usuario", codigo_usuario);
+
+    console.log("🟢 UPDATE SIN CONTRASEÑA:", updateData);
+    console.log("🔴 ERROR:", updateError);
   }
+
+  Swal.fire({
+    icon: 'success',
+    title: 'Guardado',
+    text: 'Cambios actualizados correctamente.',
+  });
+}
     function logout() {
       localStorage.clear();
       window.location.href = "index.html";
