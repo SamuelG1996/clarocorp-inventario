@@ -38,52 +38,58 @@
         <h2><i class="fas fa-user-circle"></i> Mi Perfil</h2>
       </div>
 
-      <form id="perfilForm" class="formulario-perfil">
-        <div class="grupo-form">
-          <label>Código de usuario</label>
-          <input type="text" id="codigo_usuario" disabled>
-        </div>
-        <div class="grupo-form">
-          <label>Nombres</label>
-          <input type="text" id="nombres" disabled>
-        </div>
-        <div class="grupo-form">
-          <label>Rol</label>
-          <input type="text" id="rol" disabled>
-        </div>
-        <div class="grupo-form">
-          <label>Empresa</label>
-          <input type="text" id="empresa" disabled>
-        </div>
-        <div class="grupo-form">
-          <label>Correo electrónico</label>
-          <input type="email" id="correo">
-        </div>
-        <div class="grupo-form">
-          <label>Teléfono</label>
-          <input type="text" id="telefono">
-        </div>
-        <div class="form-boton">
-          <button type="button" onclick="guardarCambios()">Guardar cambios</button>
-        </div>
-      </form>
+<!-- Reemplaza todo tu <form> actual desde <form id="perfilForm"> hasta el cierre del <script> por lo siguiente -->
 
-      <hr>
-
-      <form id="passwordForm" class="formulario-perfil">
-        <h3 class="subtitulo">Cambiar Contraseña:</h3>
-        <label>Contraseña actual</label>
-        <input type="password" id="contrasena_actual">
-        <label>Nueva contraseña</label>
-        <input type="password" id="nueva_contrasena">
-        <label>Confirmar nueva contraseña</label>
-        <input type="password" id="confirmar_contrasena">
-        <div class="form-boton">
-          <button type="button" onclick="guardarCambios()">Actualizar contraseña</button>
-        </div>
-      </form>
-    </div>
+<form id="perfilForm" class="formulario-perfil">
+  <div class="grupo-form">
+    <label for="codigo_usuario">Código de usuario</label>
+    <input type="text" id="codigo_usuario" disabled>
   </div>
+  <div class="grupo-form">
+    <label for="nombres">Nombres</label>
+    <input type="text" id="nombres" disabled>
+  </div>
+  <div class="grupo-form">
+    <label for="rol">Rol</label>
+    <input type="text" id="rol" disabled>
+  </div>
+  <div class="grupo-form">
+    <label for="empresa">Empresa</label>
+    <input type="text" id="empresa" disabled>
+  </div>
+  <div class="grupo-form">
+    <label for="correo">Correo electrónico</label>
+    <input type="email" id="correo">
+  </div>
+  <div class="grupo-form">
+    <label for="telefono">Teléfono</label>
+    <input type="text" id="telefono">
+  </div>
+  <div class="form-boton">
+    <button type="button" onclick="guardarCambios()">Guardar cambios</button>
+  </div>
+</form>
+
+<hr>
+
+<form id="passwordForm" class="formulario-perfil">
+  <h3 class="subtitulo">Cambiar Contraseña:</h3>
+  <div class="grupo-form">
+    <label for="contrasena_actual">Contraseña actual</label>
+    <input type="password" id="contrasena_actual">
+  </div>
+  <div class="grupo-form">
+    <label for="nueva_contrasena">Nueva contraseña</label>
+    <input type="password" id="nueva_contrasena">
+  </div>
+  <div class="grupo-form">
+    <label for="confirmar_contrasena">Confirmar nueva contraseña</label>
+    <input type="password" id="confirmar_contrasena">
+  </div>
+  <div class="form-boton">
+    <button type="button" onclick="guardarCambios()">Actualizar contraseña</button>
+  </div>
+</form>
 
   <script>
     const supabase = supabase.createClient(
