@@ -119,6 +119,9 @@
         .eq("codigo_usuario", codigo_usuario)
         .single();
 
+      console.log("RESPUESTA SUPABASE:", data);
+      console.log("ERROR:", error);
+      
       if (error || !data) {
         Swal.fire({
           icon: 'error',
