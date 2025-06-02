@@ -88,6 +88,7 @@
 
       filas.forEach(fila => {
         const codigo = fila.cells[0].innerText.trim();
+        const lote = fila.cells[5].innerText.trim();
         const stockReal = parseFloat(fila.cells[7].innerText.trim());
         const stockReservado = parseFloat(fila.cells[8].innerText.trim());
 
@@ -210,7 +211,8 @@
               stock_real: isNaN(stockReal) ? null : stockReal,
               stock_reservado: isNaN(stockReservado) ? null : stockReservado,
             })
-            .eq("codigo", codigo);
+            .eq("codigo", codigo)
+            .eq("lote", lote);
 
           if (!error) {
             cambiosRealizados++;
