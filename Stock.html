@@ -5,6 +5,7 @@
   <title>ClaroCorp+ || Stock Contratas</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -107,27 +108,24 @@
 <script>
 function descargarExcel() {
   const tabla = document.getElementById("tablaStock");
-  let csv = [];
 
+  // Crear una matriz de datos
+  const data = [];
   for (let fila of tabla.rows) {
-    let filaDatos = [];
+    const filaDatos = [];
     for (let celda of fila.cells) {
-      if (celda.querySelector("input")) {
-        filaDatos.push(celda.querySelector("input").value || ""); // obtiene valor del input
-      } else {
-        filaDatos.push(celda.innerText);
-      }
+      filaDatos.push(celda.innerText || celda.textContent);
     }
-    csv.push(filaDatos.join(","));
+    data.push(filaDatos);
   }
 
-  const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + csv.join("\n");
-  const link = document.createElement("a");
-  link.setAttribute("href", encodeURI(csvContent));
-  link.setAttribute("download", "Stock_ClaroCorp.csv");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  // Convertir a hoja de cálculo
+  const hoja = XLSX.utils.aoa_to_sheet(data);
+  const libro = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(libro, hoja, "Stock");
+
+  // Descargar como archivo .xlsx
+  XLSX.writeFile(libro, "Stock_ClaroCorp.xlsx");
 }
 </script>
 
