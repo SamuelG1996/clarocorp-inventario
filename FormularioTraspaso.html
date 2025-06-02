@@ -1,113 +1,97 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>ClaroCorp+ || Traspasos</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <title>ClaroCorp+ || Nueva Solicitud de Traspaso</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    table input, table select {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .tabla-datos {
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
-  <div class="sidebar">
-    <div>
-      <div class="logo">
-        <a href="Menu.html" style="text-decoration: none; color: inherit;">ClaroCorp+</a>
-      </div>
-      <div class="menu">
-        <a href="Stock.html"><i class="fas fa-box"></i> Stock Contrata</a>
-        <a href="#"><i class="fas fa-warehouse"></i> Stock Claro</a>
-        <a href="Traspaso.html" class="active"><i class="fas fa-sync-alt"></i> Traspasos</a>
-        <a href="#"><i class="fas fa-truck"></i> Compras</a>
-        <a href="#"><i class="fas fa-chart-bar"></i> Reportes</a>
-        <a href="Perfil.html"><i class="fas fa-user-tie"></i> Mi Perfil</a>
-        <a href="#"><i class="fas fa-gear"></i> Configuración</a>
-      </div>
-    </div>
-    <div class="logout">
-      <a href="index.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i></a>
-    </div>
-  </div>
-
   <div class="content">
-    <div class="encabezado-stock">
-      <h2><i class="fas fa-sync-alt"></i> Registrar Solicitud de Traspaso</h2>
+    <h2><i class="fas fa-sync-alt"></i> Nueva Solicitud de Traspaso</h2>
+
+    <div class="tabla-datos">
+      <table id="tablaSolicitud">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descripción</th>
+            <th>Cantidad</th>
+            <th>Lote</th>
+            <th>UMB</th>
+            <th>Almacén Origen</th>
+            <th>Centro Origen</th>
+            <th>Contrata que entrega</th>
+            <th>Almacén Destino</th>
+            <th>Centro Destino</th>
+            <th>Contrata que recibe</th>
+          </tr>
+        </thead>
+        <tbody id="tbodySolicitud">
+          <tr>
+            <td><input type="text" required></td>
+            <td><input type="text" required></td>
+            <td><input type="number" min="1" required></td>
+            <td><input type="text" required></td>
+            <td>
+              <select required>
+                <option value="">Seleccionar</option>
+                <option value="PZA">PZA</option>
+                <option value="MTRS">MTRS</option>
+              </select>
+            </td>
+            <td><input type="text" required></td>
+            <td><input type="text" required></td>
+            <td><input type="text" required></td>
+            <td><input type="text" required></td>
+            <td><input type="text" required></td>
+            <td><input type="text" required></td>
+          </tr>
+        </tbody>
+      </table>
+      <button onclick="agregarFila()"><i class="fas fa-plus-circle"></i> Agregar Fila</button>
     </div>
 
-    <form id="formTraspaso" class="formulario-traspaso">
-      <div class="form-row">
-        <label for="codigo">Código:</label>
-        <input type="text" id="codigo" name="codigo" required>
+    <div class="campos-unicos">
+      <label>Tipo de Material:<br><input type="text" id="tipoMaterial" required></label><br><br>
+      <label>Área Solicitante:<br><input type="text" id="areaSolicitante" required></label><br><br>
+      <label>Datos del Solicitante:<br><input type="text" id="datosSolicitante" required></label><br><br>
+      <label>Guía de Remisión (PDF, JPG, PNG):<br><input type="file" id="guiaRemision" accept=".pdf,.jpg,.jpeg,.png" required></label>
+    </div>
 
-        <label for="descripcion">Descripción:</label>
-        <input type="text" id="descripcion" name="descripcion" required>
-
-        <label for="cantidad">Cantidad:</label>
-        <input type="number" id="cantidad" name="cantidad" min="1" required>
-      </div>
-
-      <div class="form-row">
-        <label for="lote">Lote:</label>
-        <input type="text" id="lote" name="lote" required>
-
-        <label for="umb">UMB:</label>
-        <select id="umb" name="umb" required>
-          <option value="PZA">PZA</option>
-          <option value="MTRS">MTRS</option>
-        </select>
-      </div>
-
-      <div class="form-row">
-        <label for="almacen_origen">Almacén Origen:</label>
-        <input type="text" id="almacen_origen" name="almacen_origen" required>
-
-        <label for="centro_origen">Centro Origen:</label>
-        <input type="text" id="centro_origen" name="centro_origen" required>
-
-        <label for="contrata_origen">Contrata que entrega:</label>
-        <input type="text" id="contrata_origen" name="contrata_origen" required>
-      </div>
-
-      <div class="form-row">
-        <label for="almacen_destino">Almacén Destino:</label>
-        <input type="text" id="almacen_destino" name="almacen_destino" required>
-
-        <label for="centro_destino">Centro Destino:</label>
-        <input type="text" id="centro_destino" name="centro_destino" required>
-
-        <label for="contrata_destino">Contrata que recibe:</label>
-        <input type="text" id="contrata_destino" name="contrata_destino" required>
-      </div>
-
-      <div class="form-row">
-        <label for="guia_remision">Guía de Remisión (PDF/JPG/PNG, máx 10MB):</label>
-        <input type="file" id="guia_remision" name="guia_remision" accept=".pdf,.jpg,.jpeg,.png" required>
-      </div>
-
-      <div class="form-row">
-        <label for="tipo_material">Tipo de Material:</label>
-        <select id="tipo_material" name="tipo_material" required>
-          <option value="PINT">PINT</option>
-          <option value="PEXT">PEXT</option>
-        </select>
-
-        <label for="area_solicitante">Área Solicitante:</label>
-        <input type="text" id="area_solicitante" value="APROVISIONAMIENTO Y SOPORTE OPERATIVO" disabled>
-
-        <label for="datos_solicitante">Datos del Solicitante:</label>
-        <input type="text" id="datos_solicitante" value="CLAUDIA HENRIQUEZ" disabled>
-      </div>
-
-      <div class="form-row">
-        <button type="submit">Registrar Solicitud</button>
-        <button type="reset">Limpiar</button>
-      </div>
-    </form>
+    <button onclick="guardarSolicitud()"><i class="fas fa-save"></i> Guardar Solicitud</button>
   </div>
 
   <script>
-    function logout() {
+    function agregarFila() {
+      const tbody = document.getElementById('tbodySolicitud');
+      const row = tbody.rows[0].cloneNode(true);
+      row.querySelectorAll('input, select').forEach(input => input.value = '');
+      tbody.appendChild(row);
+    }
+
+    function guardarSolicitud() {
+      // Aquí se agregará la lógica para guardar los datos en Supabase o la BD elegida.
+      alert("Funcionalidad para guardar en base de datos aún no implementada.");
+    }
+
+        function logout() {
       localStorage.removeItem("codigo_usuario");
       window.location.href = "index.html";
     }
   </script>
 </body>
 </html>
+
+
+
+
