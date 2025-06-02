@@ -208,7 +208,9 @@ const supabaseClient = createClient(
     icon: 'success',
     title: 'Guardado',
     text: 'Cambios actualizados correctamente.',
-  });
+  }).then(() => {
+  location.reload();
+});
 }
     function logout() {
       localStorage.clear();
