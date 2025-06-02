@@ -114,7 +114,7 @@ const supabaseClient = createClient(
         return;
       }
 
-      const { data, error } = await supabaseClient
+      const {  data: updatedData, error: updateError } = await supabaseClient
         .from("usuarios")
         .select("*")
         .eq("codigo_usuario", codigo_usuario)
