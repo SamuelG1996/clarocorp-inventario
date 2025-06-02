@@ -76,11 +76,21 @@
 	}, 60000); // Verifica cada minuto
 
 	/*MENSAJE DE BIENVENIDA*/
+	function saludoPorHora() {
+	    const hora = new Date().getHours();
+	    if (hora >= 5 && hora < 12) return { saludo: "¡Buenos días!", emoji: "🌞" };
+	    if (hora >= 12 && hora < 19) return { saludo: "¡Buenas tardes!", emoji: "☕" };
+	    return { saludo: "¡Buenas noches!", emoji: "🌙" };
+	  }
+	
 	  const nombre = localStorage.getItem('nombres');
+	  const { saludo, emoji } = saludoPorHora();
+	
 	  if (nombre) {
-	    document.getElementById('saludo').textContent = `Bienvenido, ${nombre}`;
+	    document.getElementById('saludo').textContent = `${saludo} ${emoji} ${nombre}, ¡listo para trabajar juntos!`;
 	  }
 	 /*FIN DE MENSAJE DE BIENVENIDA*/ 
+	  
   </script>
   
 </body>
