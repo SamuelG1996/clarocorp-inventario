@@ -1,97 +1,145 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>ClaroCorp+ || Menu Principal</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css"> <!-- Tu archivo CSS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script>
-    const supabase = supabase.createClient('https://bsrtuievwjtzwejuxqee.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI');
-
-	document.addEventListener('DOMContentLoaded', () => {
-	  const usuario = localStorage.getItem('codigo_usuario');
-	  if (!usuario) {
-		window.location.href = 'index.html';
-	  }
-	});
-
-	function logout() {
-	  localStorage.clear(); // Limpia todo el almacenamiento local
-	  window.location.href = 'index.html';
-	}
-  </script>
+  <meta charset="UTF-8" />
+  <title>ClaroCorp+ || Nueva Solicitud de Traspaso</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    table input, table select {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .tabla-datos {
+      margin-bottom: 20px;
+    }
+    .volver {
+      display: inline-block;
+      margin: 15px 0;
+      text-decoration: none;
+      color: #007bff;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .volver i {
+      margin-right: 6px;
+    }
+  </style>
 </head>
 <body>
-
-  <div class="sidebar">
-    <div>
-      <div class="logo">
-  	<a href="Menu.html" style="text-decoration: none; color: inherit;">ClaroCorp+</a>
-      </div>
-      <div class="menu">
-        <a href="Stock.html"><i class="fas fa-box"></i> Stock Contrata</a>
-        <a href="#"><i class="fas fa-warehouse"></i> Stock Claro</a>
-        <a href="Traspaso.html"><i class="fas fa-sync-alt"></i> Traspasos</a>
-        <a href="#"><i class="fas fa-truck"></i> Compras</a>
-        <a href="#"><i class="fas fa-chart-bar"></i> Reportes</a>
-        <a href="Perfil.html"><i class="fas fa-user-tie"></i> Mi Perfil</a>
-        <a href="#"><i class="fas fa-gear"></i> Configuración</a>
-      </div>
-    </div>
-    <div class="logout">
-      <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i></a>
-    </div>
-  </div>
-
   <div class="content">
-    <div class="topbar">Comunicados</div>
-    <div class="main-content">
-        <p id="saludo"></p>
+    <a href="Traspasos.html" class="volver"><i class="fas fa-arrow-left"></i>Volver a Traspasos</a>
+
+    <h2><i class="fas fa-sync-alt"></i> Nueva Solicitud de Traspaso</h2>
+
+    <div class="tabla-datos">
+      <table id="tablaSolicitud">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descripción</th>
+            <th>Cantidad</th>
+            <th>Lote</th>
+            <th>UMB</th>
+            <th>Almacén Origen</th>
+            <th>Centro Origen</th>
+            <th>Contrata que entrega</th>
+            <th>Almacén Destino</th>
+            <th>Centro Destino</th>
+            <th>Contrata que recibe</th>
+          </tr>
+        </thead>
+        <tbody id="tbodySolicitud">
+          <tr>
+            <td><input type="text" required></td>
+            <td><input type="text" required></td>
+            <td><input type="number" min="1" required></td>
+            <td><input type="text" required></td>
+            <td>
+              <select required>
+                <option value="">Seleccionar</option>
+                <option value="PZA">PZA</option>
+                <option value="MTRS">MTRS</option>
+              </select>
+            </td>
+            <td><input type="text" required></td>
+            <td><input type="text" required></td>
+            <td><input type="text" required></td>
+            <td><input type="text" required></td>
+            <td><input type="text" required></td>
+            <td><input type="text" required></td>
+          </tr>
+        </tbody>
+      </table>
+      <button onclick="agregarFila()"><i class="fas fa-plus-circle"></i> Agregar Fila</button>
     </div>
+
+    <div class="campos-unicos">
+      <label>Tipo de Material:<br>
+      <select id="tipoMaterial" required>
+        <option value="">Seleccionar</option>
+        <option value="PINT">PINT</option>
+        <option value="PEXT">PEXT</option>
+      </select>
+      </label>
+     
+      <label>Área Solicitante:<br>
+      <input type="text" id="areaSolicitante" value="APROVISIONAMIENTO Y SOPORTE OPERATIVO" disabled required>
+      </label>
+      
+      <label>Datos del Solicitante:<br>
+      <input type="text" id="datosSolicitante" value="CLAUDIA HENRIQUEZ" disabled required>
+      </label>
+      
+      <label>Guía de Remisión (PDF, JPG, PNG):<br><input type="file" id="guiaRemision" accept=".pdf,.jpg,.jpeg,.png" required></label>
+    </div>
+
+    <button onclick="guardarSolicitud()"><i class="fas fa-save"></i> Guardar Solicitud</button>
   </div>
-  
+
   <script>
-	// RECARGA AL VOLVER A LA PESTAÑA
-	document.addEventListener("visibilitychange", () => {
-	  if (document.visibilityState === "visible") {
-		location.reload(); // Refresca automáticamente
-	  }
-	});
+    function agregarFila() {
+      const tbody = document.getElementById('tbodySolicitud');
+      const row = tbody.rows[0].cloneNode(true);
+      row.querySelectorAll('input, select').forEach(input => input.value = '');
+      tbody.appendChild(row);
+    }
 
-	// RECARGA AUTOMATICA SI HAY MAS DE 30 MINUTOS DE INACTIVIDAD
-	let lastActiveTime = Date.now();
+    function guardarSolicitud() {
+      const tipoMaterial = document.getElementById("tipoMaterial").value;
+      const areaSolicitante = document.getElementById("areaSolicitante").value;
+      const datosSolicitante = document.getElementById("datosSolicitante").value;
 
-	document.addEventListener("mousemove", () => lastActiveTime = Date.now());
-	document.addEventListener("keydown", () => lastActiveTime = Date.now());
+      const filas = document.querySelectorAll("#tablaSolicitud tbody tr");
 
-	setInterval(() => {
-	  const now = Date.now();
-	  const minutesInactive = (now - lastActiveTime) / 60000;
+      filas.forEach(fila => {
+        const datos = {
+          codigo: fila.cells[0].querySelector('input').value,
+          descripcion: fila.cells[1].querySelector('input').value,
+          cantidad: fila.cells[2].querySelector('input').value,
+          lote: fila.cells[3].querySelector('input').value,
+          umb: fila.cells[4].querySelector('select').value,
+          almacen_origen: fila.cells[5].querySelector('input').value,
+          centro_origen: fila.cells[6].querySelector('input').value,
+          contrata_entrega: fila.cells[7].querySelector('input').value,
+          almacen_destino: fila.cells[8].querySelector('input').value,
+          centro_destino: fila.cells[9].querySelector('input').value,
+          contrata_recibe: fila.cells[10].querySelector('input').value,
 
-	  if (minutesInactive > 30) {
-	  localStorage.removeItem('codigo_usuario');
-	  window.location.href = "index.html";
-	  }
-	}, 60000); // Verifica cada minuto
+          tipo_material: tipoMaterial,
+          area_solicitante: areaSolicitante,
+          datos_solicitante: datosSolicitante,
+        };
 
-	/*MENSAJE DE BIENVENIDA*/
-	function saludoPorHora() {
-	    const hora = new Date().getHours();
-	    if (hora >= 5 && hora < 12) return { saludo: "¡Buenos días!", emoji: "🌞" };
-	    if (hora >= 12 && hora < 19) return { saludo: "¡Buenas tardes!", emoji: "☕" };
-	    return { saludo: "¡Buenas noches!", emoji: "🌙" };
-	  }
-	
-	  const nombre = localStorage.getItem('nombres');
-	  const { saludo, emoji } = saludoPorHora();
-	
-	  if (nombre) {
-	    document.getElementById('saludo').textContent = `${saludo} ${emoji} ${nombre}, ¡Listos para trabajar juntos! 💻`;
-	  }
-	 /*FIN DE MENSAJE DE BIENVENIDA*/ 
-	  
+        console.log(datos); // Aquí luego haces insert a Supabase
+      });
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
   </script>
-  
 </body>
 </html>
+
