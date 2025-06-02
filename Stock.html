@@ -184,6 +184,22 @@
       });
     }
 
+// Escuchar mensaje desde el DOM (puente entre script normal y módulo ESM)
+window.addEventListener("message", async (event) => {
+  if (event.data?.type === "GUARDAR_DATOS_STOCK") {
+    const updates = event.data.payload;
+
+    const resultados = await Promise.all(
+      updates.map(async ({ codigo, stock_real, stock_reservado }) => {
+        return await supabase
+          .from("stock_contrata")
+          .update({ stock_real, stock_reservado })
+          .eq("codigo", codigo);
+      })
+    );
+
+    alert("Cambios guardados correctamente en Supabase.");
+    
     cargarStockContrata()
   </script>
 
