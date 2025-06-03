@@ -240,22 +240,24 @@ const fechaEditada = item.fecha_actualizacion
         let errores = [];
 
        for (const { codigo, centro, almacen, lote, stock_real, stock_reservado } of updates) {
-        const { error } = await supabase
-          .from("stock_contrata")
-           .update({ 
-            stock_real, 
-            stock_reservado, 
-            fecha_actualizacion: new Date().toISOString() 
-          })
-          .eq("codigo", codigo)
-          .eq("centro", centro)
-          .eq("almacen", almacen)
-          .eq("lote", lote);
+  const fecha_actualizacion = new Date().toISOString(); // cada fila genera su propio timestamp
 
-          if (error) {
-            errores.push(`Error con ${codigo} - ${lote}: ${error.message}`);
-          }
-        }
+  const { error } = await supabase
+    .from("stock_contrata")
+    .update({
+      stock_real,
+      stock_reservado,
+      fecha_actualizacion
+    })
+    .eq("codigo", codigo)
+    .eq("centro", centro)
+    .eq("almacen", almacen)
+    .eq("lote", lote);
+
+  if (error) {
+    errores.push(`Error con ${codigo} - ${lote}: ${error.message}`);
+  }
+}
 
       if (errores.length > 0) {
         Swal.fire({
