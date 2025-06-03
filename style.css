@@ -244,13 +244,14 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
-/* Centrado de los campos Stock y Reserva */
-td:nth-child(3),
-td:nth-child(4),
-td:nth-child(5),
-td:nth-child(8) input,
-td:nth-child(9) input,
-td:nth-child(10) {
+/* Centrado de columnas clave */
+td:nth-child(3),  /* Centro */
+td:nth-child(4),  /* Almacén */
+td:nth-child(5),  /* Cantidad */
+td:nth-child(8),  /* Empresa */
+td:nth-child(10), /* Stock físico */
+td:nth-child(11), /* Reservado */
+td:nth-child(12)  /* Disponible */ {
   text-align: center;
 }
 
