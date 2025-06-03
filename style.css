@@ -522,3 +522,40 @@ td:nth-child(2), th:nth-child(2) {
   font-size: 15px; /* o el tamaño que prefieras */
   padding: 6px 8px;
 }
+
+/* --- MENU SALUDO--- */
+body:not(.login-page) {
+  display: flex;
+  flex-direction: row;
+  background-color: #ecf0f1;
+  height: auto;
+  min-height: 100vh;
+  font-family: 'Arial', sans-serif;
+}
+
+.sidebar {
+  width: 220px;
+  background-color: #2c3e50;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.content {
+  flex: 1;
+  padding: 30px;
+  background-color: #f8f9fa;
+}
+
+.topbar {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+#saludo {
+  font-size: 18px;
+  color: #34495e;
+}
