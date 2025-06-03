@@ -313,10 +313,15 @@ td:nth-child(10) {
   background-color: #27ae60;
 }
 
+/* Centrado total del contenido editable (cursor incluido) */
 td[contenteditable="true"] {
-  text-align: center !important;
-  vertical-align: middle;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Asegura que tome el alto total de la celda */
+  padding: 0; /* Opcional: elimina espacios internos */
 }
+
 td:nth-child(10) {
   text-align: center;
 }
