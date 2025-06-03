@@ -40,6 +40,7 @@
       <div class="acciones-tabla">
         <button onclick="descargarExcel()">Descargar Excel</button>
         <button onclick="guardarCambios()">Grabar</button>
+         <button onclick="irASeries()">Ver Series</button>
       </div>
     </div>
 
@@ -295,6 +296,12 @@ const fechaEditada = item.fecha_actualizacion
         cargarStockContrata();
       }
     });
+
+function irASeries() {
+  window.location.href = "Series.html"; 
+}
+
+    
   </script>
 
 </body>
