@@ -57,7 +57,7 @@
             <th>Almacén</th>
             <th>Cantidad</th>
             <th>Lote</th>
-            <th>Actualización SAP</th>
+            <th>Fecha Actualización SAP</th>
             <th>Empresa</th>
             <th>Zona</th>
             <th>Stock físico</th>
@@ -143,9 +143,9 @@
     }
 
     function recalcularDisponibleDesdeTabla(fila) {
-      const stockTexto = fila.cells[7].innerText.trim();
-      const reservaTexto = fila.cells[8].innerText.trim();
-      const celdaDisponible = fila.cells[9];
+      const stockTexto = fila.cells[9].innerText.trim();
+      const reservaTexto = fila.cells[10].innerText.trim();
+      const celdaDisponible = fila.cells[11];
 
       const stock = parseFloat(stockTexto);
       const reserva = parseFloat(reservaTexto);
@@ -193,6 +193,14 @@
       }).replace(",", "")
     : "—";
 
+  //  Fecha de actualizacion
+const fechaEditada = item.fecha_actualizacion
+  ? new Date(item.fecha_actualizacion).toLocaleString("es-PE", {
+      day: "2-digit", month: "2-digit", year: "numeric",
+      hour: "2-digit", minute: "2-digit", hour12: false
+    }).replace(",", "")
+  : "—";
+       
   //  Inserta la fila con la columna de fechaSAP
  const fila = `
   <tr>
@@ -208,7 +216,7 @@
     <td contenteditable="true">${formatearNumero(item.stock_real ?? "")}</td>
     <td contenteditable="true">${formatearNumero(item.stock_reservado ?? "")}</td>
     <td>${formatearNumero(disponible)}</td>
-    <td>—</td> <!-- Fecha Data -->
+    <td>${fechaEditada}</td>
   </tr>
 `;
   tbody.insertAdjacentHTML("beforeend", fila);
@@ -234,7 +242,11 @@
        for (const { codigo, centro, almacen, lote, stock_real, stock_reservado } of updates) {
         const { error } = await supabase
           .from("stock_contrata")
-          .update({ stock_real, stock_reservado })
+           .update({ 
+            stock_real, 
+            stock_reservado, 
+            fecha_actualizacion: new Date().toISOString() 
+          })
           .eq("codigo", codigo)
           .eq("centro", centro)
           .eq("almacen", almacen)
