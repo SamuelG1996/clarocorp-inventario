@@ -7,7 +7,8 @@
   <link rel="stylesheet" href="style.css"> <!-- Tu archivo CSS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script>
-    const supabase = supabase.createClient('https://bsrtuievwjtzwejuxqee.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI');
+    const { createClient } = supabase;  
+    const supabaseClient = createClient('https://bsrtuievwjtzwejuxqee.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI');
 
 	document.addEventListener('DOMContentLoaded', () => {
 	  const usuario = localStorage.getItem('codigo_usuario');
@@ -90,7 +91,7 @@
 	    document.getElementById('saludo').textContent = `${saludo} ${emoji} ${nombre}, ¡Listos para trabajar juntos! 💻`;
 	  }
 	 /*FIN DE MENSAJE DE BIENVENIDA*/ 
-	/PRUEBA
+
   </script>
   
 </body>
