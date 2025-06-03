@@ -57,10 +57,13 @@
             <th>Almacén</th>
             <th>Cantidad</th>
             <th>Lote</th>
+            <th>Actualización SAP</th>
+            <th>Empresa</th>
             <th>Zona</th>
-            <th>Stock</th>
-            <th>Reserva</th>
+            <th>Stock físico</th>
+            <th>Reservado</th>
             <th>Disponible</th>
+            <th>Fecha Data</th>
           </tr>
         </thead>
         <tbody id="stock-body"></tbody>
@@ -93,14 +96,16 @@
 
       filas.forEach(fila => {
         const codigo = fila.cells[0].innerText.trim();
+        const centro = fila.cells[2].innerText.trim();
+        const almacen = fila.cells[3].innerText.trim();
         const lote = fila.cells[5].innerText.trim();
-        const stockReal = parseFloat(fila.cells[7].innerText.trim());
-        const stockReservado = parseFloat(fila.cells[8].innerText.trim());
+        const stockReal = parseFloat(fila.cells[9].innerText.trim());
+        const stockReservado = parseFloat(fila.cells[10].innerText.trim());
 
-        if (!isNaN(stockReal) || !isNaN(stockReservado)) {
-          updates.push({ codigo, lote, stock_real: stockReal, stock_reservado: stockReservado });
-        }
-      });
+    if (!isNaN(stockReal) || !isNaN(stockReservado)) {
+      updates.push({ codigo, centro, almacen, lote, stock_real: stockReal, stock_reservado: stockReservado });
+    }
+  });
 
       if (updates.length === 0) {
         alert("No hay cambios válidos para guardar.");
@@ -175,27 +180,39 @@
       const tbody = document.getElementById("stock-body");
       tbody.innerHTML = "";
 
-      data.forEach((item) => {
-        const disponible = item.stock_real != null && item.stock_reservado != null
-          ? item.stock_real - item.stock_reservado
-          : "No calculable";
+     data.forEach((item) => {
+  const disponible = item.stock_real != null && item.stock_reservado != null
+    ? item.stock_real - item.stock_reservado
+    : "No calculable";
 
-        const fila = `
-          <tr>
-            <td>${item.codigo}</td>
-            <td>${item.descripcion}</td>
-            <td>${item.centro}</td>
-            <td>${item.almacen}</td>
-            <td>${formatearNumero(item.cantidad_sap)}</td>
-            <td>${item.lote}</td>
-            <td>${item.zona}</td>
-            <td contenteditable="true">${formatearNumero(item.stock_real ?? "")}</td>
-            <td contenteditable="true">${formatearNumero(item.stock_reservado ?? "")}</td>
-            <td>${formatearNumero(disponible)}</td>
-          </tr>
-        `;
-        tbody.insertAdjacentHTML("beforeend", fila);
-      });
+  // Formatear fecha de carga SAP
+  const fechaSAP = item.fecha_carga_sap
+    ? new Date(item.fecha_carga_sap).toLocaleString("es-PE", {
+        day: "2-digit", month: "2-digit", year: "numeric",
+        hour: "2-digit", minute: "2-digit", hour12: false
+      }).replace(",", "")
+    : "—";
+
+  //  Inserta la fila con la columna de fechaSAP
+  const fila = `
+    <tr>
+      <td>${item.codigo}</td>
+      <td>${item.descripcion}</td>
+      <td>${item.centro}</td>
+      <td>${item.almacen}</td>
+      <td>${formatearNumero(item.cantidad_sap)}</td>
+      <td>${item.lote}</td>
+      <td>${item.zona}</td>
+      <td>${fechaSAP}</td> <!-- COLUMNA ACTUALIZACIÓN SAP -->
+      <td contenteditable="true">${formatearNumero(item.stock_real ?? "")}</td>
+      <td contenteditable="true">${formatearNumero(item.stock_reservado ?? "")}</td>
+      <td>${formatearNumero(disponible)}</td>
+      <td>—</td> <!-- Aquí irá fecha_actualizacion en una futura mejora -->
+    </tr>
+  `;
+
+  tbody.insertAdjacentHTML("beforeend", fila);
+});
 
       document.querySelectorAll('#stock-body td[contenteditable="true"]').forEach((celda) => {
         celda.addEventListener('input', () => {
@@ -214,12 +231,14 @@
         const updates = event.data.payload;
         let errores = [];
 
-        for (const { codigo, lote, stock_real, stock_reservado } of updates) {
-          const { error } = await supabase
-            .from("stock_contrata")
-            .update({ stock_real, stock_reservado })
-            .eq("codigo", codigo)
-            .eq("lote", lote);
+       for (const { codigo, centro, almacen, lote, stock_real, stock_reservado } of updates) {
+        const { error } = await supabase
+          .from("stock_contrata")
+          .update({ stock_real, stock_reservado })
+          .eq("codigo", codigo)
+          .eq("centro", centro)
+          .eq("almacen", almacen)
+          .eq("lote", lote);
 
           if (error) {
             errores.push(`Error con ${codigo} - ${lote}: ${error.message}`);
