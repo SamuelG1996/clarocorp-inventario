@@ -76,7 +76,7 @@ h2 {
 }
 
 .login-btn {
-  background-color: #2ecc71;
+  background-color: #11a24e;
   color: white;
   border: none;
   padding: 12px 24px;
@@ -87,7 +87,7 @@ h2 {
 }
 
 .login-btn:hover {
-  background-color: #27ae60;
+  background-color: #2ecc71;
 }
 
 .copyright {
