@@ -523,4 +523,7 @@ td:nth-child(2), th:nth-child(2) {
   padding: 6px 8px;
 }
 
-
+/* --- ESTILOS  PARA GRABAR DATOS EN MODULO STOCK CONTRATAS --- */
+.fila-editada {
+  background-color: #fff3cd !important; /* Amarillo claro */
+}
