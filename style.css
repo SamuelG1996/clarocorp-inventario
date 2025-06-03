@@ -537,3 +537,16 @@ td:nth-child(2), th:nth-child(2) {
 .fila-editada {
   background-color: #fff3cd !important; /* Amarillo claro */
 }
+
+/* --- ESTILOS  PARA EL SUBMODULO SERIES --- */
+.tabla-series-container {
+  max-height: 440px;
+  overflow-y: auto;
+  overflow-x: auto;
+  border: 1px solid #ccc;
+  padding: 8px;
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+
