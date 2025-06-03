@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Portal Gestión Inventario || Series FIFO</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="menu-page">
+
+  <div class="sidebar">
+    <div>
+      <div class="logo">
+        <a href="Menu.html" style="text-decoration: none; color: inherit;">PGI</a>
+      </div>
+      <div class="menu">
+        <a href="Stock.html"><i class="fas fa-box"></i> Stock Contrata</a>
+        <a href="#"><i class="fas fa-warehouse"></i> Stock Claro</a>
+        <a href="Traspaso.html"><i class="fas fa-sync-alt"></i> Traspasos</a>
+        <a href="#"><i class="fas fa-truck"></i> Compras</a>
+        <a href="#"><i class="fas fa-chart-bar"></i> Reportes</a>
+        <a href="Perfil.html"><i class="fas fa-user-tie"></i> Mi Perfil</a>
+        <a href="#"><i class="fas fa-gear"></i> Configuración</a>
+      </div>
+    </div>
+    <div class="logout">
+      <a href="index.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="encabezado-stock">
+      <h2><i class="fas fa-barcode"></i> Control de Series (FIFO)</h2>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Buscar por serie, código, lote..." onkeyup="filtrarTabla()">
+    </div>
+
+    <div class="tabla-contenedor">
+      <table id="tablaSeries">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descripción</th>
+            <th>N° Serie</th>
+            <th>Centro</th>
+            <th>Almacén</th>
+            <th>Lote</th>
+            <th>Empresa</th>
+            <th>Fecha Estado</th>
+            <th>Estado</th>
+            <th>Fecha de Actualización</th>
+            <th>Fecha de Carga</th>
+          </tr>
+        </thead>
+        <tbody id="series-body">
+          <!-- Contenido dinámico -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+
+    function filtrarTabla() {
+      const input = document.getElementById("searchInput").value.toLowerCase().trim();
+      const filtros = input.split(/\s+/);
+      const filas = document.querySelectorAll("#tablaSeries tbody tr");
+
+      filas.forEach(fila => {
+        const textoFila = Array.from(fila.cells).map(td => td.textContent.toLowerCase()).join(" ");
+        const coincide = filtros.every(f => textoFila.includes(f));
+        fila.style.display = coincide ? "" : "none";
+      });
+    }
+  </script>
+
+</body>
+</html>
