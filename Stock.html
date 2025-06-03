@@ -194,23 +194,23 @@
     : "—";
 
   //  Inserta la fila con la columna de fechaSAP
-  const fila = `
-    <tr>
-      <td>${item.codigo}</td>
-      <td>${item.descripcion}</td>
-      <td>${item.centro}</td>
-      <td>${item.almacen}</td>
-      <td>${formatearNumero(item.cantidad_sap)}</td>
-      <td>${item.lote}</td>
-      <td>${item.zona}</td>
-      <td>${fechaSAP}</td> <!-- COLUMNA ACTUALIZACIÓN SAP -->
-      <td contenteditable="true">${formatearNumero(item.stock_real ?? "")}</td>
-      <td contenteditable="true">${formatearNumero(item.stock_reservado ?? "")}</td>
-      <td>${formatearNumero(disponible)}</td>
-      <td>—</td> <!-- Aquí irá fecha_actualizacion en una futura mejora -->
-    </tr>
-  `;
-
+ const fila = `
+  <tr>
+    <td>${item.codigo}</td>
+    <td>${item.descripcion}</td>
+    <td>${item.centro}</td>
+    <td>${item.almacen}</td>
+    <td>${formatearNumero(item.cantidad_sap)}</td>
+    <td>${item.lote}</td>
+    <td>${fechaSAP}</td> <!-- Actualización SAP -->
+    <td>${item.empresa}</td>
+    <td>${item.zona}</td>
+    <td contenteditable="true">${formatearNumero(item.stock_real ?? "")}</td>
+    <td contenteditable="true">${formatearNumero(item.stock_reservado ?? "")}</td>
+    <td>${formatearNumero(disponible)}</td>
+    <td>—</td> <!-- Fecha Data -->
+  </tr>
+`;
   tbody.insertAdjacentHTML("beforeend", fila);
 });
 
