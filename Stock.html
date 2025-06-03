@@ -57,7 +57,7 @@
             <th>Almacén</th>
             <th>Cantidad</th>
             <th>Lote</th>
-            <th>Fecha Actualización SAP</th>
+            <th>Fecha SAP</th>
             <th>Empresa</th>
             <th>Zona</th>
             <th>Stock físico</th>
@@ -90,30 +90,43 @@
       });
     }
 
-    function guardarCambios() {
-      const filas = document.querySelectorAll("#stock-body tr");
-      const updates = [];
+   function guardarCambios() {
+  const filas = document.querySelectorAll("#stock-body tr");
+  const updates = [];
 
-      filas.forEach(fila => {
-        const codigo = fila.cells[0].innerText.trim();
-        const centro = fila.cells[2].innerText.trim();
-        const almacen = fila.cells[3].innerText.trim();
-        const lote = fila.cells[5].innerText.trim();
-        const stockReal = parseFloat(fila.cells[9].innerText.trim());
-        const stockReservado = parseFloat(fila.cells[10].innerText.trim());
+  filas.forEach(fila => {
+    const codigo = fila.cells[0].innerText.trim();
+    const centro = fila.cells[2].innerText.trim();
+    const almacen = fila.cells[3].innerText.trim();
+    const lote = fila.cells[5].innerText.trim();
 
-    if (!isNaN(stockReal) || !isNaN(stockReservado)) {
+    const celdaReal = fila.cells[9];
+    const celdaReservado = fila.cells[10];
+
+    const stockReal = parseFloat(celdaReal.innerText.trim());
+    const stockReservado = parseFloat(celdaReservado.innerText.trim());
+
+    const stockRealAnterior = parseFloat(celdaReal.getAttribute('data-anterior'));
+    const stockReservadoAnterior = parseFloat(celdaReservado.getAttribute('data-anterior'));
+
+    const cambioReal = stockReal !== stockRealAnterior;
+    const cambioReservado = stockReservado !== stockReservadoAnterior;
+
+    if ((cambioReal || cambioReservado) && (!isNaN(stockReal) || !isNaN(stockReservado))) {
       updates.push({ codigo, centro, almacen, lote, stock_real: stockReal, stock_reservado: stockReservado });
+      fila.classList.add('fila-editada');
     }
+
+
   });
 
-      if (updates.length === 0) {
-        alert("No hay cambios válidos para guardar.");
-        return;
-      }
+  if (updates.length === 0) {
+    alert("No hay cambios válidos para guardar.");
+    return;
+  }
 
-      window.postMessage({ type: "GUARDAR_DATOS_STOCK", payload: updates }, "*");
-    }
+  window.postMessage({ type: "GUARDAR_DATOS_STOCK", payload: updates }, "*");
+}
 
     function descargarExcel() {
       const tabla = document.getElementById("tablaStock");
@@ -213,8 +226,8 @@ const fechaEditada = item.fecha_actualizacion
     <td>${fechaSAP}</td> <!-- Actualización SAP -->
     <td>${item.empresa}</td>
     <td>${item.zona}</td>
-    <td contenteditable="true">${formatearNumero(item.stock_real ?? "")}</td>
-    <td contenteditable="true">${formatearNumero(item.stock_reservado ?? "")}</td>
+ <td contenteditable="true" data-anterior="${item.stock_real ?? ""}">${formatearNumero(item.stock_real ?? "")}</td>
+<td contenteditable="true" data-anterior="${item.stock_reservado ?? ""}">${formatearNumero(item.stock_reservado ?? "")}</td>
     <td>${formatearNumero(disponible)}</td>
     <td>${fechaEditada}</td>
   </tr>
