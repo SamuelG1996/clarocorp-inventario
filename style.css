@@ -315,10 +315,13 @@ td:nth-child(10) {
 
 /* Centrado total del contenido editable (cursor incluido) */
 td[contenteditable="true"] {
-  text-align: center;
   vertical-align: middle;
   padding: 6px; /* Puedes ajustar esto para que no se vea pegado */
   line-height: 1.5;
+}
+
+td[contenteditable="true"]:empty::before {
+  content: "\200B"; /* espacio invisible */
 }
 
 td:nth-child(10) {
