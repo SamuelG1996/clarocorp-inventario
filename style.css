@@ -315,11 +315,10 @@ td:nth-child(10) {
 
 /* Centrado total del contenido editable (cursor incluido) */
 td[contenteditable="true"] {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%; /* Asegura que tome el alto total de la celda */
-  padding: 0; /* Opcional: elimina espacios internos */
+  text-align: center;
+  vertical-align: middle;
+  padding: 6px; /* Puedes ajustar esto para que no se vea pegado */
+  line-height: 1.5;
 }
 
 td:nth-child(10) {
