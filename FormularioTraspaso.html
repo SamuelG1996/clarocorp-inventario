@@ -79,6 +79,7 @@
   </div>
 
   <script>
+    
     function agregarFila() {
       const tbody = document.getElementById('tbodySolicitud');
       const row = tbody.rows[0].cloneNode(true);
@@ -142,8 +143,16 @@
       localStorage.clear();
       window.location.href = "index.html";
     }
-  </script>
 
+  </script>
+  
+ <script>
+  document.querySelectorAll('#tablaSolicitud input[type="text"]').forEach(input => {
+  input.addEventListener('input', function () {
+    this.value = this.value.toUpperCase();
+  });
+});
+ </script>
   <script src="Js/Sesion.js"></script>
 </body>
 </html>
