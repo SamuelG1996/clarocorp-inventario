@@ -55,14 +55,22 @@
 	if (error || !data) {
 		    document.getElementById("loader").style.display = "none"; // Oculta loader primero
 		Swal.fire({
-  icon: 'error',
-  title: 'Acceso Denegado',
-  text: 'Código de usuario o contraseña incorrectos',
-  background: '#1a1a1a',
-  color: '#fff',
-  confirmButtonColor: '#e74c3c',
-  width: '300px', // ya no '25%', sino un valor claro
-});
+		  icon: 'error',
+		  title: '<strong>Acceso Denegado</strong>',
+		  html: '<small>Código de usuario o contraseña<br>incorrectos</small>',
+		  background: '#202b38',
+		  color: '#ffffff',
+		  iconColor: '#e74c3c',
+		  confirmButtonColor: '#e74c3c',
+		  confirmButtonText: 'Entendido',
+		  width: '320px',
+		  padding: '1.5em',
+		  customClass: {
+		    title: 'swal2-title-custom',
+		    popup: 'swal2-popup-clean',
+		    confirmButton: 'swal2-btn-rounded'
+		  }
+		});
 
 		return;
 		
