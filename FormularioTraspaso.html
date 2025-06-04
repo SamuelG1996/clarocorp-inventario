@@ -53,6 +53,7 @@
       <button onclick="agregarFila()"><i class="fas fa-plus-circle"></i> Agregar Fila</button>
       <button onclick="eliminarFila()"><i class="fas fa-minus-circle"></i> Eliminar Fila</button>
       <button onclick="descargarPlantillaExcel()"><i class="fas fa-file-excel"></i> Descargar Plantilla</button>
+      <input type="file" id="archivoExcel" accept=".xlsx" onchange="cargarDesdeExcel()" style="margin-top:10px;">
       </div>
     </div>
 
@@ -151,6 +152,8 @@
       });
     }
 
+    
+
     function logout() {
       localStorage.clear();
       window.location.href = "index.html";
@@ -165,7 +168,92 @@
   });
 });
  </script>
-  <script src="Js/Sesion.js"></script>
+  
+<script>
+function cargarDesdeExcel() {
+  const input = document.getElementById('archivoExcel');
+  const file = input.files[0];
+
+  if (!file || !file.name.endsWith(".xlsx")) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Archivo inválido',
+      text: 'Solo se permiten archivos con extensión .xlsx',
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#e74c3c'
+    });
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: 'array' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const filas = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+    // Validar columnas
+    if (filas[0].length !== 12) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Formato incorrecto',
+        text: 'La plantilla debe tener exactamente 12 columnas.',
+        toast: true,
+        position: 'bottom-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#1e2022',
+        color: '#ffffff',
+        iconColor: '#f1c40f'
+      });
+      return;
+    }
+
+    // Limpiar tabla y dejar solo 1 fila base
+    const tbody = document.getElementById('tbodySolicitud');
+    while (tbody.rows.length > 1) {
+      tbody.deleteRow(1);
+    }
+
+    // Iterar desde fila 1 (fila 0 es cabecera)
+    for (let i = 1; i < filas.length; i++) {
+      const datosFila = filas[i];
+
+      // Agregar fila si es necesario
+      if (i > 1) agregarFila();
+
+      const filaActual = tbody.rows[i - 1].querySelectorAll("input");
+      datosFila.forEach((valor, j) => {
+        if (filaActual[j]) filaActual[j].value = valor?.toString().toUpperCase();
+      });
+    }
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Plantilla cargada',
+      text: 'Los campos han sido llenados correctamente.',
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#2ecc71'
+    });
+  };
+
+  reader.readAsArrayBuffer(file);
+}
+</script>
+<script src="Js/Sesion.js"></script>
 </body>
 </html>
 
