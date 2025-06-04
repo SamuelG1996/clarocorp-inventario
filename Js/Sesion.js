@@ -7,7 +7,7 @@ const ENABLE_AUTO_RELOAD_ON_RETURN = !excludedPages.some(page =>
 );
 
 // Tiempo máximo de inactividad en minutos
-const INACTIVITY_TIMEOUT_MINUTES = 30;
+const INACTIVITY_TIMEOUT_MINUTES = 0.1;
 
 // Recarga al volver a la pestaña (si está habilitado)
 if (ENABLE_AUTO_RELOAD_ON_RETURN) {
@@ -29,7 +29,7 @@ setInterval(() => {
   const minutesInactive = (now - lastActiveTime) / 60000;
 
   if (minutesInactive > INACTIVITY_TIMEOUT_MINUTES) {
-    localStorage.removeItem('codigo_usuario');
+    localStorage.clear();
     window.location.href = "index.html";
   }
 }, 60000); // Verifica cada minuto
