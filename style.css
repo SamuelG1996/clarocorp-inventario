@@ -540,10 +540,9 @@ td:nth-child(2), th:nth-child(2) {
 
 /* --- ESTILOS  PARA EL SUBMODULO SERIES --- */
 .tabla-series-container {
-  max-width: 60%;
+ width: 90%;
+  margin: 0 auto;
   overflow-x: auto;
-  margin-left: 5%;
-  margin-right: auto;
   background-color: #fff;
   padding: 8px;
   border-radius: 8px;
@@ -553,8 +552,9 @@ td:nth-child(2), th:nth-child(2) {
 }
 
 body.menu-page .search-bar input {
-  max-width: 60%;
-  margin-left: 5%;
+  width: 90%;
+  margin: 0 auto;
+  display: block;
 }
 
 .encabezado-series {
