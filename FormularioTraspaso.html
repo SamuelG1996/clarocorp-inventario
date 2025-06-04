@@ -67,6 +67,7 @@
       </table>
       <div class="acciones-tabla">
       <button onclick="agregarFila()"><i class="fas fa-plus-circle"></i> Agregar Fila</button>
+      <button onclick="eliminarFila()"><i class="fas fa-minus-circle"></i> Eliminar Fila</button>
       </div>
     </div>
 
@@ -101,6 +102,28 @@
       row.querySelectorAll('input, select').forEach(input => input.value = '');
       tbody.appendChild(row);
     }
+
+    function eliminarFila() {
+    const tbody = document.getElementById('tbodySolicitud');
+    const filas = tbody.getElementsByTagName('tr');
+    if (filas.length > 1) {
+      tbody.removeChild(filas[filas.length - 1]);
+    } else {
+          Swal.fire({
+      icon: 'info',
+      title: 'No se puede eliminar',
+      text: 'Debe haber al menos una fila en la tabla.',
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
+    });
+    }
+  }
 
     function guardarSolicitud() {
       const tipoMaterial = document.getElementById("tipoMaterial").value;
