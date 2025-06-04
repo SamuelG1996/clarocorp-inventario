@@ -275,12 +275,36 @@ function guardarSolicitud() {
 
   // Validación de campos únicos
   if (!tipoMaterial) {
-    Swal.fire({ icon: 'warning', title: 'Tipo de material requerido', toast: true, position: 'bottom-end', timer: 3000 });
+    Swal.fire({
+      icon: 'info',
+      title: 'Tipo de material requerido',
+      text: 'Debe seleccionar un tipo de material.',
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
+    });
     return;
   }
 
   if (!archivo) {
-    Swal.fire({ icon: 'warning', title: 'Debe adjuntar la guía de remisión', toast: true, position: 'bottom-end', timer: 3000 });
+    Swal.fire({
+      icon: 'info',
+      title: 'Debe adjuntar la guía de remisión',
+      text: 'El campo guía es obligatorio (PDF, JPG, PNG).',
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
+    });
     return;
   }
 
@@ -293,7 +317,19 @@ function guardarSolicitud() {
       const valor = input.value.trim();
 
       if (!valor) {
-        Swal.fire({ icon: 'warning', title: 'Todos los campos de la tabla son obligatorios', toast: true, position: 'bottom-end', timer: 3000 });
+        Swal.fire({
+          icon: 'info',
+          title: 'Campos incompletos',
+          text: 'Todos los campos de la tabla son obligatorios.',
+          toast: true,
+          position: 'bottom-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          background: '#1e2022',
+          color: '#ffffff',
+          iconColor: '#f39c12'
+        });
         return;
       }
 
@@ -302,12 +338,17 @@ function guardarSolicitud() {
         const cantidad = Number(valor);
         if (isNaN(cantidad) || cantidad <= 0) {
           Swal.fire({
-            icon: 'error',
+            icon: 'info',
             title: 'Cantidad inválida',
-            text: 'Debe ser un número mayor a 0',
+            text: 'Debe ingresar un número mayor a 0.',
             toast: true,
             position: 'bottom-end',
-            timer: 3000
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            background: '#1e2022',
+            color: '#ffffff',
+            iconColor: '#f39c12'
           });
           return;
         }
@@ -350,6 +391,7 @@ function guardarSolicitud() {
     position: 'bottom-end',
     showConfirmButton: false,
     timer: 3000,
+    timerProgressBar: true,
     background: '#1e2022',
     color: '#ffffff',
     iconColor: '#2ecc71'
@@ -358,7 +400,6 @@ function guardarSolicitud() {
   setTimeout(() => window.location.href = "Traspaso.html", 1000);
 }
 </script>
-
   
 <script src="Js/Sesion.js"></script>
 </body>
