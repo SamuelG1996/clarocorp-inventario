@@ -618,6 +618,7 @@ body.menu-page .search-bar input {
   flex-direction: column;
   gap: 16px;
   margin-top: 20px;
+  margin-bottom: 20px;
   max-width: 500px; /* Opcional, para evitar que se estire demasiado */
 }
 
@@ -629,9 +630,9 @@ body.menu-page .search-bar input {
 }
 .campos-unicos input,
 .campos-unicos select {
-  width: 100%;
+  width: 70%;
   padding: 6px;
-  font-size: 14px;
+  font-size: 12px;
   border-radius: 4px;
   border: 1px solid #ccc;
 }
