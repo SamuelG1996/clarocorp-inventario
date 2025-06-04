@@ -268,58 +268,97 @@ function cargarDesdeExcel() {
 </script>
 
 <script>
-  function guardarSolicitud() {
-    const tipoMaterial = document.getElementById("tipoMaterial").value;
-    const areaSolicitante = document.getElementById("areaSolicitante").value;
-    const datosSolicitante = document.getElementById("datosSolicitante").value;
+function guardarSolicitud() {
+  const tipoMaterial = document.getElementById("tipoMaterial").value;
+  const archivo = document.getElementById("guiaRemision").files[0];
+  const filas = document.querySelectorAll("#tablaSolicitud tbody tr");
 
-    const filas = document.querySelectorAll("#tablaSolicitud tbody tr");
-
-    let contador = parseInt(localStorage.getItem("contadorTraspasos") || "0") + 1;
-    localStorage.setItem("contadorTraspasos", contador);
-
-    const idSolicitud = `ID-${contador.toString().padStart(5, '0')}`;
-    const fechaActual = new Date().toLocaleString('es-PE');
-
-    const solicitudes = JSON.parse(localStorage.getItem("traspasos") || "[]");
-
-    const contrataSolicitante = localStorage.getItem("empresa") || "No definida";
-    const usuarioSolicitante = localStorage.getItem("nombres") || "Anónimo";
-    const responsableNombre = "Samuel Guardia";
-    const responsableCodigo = "C0000125";
-
-    const nuevaSolicitud = {
-      id: idSolicitud,
-      contrata: contrataSolicitante,
-      solicitante: usuarioSolicitante,
-      fecha_registro: fechaActual,
-      fecha_estado: fechaActual,
-      responsable_nombre: responsableNombre,
-      responsable_codigo: responsableCodigo,
-      estado: "Pendiente"
-    };
-
-    solicitudes.push(nuevaSolicitud);
-    localStorage.setItem("traspasos", JSON.stringify(solicitudes));
-
-    Swal.fire({
-      icon: 'success',
-      title: `Solicitud registrada`,
-      text: `${idSolicitud} fue generada exitosamente.`,
-      toast: true,
-      position: 'bottom-end',
-      showConfirmButton: false,
-      timer: 3000,
-      background: '#1e2022',
-      color: '#ffffff',
-      iconColor: '#2ecc71'
-    });
-
-    // Aquí puedes después hacer un insert en Supabase si deseas
-
-    setTimeout(() => window.location.href = "Traspaso.html", 1000);
+  // Validación de campos únicos
+  if (!tipoMaterial) {
+    Swal.fire({ icon: 'warning', title: 'Tipo de material requerido', toast: true, position: 'bottom-end', timer: 3000 });
+    return;
   }
+
+  if (!archivo) {
+    Swal.fire({ icon: 'warning', title: 'Debe adjuntar la guía de remisión', toast: true, position: 'bottom-end', timer: 3000 });
+    return;
+  }
+
+  // Validar que todos los campos estén llenos y cantidad válida
+  for (let fila of filas) {
+    const inputs = fila.querySelectorAll("input");
+
+    for (let i = 0; i < inputs.length; i++) {
+      const input = inputs[i];
+      const valor = input.value.trim();
+
+      if (!valor) {
+        Swal.fire({ icon: 'warning', title: 'Todos los campos de la tabla son obligatorios', toast: true, position: 'bottom-end', timer: 3000 });
+        return;
+      }
+
+      // Validar campo cantidad (índice 2)
+      if (i === 2) {
+        const cantidad = Number(valor);
+        if (isNaN(cantidad) || cantidad <= 0) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Cantidad inválida',
+            text: 'Debe ser un número mayor a 0',
+            toast: true,
+            position: 'bottom-end',
+            timer: 3000
+          });
+          return;
+        }
+      }
+    }
+  }
+
+  // Datos generales
+  const contador = parseInt(localStorage.getItem("contadorTraspasos") || "0") + 1;
+  localStorage.setItem("contadorTraspasos", contador);
+  const idSolicitud = `ID-${contador.toString().padStart(5, '0')}`;
+  const fechaActual = new Date().toLocaleString('es-PE');
+
+  const contrataSolicitante = localStorage.getItem("empresa") || "No definida";
+  const usuarioSolicitante = localStorage.getItem("nombres") || "Anónimo";
+  const responsableNombre = "Samuel Guardia";
+  const responsableCodigo = "C0000125";
+
+  const solicitudes = JSON.parse(localStorage.getItem("traspasos") || "[]");
+
+  const nuevaSolicitud = {
+    id: idSolicitud,
+    contrata: contrataSolicitante,
+    solicitante: usuarioSolicitante,
+    fecha_registro: fechaActual,
+    fecha_estado: fechaActual,
+    responsable_nombre: responsableNombre,
+    responsable_codigo: responsableCodigo,
+    estado: "Pendiente"
+  };
+
+  solicitudes.push(nuevaSolicitud);
+  localStorage.setItem("traspasos", JSON.stringify(solicitudes));
+
+  Swal.fire({
+    icon: 'success',
+    title: `Solicitud registrada`,
+    text: `${idSolicitud} fue generada exitosamente.`,
+    toast: true,
+    position: 'bottom-end',
+    showConfirmButton: false,
+    timer: 3000,
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#2ecc71'
+  });
+
+  setTimeout(() => window.location.href = "Traspaso.html", 1000);
+}
 </script>
+
   
 <script src="Js/Sesion.js"></script>
 </body>
