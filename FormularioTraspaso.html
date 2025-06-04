@@ -55,13 +55,7 @@
             <td><input type="text" required></td>
             <td><input type="number" min="1" required></td>
             <td><input type="text" required></td>
-            <td>
-              <select required>
-                <option value="">Seleccionar</option>
-                <option value="PZA">PZA</option>
-                <option value="MTRS">MTRS</option>
-              </select>
-            </td>
+            <td><input type="text" required></td>
             <td><input type="text" required></td>
             <td><input type="text" required></td>
             <td><input type="text" required></td>
@@ -71,7 +65,9 @@
           </tr>
         </tbody>
       </table>
+      <div class="acciones-tabla">
       <button onclick="agregarFila()"><i class="fas fa-plus-circle"></i> Agregar Fila</button>
+      </div>
     </div>
 
     <div class="campos-unicos">
@@ -93,8 +89,9 @@
       
       <label>Guía de Remisión (PDF, JPG, PNG):<br><input type="file" id="guiaRemision" accept=".pdf,.jpg,.jpeg,.png" required></label>
     </div>
-
-    <button onclick="guardarSolicitud()"><i class="fas fa-save"></i> Guardar Solicitud</button>
+    <div class="acciones-tabla">
+    <button onclick="guardarSolicitud()"><i class="fas fa-save"></i> Generar Solicitud</button>
+    </div>
   </div>
 
   <script>
