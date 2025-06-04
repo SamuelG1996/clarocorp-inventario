@@ -8,7 +8,8 @@
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-<body class="login-page">	
+<body class="login-page">
+
 	<div class="login-container">
 	<h2></h2>
 	<form onsubmit="login(event)">
@@ -27,6 +28,9 @@
 		</div>
 	</form>
 	</div>
+	<div id="loader" class="loader-overlay" style="display: none;">
+	<div class="spinner"></div>
+	</div>
 
 	<div class="copyright">© 2025 ClaroCorp+ | Desarrollado por Samuel Guardia</div>
 
@@ -37,6 +41,7 @@
 
 	async function login(event) {
 	  event.preventDefault();
+	  document.getElementById('loader').style.display = 'flex';
 	  const codigo = document.querySelector('input[name="codigo"]').value.trim().toUpperCase();
 	  const password = document.querySelector('input[name="contrasena"]').value.trim();
 
@@ -66,9 +71,11 @@
 			icon: 'swal2-icon-compact',
 			confirmButton: 'swal2-btn-sm'
 		  }
+			
 		});
 
 		return;
+		
 	  }
 		localStorage.setItem('codigo_usuario', data.codigo_usuario);
 		localStorage.setItem('nombres', data.nombre);
@@ -77,7 +84,7 @@
 		localStorage.setItem('rol', data.rol);
 		localStorage.setItem('empresa', data.empresa);
 		window.location.href = "Menu.html";
-		
+		document.getElementById('loader').style.display = 'none';
 	}
 	function togglePassword() {
 	  const pass = document.getElementById("pass");
@@ -119,6 +126,15 @@
 	  }
 	}, 60000); // Revisa cada 1 minuto
 </script>
+
+<script>
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+    }, 300); // Espera breve para evitar flashes incómodos
+  });
+</script>
+	
 
 </body>
 </html>
