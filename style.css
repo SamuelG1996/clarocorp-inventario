@@ -616,3 +616,37 @@ body.menu-page .search-bar input {
   min-width: 100%;
   border-collapse: collapse;
 }
+
+/* === AJUSTE VISUAL EXCLUSIVO PARA MÓDULO SERIES === */
+.content-series {
+  width: 98%;
+  margin: auto;
+  padding: 20px;
+  background-color: white;
+  color: black;
+  box-sizing: border-box;
+}
+
+/* Alineación interna */
+.content-series .encabezado-stock,
+.content-series .search-bar,
+.content-series .tabla-scroll {
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Tabla con scroll horizontal contenido */
+.tabla-scroll {
+  width: 100%;
+  overflow-x: auto;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  max-width: 100%;
+}
+
+.tabla-scroll table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+}
