@@ -6,6 +6,7 @@ body.login-page {
   background-color: #1a2b3c;
   display: flex;
   justify-content: center;
+  align-items: center; /* 👈 esta línea es la clave */
   height: 100vh;
 }
 
