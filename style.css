@@ -683,8 +683,8 @@ table select {
 
 #tablaSolicitud th:nth-child(5),
 #tablaSolicitud td:nth-child(5) { /* Lote */
-  min-width: 80px;
-  width: 8%;
+  min-width: 120px;
+  width: 10%;
 }
 
 #tablaSolicitud th:nth-child(6),
@@ -695,14 +695,14 @@ table select {
 
 #tablaSolicitud th:nth-child(7),
 #tablaSolicitud td:nth-child(7) { /* Almacén Origen */
-  min-width: 80px;
-  width: 8%;
+  min-width: 70px;
+  width: 7%;
 }
 
 #tablaSolicitud th:nth-child(8),
 #tablaSolicitud td:nth-child(8) { /* Centro Origen */
-  min-width: 80px;
-  width: 8%;
+  min-width: 70px;
+  width: 7%;
 }
 
 #tablaSolicitud th:nth-child(9),
@@ -713,14 +713,14 @@ table select {
 
 #tablaSolicitud th:nth-child(10),
 #tablaSolicitud td:nth-child(10) { /* Almacén Destino */
-  min-width: 80px;
-  width: 8%;
+  min-width: 70px;
+  width: 7%;
 }
 
 #tablaSolicitud th:nth-child(11),
 #tablaSolicitud td:nth-child(11) { /* Centro Destino */
-  min-width: 80px;
-  width: 8%;
+  min-width: 70px;
+  width: 7%;
 }
 
 #tablaSolicitud th:nth-child(12),
