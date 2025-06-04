@@ -53,7 +53,10 @@
       <button onclick="agregarFila()"><i class="fas fa-plus-circle"></i> Agregar Fila</button>
       <button onclick="eliminarFila()"><i class="fas fa-minus-circle"></i> Eliminar Fila</button>
       <button onclick="descargarPlantillaExcel()"><i class="fas fa-file-excel"></i> Descargar Plantilla</button>
-      <input type="file" id="archivoExcel" accept=".xlsx" onchange="cargarDesdeExcel()" style="margin-top:10px;">
+      <button onclick="document.getElementById('archivoExcel').click()">
+        <i class="fas fa-upload"></i> Cargar Plantilla
+        </button>
+      <input type="file" id="archivoExcel" accept=".xlsx" onchange="cargarDesdeExcel()" style="display: none;">
       </div>
     </div>
 
@@ -83,12 +86,22 @@
 
   <script>
     
-    function agregarFila() {
-      const tbody = document.getElementById('tbodySolicitud');
-      const row = tbody.rows[0].cloneNode(true);
-      row.querySelectorAll('input, select').forEach(input => input.value = '');
-      tbody.appendChild(row);
-    }
+function agregarFila() {
+  const tbody = document.getElementById('tbodySolicitud');
+  const row = tbody.rows[0].cloneNode(true);
+  
+  // Limpia todos los campos
+  row.querySelectorAll('input, select').forEach(input => input.value = '');
+
+  // Agrega el evento para convertir texto a mayúsculas en inputs de texto
+  row.querySelectorAll('input[type="text"]').forEach(input => {
+    input.addEventListener('input', function () {
+      this.value = this.value.toUpperCase();
+    });
+  });
+
+  tbody.appendChild(row);
+}
 
     function eliminarFila() {
     const tbody = document.getElementById('tbodySolicitud');
