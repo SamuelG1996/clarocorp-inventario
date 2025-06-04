@@ -739,8 +739,8 @@ table select {
 
 /* ---  ESTILOS PARA EL MODULO DE TRASPASOS --- */
 #tablaTraspasos td {
-  font-family: "Segoe UI", sans-serif;
-  font-size: 15px;
+  font-family: 'Arial', sans-serif;
+  font-size: 12px;
   font-weight: 400;
   color: #333;
 }
