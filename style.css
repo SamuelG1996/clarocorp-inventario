@@ -657,4 +657,70 @@ table select {
   margin-right: 6px;
 }
 
+#tablaSolicitud th:nth-child(1),
+#tablaSolicitud td:nth-child(1) { /* Código */
+  min-width: 70px;
+  width: 8%;
+}
+
+#tablaSolicitud th:nth-child(2),
+#tablaSolicitud td:nth-child(2) { /* Descripción */
+  min-width: 130px;
+  width: 12%;
+}
+
+#tablaSolicitud th:nth-child(3),
+#tablaSolicitud td:nth-child(3) { /* Cantidad */
+  min-width: 60px;
+  width: 6%;
+}
+
+#tablaSolicitud th:nth-child(4),
+#tablaSolicitud td:nth-child(4) { /* Serie */
+  min-width: 130px;
+  width: 11%;
+}
+
+#tablaSolicitud th:nth-child(5),
+#tablaSolicitud td:nth-child(5) { /* Lote */
+  min-width: 80px;
+  width: 8%;
+}
+
+#tablaSolicitud th:nth-child(6),
+#tablaSolicitud td:nth-child(6) { /* UMB */
+  min-width: 50px;
+  width: 5%;
+}
+
+#tablaSolicitud th:nth-child(7),
+#tablaSolicitud td:nth-child(7) { /* Almacén Origen */
+  min-width: 90px;
+  width: 9%;
+}
+
+#tablaSolicitud th:nth-child(8),
+#tablaSolicitud td:nth-child(8) { /* Centro Origen */
+  min-width: 90px;
+  width: 9%;
+}
+
+#tablaSolicitud th:nth-child(9),
+#tablaSolicitud td:nth-child(9) { /* Contrata que entrega */
+  min-width: 110px;
+  width: 10%;
+}
+
+#tablaSolicitud th:nth-child(10),
+#tablaSolicitud td:nth-child(10) { /* Almacén Destino */
+  min-width: 90px;
+  width: 9%;
+}
+
+#tablaSolicitud th:nth-child(11),
+#tablaSolicitud td:nth-child(11) { /* Centro Destino */
+  min-width: 90px;
+  width: 9%;
+}
+
 /* --- FIN ESTILOS  PARA EL SUBMODULO FORMULARIO DE TRASPASOS --- */
