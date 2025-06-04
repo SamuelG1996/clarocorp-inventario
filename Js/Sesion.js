@@ -32,4 +32,4 @@ setInterval(() => {
     localStorage.clear();
     window.location.href = "index.html";
   }
-}, 60000); // Verifica cada minuto
+}, 1000); // Verifica cada minuto
