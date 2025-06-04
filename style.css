@@ -340,6 +340,7 @@ td:nth-child(2), th:nth-child(2) {
   background: rgba(255, 255, 255, 0.7);
   display: flex;
   justify-content: center;
+  align-items: center; /* ESTA LÍNEA CENTRA VERTICALMENTE */
   z-index: 9999;
 }
 
