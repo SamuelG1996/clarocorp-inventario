@@ -20,7 +20,7 @@
 		<div class="input-group">
 		<img alt="lock" class="icon-left" src="https://cdn-icons-png.flaticon.com/512/3064/3064155.png"/>
 		<input id="pass" name="contrasena" placeholder="Contraseña" required="" type="password"/>
-		<img alt="toggle" class="icon-right" id="eye-icon" onclick="togglePassword()" src="https://cdn-icons-png.flaticon.com/512/159/159604.png"/>
+		<img alt="Ver contraseña" class="icon-right" id="eye-icon" onclick="togglePassword()" src="https://cdn-icons-png.flaticon.com/512/159/159604.png"/>
 		</div>
 		<div class="options" style="display: flex; justify-content: space-between; align-items: center;">
 		<label><input type="checkbox"/> Recordarme</label>
@@ -52,7 +52,7 @@
 	  .eq('contrasena', password)
 	  .single();
 	
-	if (error || !data) {
+	if (!data) {
 		    document.getElementById("loader").style.display = "none"; // Oculta loader primero
 		Swal.fire({
 		  icon: 'error',
@@ -97,33 +97,6 @@
 	  }
 	}
 
-
-	// Recarga al volver a la pestaña (tras suspensión o cambio de foco)
-	document.addEventListener("visibilitychange", () => {
-	  if (document.visibilityState === "visible") {
-		location.reload(); // Recarga la página
-	  }
-	});
-
-	// Recarga automática si hay más de 30 minutos sin interacción
-	let lastActiveTime = Date.now();
-
-	document.addEventListener("mousemove", () => {
-	  lastActiveTime = Date.now();
-	});
-	document.addEventListener("keydown", () => {
-	  lastActiveTime = Date.now();
-	});
-
-	setInterval(() => {
-	  const now = Date.now();
-	  const minutesInactive = (now - lastActiveTime) / 60000;
-
-	  if (minutesInactive > 30) {
-	  localStorage.removeItem('codigo_usuario');
-	  window.location.href = "index.html";
-	  }
-	}, 60000); // Revisa cada 1 minuto
 </script>
 
 <script>
@@ -133,6 +106,8 @@
     }, 300); // Espera breve para evitar flashes incómodos
   });
 </script>
+
+	<script src="Js/Sesion.js"></script>
 	
 	<div id="loader" class="loader-overlay" style="display: none;">
 	<div class="spinner"></div>
