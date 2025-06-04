@@ -610,3 +610,21 @@ body.menu-page .search-bar input {
   min-width: 100%;
   border-collapse: collapse;
 }
+/* --- FIN DE ESTILOS  PARA EL SUBMODULO SERIES --- */
+
+/* --- ESTILOS  PARA EL SUBMODULO FORMULARIO DE TRASPASOS --- */
+.campos-unicos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.campos-unicos label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+/* --- FIN ESTILOS  PARA EL SUBMODULO FORMULARIO DE TRASPASOS --- */
