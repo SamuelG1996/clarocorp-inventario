@@ -381,6 +381,14 @@ td:nth-child(2), th:nth-child(2) {
   font-size: 0.9em;
 }
 
+/* Forzar que SweetAlert2 use la fuente del sistema */
+.swal2-popup,
+.swal2-title,
+.swal2-html-container,
+.swal2-confirm {
+  font-family: 'Arial', sans-serif !important;
+}
+
 /* ===FIN ALERTA LOGIN INCORRECTO=== */
 
 /* FONDO BLANCO PARA EL CONTENIDO PRINCIPAL */
