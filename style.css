@@ -723,4 +723,9 @@ table select {
   width: 9%;
 }
 
+#tablaSolicitud input,
+#tablaSolicitud select {
+  text-transform: uppercase;
+}
+
 /* --- FIN ESTILOS  PARA EL SUBMODULO FORMULARIO DE TRASPASOS --- */
