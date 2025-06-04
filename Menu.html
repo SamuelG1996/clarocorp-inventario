@@ -53,29 +53,6 @@
   </div>
   
   <script>
-	// RECARGA AL VOLVER A LA PESTAÑA
-	document.addEventListener("visibilitychange", () => {
-	  if (document.visibilityState === "visible") {
-		location.reload(); // Refresca automáticamente
-	  }
-	});
-
-	// RECARGA AUTOMATICA SI HAY MAS DE 30 MINUTOS DE INACTIVIDAD
-	let lastActiveTime = Date.now();
-
-	document.addEventListener("mousemove", () => lastActiveTime = Date.now());
-	document.addEventListener("keydown", () => lastActiveTime = Date.now());
-
-	setInterval(() => {
-	  const now = Date.now();
-	  const minutesInactive = (now - lastActiveTime) / 60000;
-
-	  if (minutesInactive > 30) {
-	  localStorage.removeItem('codigo_usuario');
-	  window.location.href = "index.html";
-	  }
-	}, 60000); // Verifica cada minuto
-
 	/*MENSAJE DE BIENVENIDA*/
 	function saludoPorHora() {
 	    const hora = new Date().getHours();
@@ -93,6 +70,8 @@
 	 /*FIN DE MENSAJE DE BIENVENIDA*/ 
 
   </script>
+
+	<script src="Js/Sesion.js"></script>
   
 </body>
 </html>
