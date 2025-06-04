@@ -28,9 +28,6 @@
 		</div>
 	</form>
 	</div>
-	<div id="loader" class="loader-overlay" style="display: none;">
-	<div class="spinner"></div>
-	</div>
 
 	<div class="copyright">© 2025 ClaroCorp+ | Desarrollado por Samuel Guardia</div>
 
@@ -56,6 +53,7 @@
 	  .single();
 	
 	if (error || !data) {
+		    document.getElementById("loader").style.display = "none"; // Oculta loader primero
 		Swal.fire({
 		  icon: 'error',
 		  title: 'Acceso Denegado',
@@ -71,7 +69,7 @@
 			icon: 'swal2-icon-compact',
 			confirmButton: 'swal2-btn-sm'
 		  }
-			
+
 		});
 
 		return;
@@ -83,9 +81,10 @@
 		localStorage.setItem('telefono', data.telefono);
 		localStorage.setItem('rol', data.rol);
 		localStorage.setItem('empresa', data.empresa);
+		document.getElementById("loader").style.display = "none";
 		window.location.href = "Menu.html";
-		document.getElementById('loader').style.display = 'none';
 	}
+	
 	function togglePassword() {
 	  const pass = document.getElementById("pass");
 	  const icon = document.getElementById("eye-icon");
@@ -135,6 +134,9 @@
   });
 </script>
 	
-
+	<div id="loader" class="loader-overlay" style="display: none;">
+	<div class="spinner"></div>
+	</div>
+	
 </body>
 </html>
