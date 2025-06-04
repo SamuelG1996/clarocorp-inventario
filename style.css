@@ -585,3 +585,9 @@ body.menu-page .search-bar input {
 .acciones-series button:hover {
   background-color: #27ae60;
 }
+
+.encabezado-series h2 {
+  margin-left: 10px;
+  font-size: 20px;
+  flex: 1;
+}
