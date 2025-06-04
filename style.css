@@ -671,8 +671,8 @@ table select {
 
 #tablaSolicitud th:nth-child(3),
 #tablaSolicitud td:nth-child(3) { /* Cantidad */
-  min-width: 60px;
-  width: 6%;
+  min-width: 50px;
+  width: 5%;
 }
 
 #tablaSolicitud th:nth-child(4),
@@ -695,14 +695,14 @@ table select {
 
 #tablaSolicitud th:nth-child(7),
 #tablaSolicitud td:nth-child(7) { /* Almacén Origen */
-  min-width: 90px;
-  width: 9%;
+  min-width: 80px;
+  width: 8%;
 }
 
 #tablaSolicitud th:nth-child(8),
 #tablaSolicitud td:nth-child(8) { /* Centro Origen */
-  min-width: 90px;
-  width: 9%;
+  min-width: 80px;
+  width: 8%;
 }
 
 #tablaSolicitud th:nth-child(9),
@@ -713,14 +713,20 @@ table select {
 
 #tablaSolicitud th:nth-child(10),
 #tablaSolicitud td:nth-child(10) { /* Almacén Destino */
-  min-width: 90px;
-  width: 9%;
+  min-width: 80px;
+  width: 8%;
 }
 
 #tablaSolicitud th:nth-child(11),
 #tablaSolicitud td:nth-child(11) { /* Centro Destino */
-  min-width: 90px;
-  width: 9%;
+  min-width: 80px;
+  width: 8%;
+}
+
+#tablaSolicitud th:nth-child(12),
+#tablaSolicitud td:nth-child(12) { /* Contrata que entrega */
+  min-width: 110px;
+  width: 10%;
 }
 
 #tablaSolicitud input,
