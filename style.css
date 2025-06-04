@@ -538,32 +538,32 @@ td:nth-child(2), th:nth-child(2) {
   background-color: #fff3cd !important; /* Amarillo claro */
 }
 
-/* --- ESTILOS  PARA EL SUBMODULO SERIES --- */
+/* === ESTILOS OPTIMIZADOS PARA EL SUBMÓDULO SERIES === */
 
-/* Asegura que el body y html no permitan scroll horizontal innecesario */
+/* Evitar scroll horizontal general innecesario */
 body, html {
   overflow-x: hidden;
 }
 
-.tabla-series-container {
-  max-width: 95vw;
-  overflow-x: auto;
-  margin: 0 auto;
-  background-color: #fff;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  min-height: 100px;
-  font-size: 15px;
-  box-sizing: border-box;
+/* Área de contenido general */
+.content {
+  padding: 40px 30px;
+  align-items: center;
+  color: white;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-body.menu-page .search-bar input {
+/* Encabezado y barra de acciones */
+.encabezado-stock,
+.search-bar,
+.tabla-scroll {
   width: 90%;
   margin: 0 auto;
-  display: block;
 }
 
+/* Ajustes específicos para el encabezado de Series */
 .encabezado-series {
   display: flex;
   justify-content: space-between;
@@ -572,6 +572,14 @@ body.menu-page .search-bar input {
   margin-bottom: 10px;
 }
 
+.encabezado-series h2 {
+  margin-left: 10px;
+  font-size: 24px;
+  color: white;
+  flex: 1;
+}
+
+/* Botones de acción */
 .acciones-series {
   display: flex;
   gap: 10px;
@@ -593,16 +601,16 @@ body.menu-page .search-bar input {
   background-color: #27ae60;
 }
 
-.encabezado-series h2 {
-  margin-left: 10px;
-  font-size: 24px;
-  color:white;
-  flex: 1;
+/* Barra de búsqueda centrada */
+body.menu-page .search-bar input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: none;
 }
 
-/* Contenedor para scroll horizontal en tablas anchas */
+/* Contenedor de tabla con scroll horizontal */
 .tabla-scroll {
-  width: 90%;
   overflow-x: auto;
   background-color: white;
   border: 1px solid #ccc;
@@ -610,43 +618,20 @@ body.menu-page .search-bar input {
   max-width: 100%;
 }
 
-/* Tabla dentro del contenedor */
-.tabla-scroll table {
-  width: max-content; /* se adapta al contenido */
-  min-width: 100%;
-  border-collapse: collapse;
-}
-
-/* === AJUSTE VISUAL EXCLUSIVO PARA MÓDULO SERIES === */
-.content-series {
-  width: 98%;
-  margin: auto;
-  padding: 20px;
-  background-color: white;
-  color: black;
-  box-sizing: border-box;
-}
-
-/* Alineación interna */
-.content-series .encabezado-stock,
-.content-series .search-bar,
-.content-series .tabla-scroll {
-  width: 100%;
-  margin: 0 auto;
-}
-
-/* Tabla con scroll horizontal contenido */
-.tabla-scroll {
-  width: 100%;
-  overflow-x: auto;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  max-width: 100%;
-}
-
+/* Tabla responsive */
 .tabla-scroll table {
   width: max-content;
   min-width: 100%;
   border-collapse: collapse;
+}
+
+/* Estilos de tabla */
+#tablaSeries th {
+  font-size: 13px;
+  color: black;
+  background: #f1f1f1;
+}
+
+#tablaSeries td {
+  font-size: 12px;
 }
