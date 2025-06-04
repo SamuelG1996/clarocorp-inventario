@@ -6,7 +6,6 @@ body.login-page {
   background-color: #1a2b3c;
   display: flex;
   justify-content: center;
-  align-items: center;
   height: 100vh;
 }
 
@@ -65,7 +64,6 @@ h2 {
 
 .options {
   display: flex;
-  align-items: center;
   justify-content: space-between;
   margin-top: 10px;
 }
@@ -143,7 +141,6 @@ body.menu-page {
   color: white;
   padding: 10px 20px;
   display: flex;
-  align-items: center;
   gap: 12px;
   transition: background 0.3s;
 }
@@ -185,16 +182,14 @@ body.menu-page {
 }
 
 .content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* === MÓDULO DE VISUALIZACIÓN DE STOCK === */
 
 .content {
   padding: 40px 30px;
-  align-items: center;
   color: white;
 }
 
@@ -283,7 +278,6 @@ td:nth-child(10) {
   width: 90%;
   display: flex;
   justify-content: space-between;
-  align-items: center;
   margin-bottom: 20px;
 }
 
@@ -292,7 +286,6 @@ td:nth-child(10) {
   font-size: 24px;
   color: white;
   display: flex;
-  align-items: center;
   gap: 10px;
 }
 
@@ -346,7 +339,6 @@ td:nth-child(2), th:nth-child(2) {
   background: rgba(255, 255, 255, 0.7);
   display: flex;
   justify-content: center;
-  align-items: center;
   z-index: 9999;
 }
 
@@ -436,7 +428,6 @@ td:nth-child(2), th:nth-child(2) {
 
 .perfil-box .encabezado-stock {
   display: flex;
-  align-items: center;
   margin-bottom: 25px;
 }
 
@@ -444,7 +435,6 @@ td:nth-child(2), th:nth-child(2) {
   font-size: 22px;
   color: white;
   display: flex;
-  align-items: center;
   gap: 10px;
 }
 
@@ -538,48 +528,39 @@ td:nth-child(2), th:nth-child(2) {
   background-color: #fff3cd !important; /* Amarillo claro */
 }
 
-/* === ESTILOS OPTIMIZADOS PARA EL SUBMÓDULO SERIES === */
+/* --- ESTILOS  PARA EL SUBMODULO SERIES --- */
 
-/* Evitar scroll horizontal general innecesario */
+/* Asegura que el body y html no permitan scroll horizontal innecesario */
 body, html {
   overflow-x: hidden;
 }
 
-/* Área de contenido general */
-.content {
-  padding: 40px 30px;
-  align-items: center;
-  color: white;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.tabla-series-container {
+  max-width: 95vw;
+  overflow-x: auto;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  min-height: 100px;
+  font-size: 15px;
+  box-sizing: border-box;
 }
 
-/* Encabezado y barra de acciones */
-.encabezado-stock,
-.search-bar,
-.tabla-scroll {
+body.menu-page .search-bar input {
   width: 90%;
   margin: 0 auto;
+  display: block;
 }
 
-/* Ajustes específicos para el encabezado de Series */
 .encabezado-series {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   flex-wrap: wrap;
   margin-bottom: 10px;
 }
 
-.encabezado-series h2 {
-  margin-left: 10px;
-  font-size: 24px;
-  color: white;
-  flex: 1;
-}
-
-/* Botones de acción */
 .acciones-series {
   display: flex;
   gap: 10px;
@@ -601,16 +582,16 @@ body, html {
   background-color: #27ae60;
 }
 
-/* Barra de búsqueda centrada */
-body.menu-page .search-bar input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 4px;
-  border: none;
+.encabezado-series h2 {
+  margin-left: 10px;
+  font-size: 24px;
+  color:white;
+  flex: 1;
 }
 
-/* Contenedor de tabla con scroll horizontal */
+/* Contenedor para scroll horizontal en tablas anchas */
 .tabla-scroll {
+  width: 90%;
   overflow-x: auto;
   background-color: white;
   border: 1px solid #ccc;
@@ -618,20 +599,9 @@ body.menu-page .search-bar input {
   max-width: 100%;
 }
 
-/* Tabla responsive */
+/* Tabla dentro del contenedor */
 .tabla-scroll table {
-  width: max-content;
+  width: max-content; /* se adapta al contenido */
   min-width: 100%;
   border-collapse: collapse;
-}
-
-/* Estilos de tabla */
-#tablaSeries th {
-  font-size: 13px;
-  color: black;
-  background: #f1f1f1;
-}
-
-#tablaSeries td {
-  font-size: 12px;
 }
