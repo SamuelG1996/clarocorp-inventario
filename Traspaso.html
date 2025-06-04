@@ -77,6 +77,28 @@
       alert("Aquí se eliminarán las solicitudes seleccionadas.");
     }
   </script>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const tbody = document.querySelector("#tablaTraspasos tbody");
+    const solicitudes = JSON.parse(localStorage.getItem("traspasos") || "[]");
+
+    solicitudes.forEach(solicitud => {
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td><input type="checkbox"></td>
+        <td>${solicitud.id}</td>
+        <td>${solicitud.contrata}</td>
+        <td>${solicitud.solicitante}</td>
+        <td>${solicitud.fecha_registro}</td>
+        <td>${solicitud.fecha_estado}</td>
+        <td>${solicitud.responsable_nombre}</td>
+        <td>${solicitud.estado}</td>
+      `;
+      tbody.appendChild(fila);
+    });
+  });
+</script>
 <script src="Js/Sesion.js"></script>
 </body>
 </html>
