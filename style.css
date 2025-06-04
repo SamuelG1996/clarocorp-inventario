@@ -529,7 +529,7 @@ td:nth-child(2), th:nth-child(2) {
 /* --- ESTILOS GENERALES PARA MÓDULO TRASPASOS --- */
 
 #tablaTraspasos thead th {
-  font-size: 15px; /* o el tamaño que prefieras */
+  font-size: 13px; /* o el tamaño que prefieras */
   padding: 6px 8px;
 }
 
@@ -548,5 +548,6 @@ td:nth-child(2), th:nth-child(2) {
   border-radius: 8px;
   border: 1px solid #ccc;
   min-height: 100px;
+  font-size: 15px; /* o el tamaño que prefieras */
 }
 
