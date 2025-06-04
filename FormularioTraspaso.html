@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body class="menu-page">
   <div class="content">
@@ -51,6 +52,7 @@
       <div class="acciones-tabla">
       <button onclick="agregarFila()"><i class="fas fa-plus-circle"></i> Agregar Fila</button>
       <button onclick="eliminarFila()"><i class="fas fa-minus-circle"></i> Eliminar Fila</button>
+      <button onclick="descargarPlantillaExcel()"><i class="fas fa-file-excel"></i> Descargar Plantilla</button>
       </div>
     </div>
 
@@ -108,6 +110,16 @@
     });
     }
   }
+    function descargarPlantillaExcel() {
+  const cabeceras = [
+    ["Código", "Descripción", "Cantidad", "Serie", "Lote", "UMB", "Almacén Origen", "Centro Origen", "Contrata que entrega", "Almacén Destino", "Centro Destino", "Contrata que recibe"]
+  ];
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(cabeceras);
+  XLSX.utils.book_append_sheet(wb, ws, "Traspaso");
+  XLSX.writeFile(wb, "Plantilla_Traspaso.xlsx");
+}
 
     function guardarSolicitud() {
       const tipoMaterial = document.getElementById("tipoMaterial").value;
