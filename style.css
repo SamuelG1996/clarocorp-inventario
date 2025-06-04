@@ -363,31 +363,22 @@ td:nth-child(2), th:nth-child(2) {
 /* === FIN MÓDULO DE VISUALIZACIÓN DE STOCK === */
 
 /* ===ALERTA LOGIN INCORRECTO=== */
-.swal2-sm {
-  font-size: 14px;
-  padding: 1em;
+.swal2-title-custom {
+  font-size: 1.3em;
+  margin-top: 0.5em;
+  font-weight: 600;
 }
 
-.swal2-title-tight {
-  margin-top: 0.4em !important;
-  margin-bottom: 0.4em !important;
-  font-size: 18px;
+.swal2-popup-clean {
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
 }
 
-.swal2-icon-compact {
-  width: 50px !important;
-  height: 50px !important;
-  margin: 10px auto !important;
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
-  padding: 0 !important;
-  border-width: 2px !important;
-}
-
-.swal2-btn-sm {
-  font-size: 13px;
-  padding: 6px 20px;
+.swal2-btn-rounded {
+  border-radius: 6px !important;
+  font-weight: bold;
+  padding: 8px 20px;
+  font-size: 0.9em;
 }
 
 /* ===FIN ALERTA LOGIN INCORRECTO=== */
