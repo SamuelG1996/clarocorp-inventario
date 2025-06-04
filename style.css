@@ -588,6 +588,7 @@ body.menu-page .search-bar input {
 
 .encabezado-series h2 {
   margin-left: 10px;
-  font-size: 20px;
+  font-size: 24px;
+  color:white;
   flex: 1;
 }
