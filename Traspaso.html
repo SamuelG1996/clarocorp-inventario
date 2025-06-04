@@ -74,8 +74,57 @@
     }
 
     function eliminarSeleccionados() {
-      alert("Aquí se eliminarán las solicitudes seleccionadas.");
+  const filas = document.querySelectorAll("#tablaTraspasos tbody tr");
+  let solicitudes = JSON.parse(localStorage.getItem("traspasos") || "[]");
+  let cambiosRealizados = false;
+
+  filas.forEach((fila, index) => {
+    const checkbox = fila.querySelector('input[type="checkbox"]');
+    if (checkbox && checkbox.checked) {
+      const id = fila.cells[1].textContent;
+      const solicitud = solicitudes.find(s => s.id === id);
+      if (solicitud && solicitud.estado !== "Anulado") {
+        solicitud.estado = "Anulado";
+        solicitud.fecha_estado = new Date().toLocaleString('es-PE');
+        cambiosRealizados = true;
+      }
     }
+  });
+
+  if (cambiosRealizados) {
+    localStorage.setItem("traspasos", JSON.stringify(solicitudes));
+
+    Swal.fire({
+      icon: 'info',
+      title: 'Solicitudes anuladas',
+      text: 'Se cambiaron los estados a Anulado.',
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
+    });
+
+    setTimeout(() => location.reload(), 1000);
+  } else {
+    Swal.fire({
+      icon: 'info',
+      title: 'No hay cambios',
+      text: 'No se seleccionaron solicitudes o ya están anuladas.',
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
+    });
+  }
+}
   </script>
 
   <script>
