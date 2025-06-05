@@ -76,47 +76,23 @@
     }
       </script>
   <script>
-    function eliminarSeleccionados() {
+  async function eliminarSeleccionados() {
   const filas = document.querySelectorAll("#tablaTraspasos tbody tr");
-  let solicitudes = JSON.parse(localStorage.getItem("traspasos") || "[]");
-  let cambiosRealizados = false;
+  const idsAAnular = [];
 
-  filas.forEach((fila, index) => {
+  filas.forEach(fila => {
     const checkbox = fila.querySelector('input[type="checkbox"]');
     if (checkbox && checkbox.checked) {
       const id = fila.cells[1].textContent;
-      const solicitud = solicitudes.find(s => s.id === id);
-      if (solicitud && solicitud.estado !== "Anulado") {
-        solicitud.estado = "Anulado";
-        solicitud.fecha_estado = new Date().toLocaleString('es-PE');
-        cambiosRealizados = true;
-      }
+      idsAAnular.push(id);
     }
   });
 
-  if (cambiosRealizados) {
-    localStorage.setItem("traspasos", JSON.stringify(solicitudes));
-
-    Swal.fire({
-      icon: 'info',
-      title: 'Solicitudes anuladas',
-      text: 'Se cambiaron los estados a Anulado.',
-      toast: true,
-      position: 'bottom-end',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      background: '#1e2022',
-      color: '#ffffff',
-      iconColor: '#f39c12'
-    });
-
-    setTimeout(() => location.reload(), 1000);
-  } else {
+  if (idsAAnular.length === 0) {
     Swal.fire({
       icon: 'info',
       title: 'No hay cambios',
-      text: 'No se seleccionaron solicitudes o ya están anuladas.',
+      text: 'No se seleccionaron solicitudes para anular.',
       toast: true,
       position: 'bottom-end',
       showConfirmButton: false,
@@ -126,6 +102,43 @@
       color: '#ffffff',
       iconColor: '#f39c12'
     });
+    return;
+  }
+
+  const { error } = await supabase
+    .from("traspasos")
+    .update({ estado: "Anulado", fecha_estado: new Date().toISOString() })
+    .in("id", idsAAnular);
+
+  if (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al anular solicitudes',
+      text: error.message,
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#e74c3c'
+    });
+  } else {
+    Swal.fire({
+      icon: 'info',
+      title: 'Solicitudes anuladas',
+      text: 'Se actualizaron correctamente en Supabase.',
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
+    });
+    setTimeout(() => location.reload(), 1000);
   }
 }
   </script>
@@ -168,7 +181,73 @@ document.addEventListener("DOMContentLoaded", async () => {
       <td>${solicitud.estado}</td>
     `;
     tbody.appendChild(fila);
+    fila.addEventListener("click", async () => {
+    const { data: detalles, error: errorDetalles } = await supabase
+      .from("traspaso_detalle")
+      .select("*")
+      .eq("id_traspaso", solicitud.id);
+
+    if (errorDetalles) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al cargar detalles',
+        text: errorDetalles.message,
+        toast: true,
+        position: 'bottom-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#1e2022',
+        color: '#ffffff',
+        iconColor: '#e74c3c'
+      });
+      return;
+    }
+
+    // Generar tabla HTML de los detalles
+    const tablaHTML = `
+      <table border="1" style="width:100%; font-size:12px; text-align:left">
+        <tr>
+          <th>Código</th><th>Descripción</th><th>Cantidad</th><th>Serie</th><th>Lote</th><th>UMB</th>
+          <th>Almacén Origen</th><th>Centro Origen</th><th>Contrata Entrega</th>
+          <th>Almacén Destino</th><th>Centro Destino</th><th>Contrata Recibe</th><th>Guía</th>
+        </tr>
+        ${detalles.map(det => `
+          <tr>
+            <td>${det.codigo}</td>
+            <td>${det.descripcion}</td>
+            <td>${det.cantidad}</td>
+            <td>${det.serie}</td>
+            <td>${det.lote}</td>
+            <td>${det.umb}</td>
+            <td>${det.almacen_origen}</td>
+            <td>${det.centro_origen}</td>
+            <td>${det.contrata_entrega}</td>
+            <td>${det.almacen_destino}</td>
+            <td>${det.centro_destino}</td>
+            <td>${det.contrata_recibe}</td>
+            <td>${det.guia_remision}</td>
+          </tr>
+        `).join("")}
+      </table>
+    `;
+
+    Swal.fire({
+      icon: 'info',
+      title: `Detalles de la solicitud ${solicitud.id}`,
+      html: tablaHTML,
+      width: '90%',
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12',
+      confirmButtonText: 'Cerrar',
+      confirmButtonColor: '#f39c12'
+    });
   });
+  });
+
+
+  
 });
 </script>
 <script>
