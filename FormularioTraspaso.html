@@ -11,7 +11,8 @@
   <script>
     const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI';
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    const { createClient } = supabase;
+  const supabaseClient = createClient(supabaseUrl, supabaseKey);
   </script>
 </head>
 <body class="menu-page formulario-traspaso">
@@ -249,7 +250,7 @@ function cargarDesdeExcel() {
 async function subirArchivoGuia(idSolicitud, archivo) {
   const nombre = `${idSolicitud}_${archivo.name}`.replace(/\s+/g, "_");
 
-  const { data, error } = await supabase.storage
+  const { data, error } = await supabaseClient.storage
     .from("traspasos")  // ← aquí usas tu bucket llamado "traspasos"
     .upload(nombre, archivo, {
       cacheControl: "3600",
@@ -410,7 +411,7 @@ if (archivo.size > 10 * 1024 * 1024) {
     estado: "Pendiente"
   };
 
-const { data, error } = await supabase
+const { data, error } = await supabaseClient
   .from("traspasos")
   .insert([nuevaSolicitud])
   .select();
@@ -475,7 +476,7 @@ for (let fila of filas) {
     datos_solicitante: datosSolicitante
   };
 
-  const { error: detalleError } = await supabase.from("traspaso_detalle").insert([detalle]);
+  const { error: detalleError } = await supabaseClient.from("traspaso_detalle").insert([detalle]);
 
   if (detalleError) {
     console.error("Error al insertar detalle:", detalleError.message);
