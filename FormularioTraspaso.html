@@ -129,7 +129,7 @@ function agregarFila() {
   }
     function descargarPlantillaExcel() {
   const cabeceras = [
-    ["Código", "Descripción", "Cantidad", "Serie", "Lote", "UMB", "Almacén Origen", "Centro Origen", "Contrata que entrega", "Almacén Destino", "Centro Destino", "Contrata que recibe"]
+    ["Código", "Descripción", "Cantidad", "Serie", "Lote", "UMB", "Almacén Origen", "Centro Origen", "Contrata que entrega", "Almacén Destino", "Centro Destino", "Contrata que recibe","Guia de remisión"]
   ];
 
   const wb = XLSX.utils.book_new();
@@ -183,11 +183,11 @@ function cargarDesdeExcel() {
     const filas = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
     // Validar columnas
-    if (filas[0].length !== 12) {
+    if (filas[0].length !== 13) {
       Swal.fire({
         icon: 'warning',
         title: 'Formato incorrecto',
-        text: 'La plantilla debe tener exactamente 12 columnas.',
+        text: 'La plantilla debe tener exactamente 13 columnas.',
         toast: true,
         position: 'bottom-end',
         showConfirmButton: false,
