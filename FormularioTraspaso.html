@@ -239,6 +239,31 @@ function cargarDesdeExcel() {
 </script>
 
 <script>
+async function subirArchivoGuia(idSolicitud, archivo) {
+  const nombre = `${idSolicitud}_${archivo.name}`.replace(/\s+/g, "_");
+
+  const { data, error } = await supabase.storage
+    .from("traspasos")  // ← aquí usas tu bucket llamado "traspasos"
+    .upload(nombre, archivo, {
+      cacheControl: "3600",
+      upsert: true,
+    });
+
+  if (error) {
+    console.error("Error al subir archivo:", error.message);
+    throw new Error("No se pudo subir la guía de remisión.");
+  }
+
+  const { data: publicUrlData } = supabase.storage
+    .from("traspasos")  // ← también aquí
+    .getPublicUrl(nombre);
+
+  return publicUrlData.publicUrl;
+}
+</script>
+
+  
+<script>
 async function guardarSolicitud() {
   const tipoMaterial = document.getElementById("tipoMaterial").value;
   const areaSolicitante = document.getElementById("areaSolicitante").value;
@@ -399,7 +424,27 @@ if (error) {
   });
   return;
 }
-const idSolicitud = data[0].id; // ← AQUÍ recuperas el ID real generado por Supabase
+const idSolicitud = data[0].id;
+
+let urlGuiaRemision = "";
+try {
+  urlGuiaRemision = await subirArchivoGuia(idSolicitud, archivo);
+} catch (errorSubida) {
+  Swal.fire({
+    icon: 'error',
+    title: 'Error al subir archivo',
+    text: errorSubida.message,
+    toast: true,
+    position: 'bottom-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#e74c3c'
+  });
+  return;
+}
 // Inserta los detalles por cada fila a la tabla traspaso_detalle
 for (let fila of filas) {
   const celdas = fila.querySelectorAll("input, select");
@@ -418,7 +463,7 @@ for (let fila of filas) {
     almacen_destino: celdas[9].value,
     centro_destino: celdas[10].value,
     contrata_recibe: celdas[11].value,
-    guia_remision: celdas[12].value,
+    guia_remision: urlGuiaRemision,
     area_solicitante: areaSolicitante,
     datos_solicitante: datosSolicitante
   };
