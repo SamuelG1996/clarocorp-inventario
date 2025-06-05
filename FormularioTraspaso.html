@@ -357,7 +357,7 @@ console.log("Enviando a Teams...");
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    texto: `📩 Nueva solicitud registrada: ${idSolicitud}\n👷 Contrata: ${contrataSolicitante}\n🧑‍💼 Solicitante: ${usuarioSolicitante}\n📅 Fecha: ${fechaActual}`
+    texto: `📩 Nueva solicitud registrada: ${idSolicitud}\n\n👷 Contrata Solicitante: ${contrataSolicitante}\n\n📝Solicitante: ${usuarioSolicitante}\n\n📅 Fecha: ${fechaActual}`
   })
 });
   
@@ -375,7 +375,7 @@ console.log("Enviando a Teams...");
     iconColor: '#2ecc71'
   });
 
-  //setTimeout(() => window.location.href = "Traspaso.html", 1000);
+  setTimeout(() => window.location.href = "Traspaso.html", 1000);
 }
 </script>
   
