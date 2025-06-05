@@ -389,7 +389,51 @@ if (error) {
   return;
 }
 
-  
+// Inserta los detalles por cada fila a la tabla traspaso_detalle
+for (let fila of filas) {
+  const celdas = fila.querySelectorAll("input, select");
+
+  const detalle = {
+    id_traspaso: idSolicitud,
+    codigo: celdas[0].value,
+    descripcion: celdas[1].value,
+    cantidad: parseInt(celdas[2].value),
+    serie: celdas[3].value,
+    lote: celdas[4].value,
+    umb: celdas[5].value,
+    almacen_origen: celdas[6].value,
+    centro_origen: celdas[7].value,
+    contrata_entrega: celdas[8].value,
+    almacen_destino: celdas[9].value,
+    centro_destino: celdas[10].value,
+    contrata_recibe: celdas[11].value,
+    guia_remision: celdas[12].value,
+    area_solicitante: areaSolicitante,
+    datos_solicitante: datosSolicitante
+  };
+
+  const { error: detalleError } = await supabase.from("traspaso_detalle").insert([detalle]);
+
+  if (detalleError) {
+    console.error("Error al insertar detalle:", detalleError.message);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error en detalle',
+      text: 'Uno o más ítems no se guardaron.',
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#e74c3c'
+    });
+    return;
+  }
+}
+
+
 console.log("Enviando a Teams...");
   // Notificación Microsoft Teams
   fetch("/api/notificar-teams", {
@@ -413,6 +457,9 @@ console.log("Enviando a Teams...");
     color: '#ffffff',
     iconColor: '#2ecc71'
   });
+
+
+  
 
   setTimeout(() => window.location.href = "Traspaso.html", 1000);
 }
