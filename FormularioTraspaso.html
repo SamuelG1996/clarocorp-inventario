@@ -134,39 +134,7 @@ function agregarFila() {
   XLSX.utils.book_append_sheet(wb, ws, "Traspaso");
   XLSX.writeFile(wb, "Plantilla_Traspaso.xlsx");
 }
-
-    function guardarSolicitud() {
-      const tipoMaterial = document.getElementById("tipoMaterial").value;
-      const areaSolicitante = document.getElementById("areaSolicitante").value;
-      const datosSolicitante = document.getElementById("datosSolicitante").value;
-
-      const filas = document.querySelectorAll("#tablaSolicitud tbody tr");
-
-      filas.forEach(fila => {
-        const datos = {
-          codigo: fila.cells[0].querySelector('input').value,
-          descripcion: fila.cells[1].querySelector('input').value,
-          cantidad: fila.cells[2].querySelector('input').value,
-          lote: fila.cells[3].querySelector('input').value,
-          umb: fila.cells[4].querySelector('select').value,
-          almacen_origen: fila.cells[5].querySelector('input').value,
-          centro_origen: fila.cells[6].querySelector('input').value,
-          contrata_entrega: fila.cells[7].querySelector('input').value,
-          almacen_destino: fila.cells[8].querySelector('input').value,
-          centro_destino: fila.cells[9].querySelector('input').value,
-          contrata_recibe: fila.cells[10].querySelector('input').value,
-
-          tipo_material: tipoMaterial,
-          area_solicitante: areaSolicitante,
-          datos_solicitante: datosSolicitante,
-        };
-
-        console.log(datos); // Aquí luego haces insert a Supabase
-      });
-    }
-
     
-
     function logout() {
       localStorage.clear();
       window.location.href = "index.html";
@@ -270,10 +238,12 @@ function cargarDesdeExcel() {
 <script>
 function guardarSolicitud() {
   const tipoMaterial = document.getElementById("tipoMaterial").value;
+  const areaSolicitante = document.getElementById("areaSolicitante").value;
+  const datosSolicitante = document.getElementById("datosSolicitante").value;
   const archivo = document.getElementById("guiaRemision").files[0];
   const filas = document.querySelectorAll("#tablaSolicitud tbody tr");
 
-  // Validación de campos únicos
+  // Validaciones únicas
   if (!tipoMaterial) {
     Swal.fire({
       icon: 'info',
@@ -294,8 +264,8 @@ function guardarSolicitud() {
   if (!archivo) {
     Swal.fire({
       icon: 'info',
-      title: 'Debe adjuntar la guía de remisión',
-      text: 'El campo guía es obligatorio (PDF, JPG, PNG).',
+      title: 'Guía requerida',
+      text: 'Debes adjuntar una guía de remisión.',
       toast: true,
       position: 'bottom-end',
       showConfirmButton: false,
@@ -308,13 +278,11 @@ function guardarSolicitud() {
     return;
   }
 
-  // Validar que todos los campos estén llenos y cantidad válida
+  // Validación de tabla
   for (let fila of filas) {
     const inputs = fila.querySelectorAll("input");
-
     for (let i = 0; i < inputs.length; i++) {
-      const input = inputs[i];
-      const valor = input.value.trim();
+      const valor = inputs[i].value.trim();
 
       if (!valor) {
         Swal.fire({
@@ -333,8 +301,7 @@ function guardarSolicitud() {
         return;
       }
 
-      // Validar campo cantidad (índice 2)
-      if (i === 2) {
+      if (i === 2) { // Cantidad
         const cantidad = Number(valor);
         if (isNaN(cantidad) || cantidad <= 0) {
           Swal.fire({
@@ -356,8 +323,8 @@ function guardarSolicitud() {
     }
   }
 
-  // Datos generales
-  const contador = parseInt(localStorage.getItem("contadorTraspasos") || "0") + 1;
+  // Generar datos
+  let contador = parseInt(localStorage.getItem("contadorTraspasos") || "0") + 1;
   localStorage.setItem("contadorTraspasos", contador);
   const idSolicitud = `ID-${contador.toString().padStart(5, '0')}`;
   const fechaActual = new Date().toLocaleString('es-PE');
@@ -373,6 +340,8 @@ function guardarSolicitud() {
     id: idSolicitud,
     contrata: contrataSolicitante,
     solicitante: usuarioSolicitante,
+    area: areaSolicitante,
+    datos: datosSolicitante,
     fecha_registro: fechaActual,
     fecha_estado: fechaActual,
     responsable_nombre: responsableNombre,
@@ -382,6 +351,15 @@ function guardarSolicitud() {
 
   solicitudes.push(nuevaSolicitud);
   localStorage.setItem("traspasos", JSON.stringify(solicitudes));
+
+  // Notificación Microsoft Teams
+  fetch('https://globalhitss.webhook.office.com/webhookb2/e1541f66-6528-4f01-ba60-bdf7893d3c22@5fd5460a-b425-49de-9bd0-fcd26270d30c/IncomingWebhook/536976a0b8fc4247a32da539f8f561a6/c86799d7-d6be-44ce-bce7-1eddc12a1672/V2yAU2WN7iTsispCK85FfaQbKvuAcZvbLWF5w68X-2Pe41', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      text: `📩 Nueva solicitud registrada: ${idSolicitud}\n👷 Contrata: ${contrataSolicitante}\n🧑‍💼 Solicitante: ${usuarioSolicitante}\n📅 Fecha: ${fechaActual}`
+    })
+  });
 
   Swal.fire({
     icon: 'success',
