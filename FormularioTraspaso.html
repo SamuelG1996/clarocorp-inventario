@@ -86,7 +86,14 @@
     <button onclick="guardarSolicitud()"><i class="fas fa-save"></i> Generar Solicitud</button>
     </div>
   </div>
+  <script>
+    const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co'
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI';
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+</script>
+  
 
+  
   <script>
     
 function agregarFila() {
@@ -521,12 +528,7 @@ console.log("Enviando a Teams...");
 }
 </script>
 
-<script>
-    const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co'
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI';
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-</script>
-  
+
 <script src="Js/Sesion.js"></script>
 </body>
 </html>
