@@ -739,6 +739,20 @@ body.formulario-traspaso.menu-page .content {
   color: white;
 }
 
+	
+body.formulario-traspaso .acciones-tabla button {
+	  background-color: #11a24e;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  margin-left: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+}
+
 /* --- FIN ESTILOS  PARA EL SUBMODULO FORMULARIO DE TRASPASOS --- */
 
 /* ---  ESTILOS PARA EL MODULO DE TRASPASOS --- */
