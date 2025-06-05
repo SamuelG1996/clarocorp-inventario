@@ -729,6 +729,12 @@ table select {
   width: 10%;
 }
 
+#tablaSolicitud th:nth-child(13),
+#tablaSolicitud td:nth-child(13) { /* Contrata que entrega */
+  min-width: 110px;
+  width: 10%;
+}
+
 #tablaSolicitud input,
 #tablaSolicitud select {
   text-transform: uppercase;
