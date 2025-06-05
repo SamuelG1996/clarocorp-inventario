@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body class="menu-page formulario-traspaso">
   <div class="content">
@@ -236,7 +237,7 @@ function cargarDesdeExcel() {
 </script>
 
 <script>
-function guardarSolicitud() {
+async function guardarSolicitud() {
   const tipoMaterial = document.getElementById("tipoMaterial").value;
   const areaSolicitante = document.getElementById("areaSolicitante").value;
   const datosSolicitante = document.getElementById("datosSolicitante").value;
@@ -278,6 +279,24 @@ function guardarSolicitud() {
     return;
   }
 
+  // 🚨 Validación de tamaño máximo 10MB
+if (archivo.size > 10 * 1024 * 1024) {
+  Swal.fire({
+    icon: 'error',
+    title: 'Archivo muy grande',
+    text: 'El tamaño máximo permitido es 10 MB.',
+    toast: true,
+    position: 'bottom-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#e74c3c'
+  });
+  return;
+}
+  
   // Validación de tabla
   for (let fila of filas) {
     const inputs = fila.querySelectorAll("input");
@@ -327,8 +346,8 @@ function guardarSolicitud() {
   let contador = parseInt(localStorage.getItem("contadorTraspasos") || "0") + 1;
   localStorage.setItem("contadorTraspasos", contador);
   const idSolicitud = `ID-${contador.toString().padStart(5, '0')}`;
-  const fechaActual = new Date().toLocaleString('es-PE');
-
+  const fechaActual = new Date().toISOString();
+  
   const contrataSolicitante = localStorage.getItem("empresa") || "No definida";
   const usuarioSolicitante = localStorage.getItem("nombres") || "Anónimo";
   const responsableNombre = "Samuel Guardia";
@@ -349,8 +368,26 @@ function guardarSolicitud() {
     estado: "Pendiente"
   };
 
-  solicitudes.push(nuevaSolicitud);
-  localStorage.setItem("traspasos", JSON.stringify(solicitudes));
+const { error } = await supabase.from("traspasos").insert([nuevaSolicitud]);
+
+if (error) {
+  Swal.fire({
+    icon: 'error',
+    title: 'Error al registrar',
+    text: error.message,
+    toast: true,
+    position: 'bottom-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#e74c3c'
+  });
+  return;
+}
+
+  
 console.log("Enviando a Teams...");
   // Notificación Microsoft Teams
   fetch("/api/notificar-teams", {
@@ -377,6 +414,12 @@ console.log("Enviando a Teams...");
 
   setTimeout(() => window.location.href = "Traspaso.html", 1000);
 }
+</script>
+
+<script>
+    const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co'
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI';
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 </script>
   
 <script src="Js/Sesion.js"></script>
