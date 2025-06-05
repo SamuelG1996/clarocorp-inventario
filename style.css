@@ -617,8 +617,8 @@ body.menu-page .search-bar input {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 15px;
+  margin-bottom: 15px;
   max-width: 500px; /* Opcional, para evitar que se estire demasiado */
 }
 
@@ -627,6 +627,7 @@ body.menu-page .search-bar input {
   flex-direction: column;
   font-weight: bold;
   color: #ffffff;
+  margin-top: 15px;	
 }
 .campos-unicos input,
 .campos-unicos select {
@@ -637,7 +638,7 @@ body.menu-page .search-bar input {
   border: 1px solid #ccc;
 }
 
-/* --- FORMULARIO DE TRASPASO TEMPORAL --- */
+/* --- FORMULARIO DE TRASPASOs --- */
 table input,
 table select {
   width: 100%;
@@ -734,6 +735,10 @@ table select {
   text-transform: uppercase;
 }
 
+body.formulario-traspaso.menu-page .content {
+  padding: 20px 30px !important;
+  color: white;
+}
 
 /* --- FIN ESTILOS  PARA EL SUBMODULO FORMULARIO DE TRASPASOS --- */
 
