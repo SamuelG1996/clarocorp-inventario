@@ -627,7 +627,6 @@ body.menu-page .search-bar input {
   flex-direction: column;
   font-weight: bold;
   color: #ffffff;
-  margin-top: 15px;	
 }
 .campos-unicos input,
 .campos-unicos select {
