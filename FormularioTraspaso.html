@@ -262,7 +262,7 @@ async function subirArchivoGuia(idSolicitud, archivo) {
     throw new Error("No se pudo subir la guía de remisión.");
   }
 
-  const { data: publicUrlData } = supabase.storage
+  const { data: publicUrlData } = supabaseClient.storage
     .from("traspasos")  // ← también aquí
     .getPublicUrl(nombre);
 
