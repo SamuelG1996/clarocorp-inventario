@@ -379,7 +379,18 @@ if (archivo.size > 10 * 1024 * 1024) {
 
   // Generar datos
   const fechaActual = new Date().toISOString();
+  const fechaPeru = new Date();
+  fechaPeru.setHours(fechaPeru.getHours() - 5); // Ajuste a UTC-5
   
+  // Formato: 05/06/2025 09:22 a.m.
+  const fechaFormateada = fechaPeru.toLocaleString("es-PE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
   const contrataSolicitante = localStorage.getItem("empresa") || "No definida";
   const usuarioSolicitante = localStorage.getItem("nombres") || "Anónimo";
   
@@ -504,7 +515,7 @@ console.log("Enviando a Teams...");
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    texto: `📝 Nueva solicitud registrada: ${idSolicitud}\n\n💼 Contrata: ${contrataSolicitante}\n\n🧭 Solicitante: ${usuarioSolicitante}\n\n🛠️ Usuario responsable: ${responsableNombre}\n\n📅 Fecha: ${fechaActual}`
+    texto: `📝 Nueva solicitud registrada: ID-${idSolicitud}\n\n💼 Contrata: ${contrataSolicitante}\n\n🧭 Solicitante: ${usuarioSolicitante}\n\n🛠️ Usuario responsable: ${responsableNombre}\n\n📅 Fecha: ${fechaFormateada}`
   })
 });
   
