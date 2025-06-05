@@ -345,20 +345,28 @@ if (archivo.size > 10 * 1024 * 1024) {
   }
 
   // Generar datos
-  let contador = parseInt(localStorage.getItem("contadorTraspasos") || "0") + 1;
-  localStorage.setItem("contadorTraspasos", contador);
-  const idSolicitud = `ID-${contador.toString().padStart(5, '0')}`;
   const fechaActual = new Date().toISOString();
   
   const contrataSolicitante = localStorage.getItem("empresa") || "No definida";
   const usuarioSolicitante = localStorage.getItem("nombres") || "Anónimo";
-  const responsableNombre = "Samuel Guardia";
-  const responsableCodigo = "C0000125";
+  
+  let responsableNombre = "";
+  let responsableCodigo = "";
+  
+  if (tipoMaterial === "PINT") {
+    responsableNombre = "Abel Chancahuaña";
+    responsableCodigo = "C0000325";
+  } else if (tipoMaterial === "PEXT") {
+    responsableNombre = "Samuel Guardia";
+    responsableCodigo = "C0000125";
+  } else {
+    responsableNombre = "No definido";
+    responsableCodigo = "ND";
+  }
 
   const solicitudes = JSON.parse(localStorage.getItem("traspasos") || "[]");
 
   const nuevaSolicitud = {
-    id: idSolicitud,
     contrata: contrataSolicitante,
     solicitante: usuarioSolicitante,
     area: areaSolicitante,
@@ -370,7 +378,10 @@ if (archivo.size > 10 * 1024 * 1024) {
     estado: "Pendiente"
   };
 
-const { error } = await supabase.from("traspasos").insert([nuevaSolicitud]);
+const { data, error } = await supabase
+  .from("traspasos")
+  .insert([nuevaSolicitud])
+  .select();
 
 if (error) {
   Swal.fire({
@@ -388,7 +399,7 @@ if (error) {
   });
   return;
 }
-
+const idSolicitud = data[0].id; // ← AQUÍ recuperas el ID real generado por Supabase
 // Inserta los detalles por cada fila a la tabla traspaso_detalle
 for (let fila of filas) {
   const celdas = fila.querySelectorAll("input, select");
