@@ -56,6 +56,7 @@
             <th>Fecha Último Estado</th>
             <th>Usuario Responsable</th>
             <th>Estado</th>
+            <th>Ver</th>
           </tr>
         </thead>
         <tbody>
@@ -186,74 +187,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       <td>${solicitud.responsable_nombre}</td>
       <td>${solicitud.estado}</td>
     `;
-    tbody.appendChild(fila);
-    fila.addEventListener("click", async () => {
-    const { data: detalles, error: errorDetalles } = await supabaseClient
-      .from("traspaso_detalle")
-      .select("*")
-      .eq("id_traspaso", solicitud.id);
+   
+    const btnVer = document.createElement("button");
+    btnVer.innerHTML = `<i class="fa fa-eye"></i>`;
+    btnVer.onclick = () => {
+      window.location.href = `DetalleSolicitud.html?id=${solicitud.id}`;
+    };
+      
+const celdaVer = document.createElement("td");
+celdaVer.appendChild(btnVer);
+fila.appendChild(celdaVer);
 
-    if (errorDetalles) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error al cargar detalles',
-        text: errorDetalles.message,
-        toast: true,
-        position: 'bottom-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        background: '#1e2022',
-        color: '#ffffff',
-        iconColor: '#e74c3c'
-      });
-      return;
-    }
-
-    // Generar tabla HTML de los detalles
-    const tablaHTML = `
-      <table border="1" style="width:100%; font-size:12px; text-align:left">
-        <tr>
-          <th>Código</th><th>Descripción</th><th>Cantidad</th><th>Serie</th><th>Lote</th><th>UMB</th>
-          <th>Almacén Origen</th><th>Centro Origen</th><th>Contrata Entrega</th>
-          <th>Almacén Destino</th><th>Centro Destino</th><th>Contrata Recibe</th><th>Guía</th>
-        </tr>
-        ${detalles.map(det => `
-          <tr>
-            <td>${det.codigo}</td>
-            <td>${det.descripcion}</td>
-            <td>${det.cantidad}</td>
-            <td>${det.serie}</td>
-            <td>${det.lote}</td>
-            <td>${det.umb}</td>
-            <td>${det.almacen_origen}</td>
-            <td>${det.centro_origen}</td>
-            <td>${det.contrata_entrega}</td>
-            <td>${det.almacen_destino}</td>
-            <td>${det.centro_destino}</td>
-            <td>${det.contrata_recibe}</td>
-            <td><a href="${det.guia_remision}" target="_blank">Ver Guía</a></td>
-          </tr>
-        `).join("")}
-      </table>
-    `;
-
-    Swal.fire({
-      icon: 'info',
-      title: `Detalles de la solicitud ${solicitud.id}`,
-      html: tablaHTML,
-      width: '90%',
-      background: '#1e2022',
-      color: '#ffffff',
-      iconColor: '#f39c12',
-      confirmButtonText: 'Cerrar',
-      confirmButtonColor: '#f39c12'
-    });
-  });
-  });
-
-
+tbody.appendChild(fila);
   
+  });
 });
 </script>
 
