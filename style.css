@@ -769,3 +769,9 @@ body.formulario-traspaso .acciones-tabla button {
   color: #333;
 }
 /* --- FIN ESTILOS PARA EL MODULO DE TRASPASOS --- */
+
+/* ---  ESTILOS PARA EL SUBMODULO DE DETALLE SOLICITUD --- */
+.detalle-solicitud .tabla-scroll {
+  width: 100%;
+}
+/* --- FIN ESTILOS PARA EL SUBMODULO DE DETALLE SOLICITUD --- */
