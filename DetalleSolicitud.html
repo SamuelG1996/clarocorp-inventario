@@ -21,8 +21,6 @@
 
     <h2><i class="fas fa-eye"></i> Detalle de Solicitud</h2>
 
-    <div id="infoSolicitud" class="campos-unicos"></div>
-
     <div class="tabla-datos">
       <div class="tabla-scroll">
         <table id="tablaDetalle">
@@ -39,45 +37,43 @@
 
       <div class="acciones-tabla">
         <button onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Descargar Excel</button>
-        <button onclick="location.href='Traspasos.html'"><i class="fas fa-arrow-left"></i> Regresar</button>
+        <button onclick="location.href='Traspaso.html'"><i class="fas fa-arrow-left"></i> Regresar</button>
       </div>
     </div>
   </div>
 
   <script>
+    const { createClient } = supabase;
+    const supabaseClient = createClient(
+      "https://bsrtuievwjtzwejuxqee.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI"
+    );
     const supabase = supabaseClient;
+
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get("id");
 
     document.addEventListener("DOMContentLoaded", async () => {
       if (!id) return;
 
-      const { data: cabecera, error: errorCabecera } = await supabase
-        .from("traspasos")
-        .select("*")
-        .eq("id", id)
-        .single();
-console.log("Buscando detalles con id_traspaso =", id);
       const { data: detalles, error: errorDetalles } = await supabase
         .from("traspaso_detalle")
         .select("*")
         .eq("id_traspaso", id);
 
-      if (errorCabecera || errorDetalles) {
-        Swal.fire({ icon: 'error', title: 'Error al cargar solicitud' });
+      if (errorDetalles) {
+        Swal.fire({ icon: 'error', title: 'Error al cargar detalles' });
         return;
       }
 
-      document.getElementById("infoSolicitud").innerHTML = `
-        <label><strong>ID:</strong><br><input type="text" value="${cabecera.id}" disabled></label>
-        <label><strong>Contrata:</strong><br><input type="text" value="${cabecera.contrata}" disabled></label>
-        <label><strong>Solicitante:</strong><br><input type="text" value="${cabecera.solicitante}" disabled></label>
-        <label><strong>Estado:</strong><br><input type="text" value="${cabecera.estado}" disabled></label>
-        <label><strong>Fecha Registro:</strong><br><input type="text" value="${new Date(cabecera.fecha_registro).toLocaleString('es-PE')}" disabled></label>
-        <label><strong>Responsable:</strong><br><input type="text" value="${cabecera.responsable_nombre || '-'}" disabled></label>
-      `;
-
       const tbody = document.querySelector("#tablaDetalle tbody");
+
+      if (detalles.length === 0) {
+        const filaVacia = document.createElement("tr");
+        filaVacia.innerHTML = `<td colspan="13" style="text-align:center;">No se encontraron detalles para esta solicitud.</td>`;
+        tbody.appendChild(filaVacia);
+      }
+
       detalles.forEach(det => {
         const fila = document.createElement("tr");
         fila.innerHTML = `
@@ -89,7 +85,6 @@ console.log("Buscando detalles con id_traspaso =", id);
         `;
         tbody.appendChild(fila);
       });
-      console.log("Detalles obtenidos:", detalles);
     });
 
     function exportarExcel() {
