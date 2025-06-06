@@ -70,13 +70,21 @@
 
       detalles.forEach(det => {
         const fila = document.createElement("tr");
-        fila.innerHTML = `
-          <td>${det.codigo}</td><td>${det.descripcion}</td><td>${det.cantidad}</td>
-          <td>${det.serie}</td><td>${det.lote}</td><td>${det.umb}</td>
-          <td>${det.almacen_origen}</td><td>${det.centro_origen}</td><td>${det.contrata_entrega}</td>
-          <td>${det.almacen_destino}</td><td>${det.centro_destino}</td><td>${det.contrata_recibe}</td>
-          <td><a href="${det.guia_remision}" target="_blank">Ver Guía</a></td>
-        `;
+       fila.innerHTML = `
+      <td>${det.codigo}</td>
+      <td>${det.descripcion}</td>
+      <td class="td-center">${det.cantidad}</td>
+      <td>${det.serie}</td>
+      <td class="td-center">${det.lote}</td>
+      <td class="td-center">${det.umb}</td>
+      <td class="td-center">${det.almacen_origen}</td>
+      <td class="td-center">${det.centro_origen}</td>
+      <td class="td-center">${det.contrata_entrega}</td>
+      <td class="td-center">${det.almacen_destino}</td>
+      <td class="td-center">${det.centro_destino}</td>
+      <td class="td-center">${det.contrata_recibe}</td>
+      <td class="td-center"><a href="${det.guia_remision}" target="_blank">Ver Guía</a></td>
+    `;
         tbody.appendChild(fila);
       });
     });
