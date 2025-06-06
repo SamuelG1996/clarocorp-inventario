@@ -51,7 +51,7 @@
         .select("*")
         .eq("id", id)
         .single();
-
+console.log("Buscando detalles con id_traspaso =", id);
       const { data: detalles, error: errorDetalles } = await supabase
         .from("traspaso_detalle")
         .select("*")
@@ -83,6 +83,7 @@
         `;
         tbody.appendChild(fila);
       });
+      console.log("Detalles obtenidos:", detalles);
     });
 
     function exportarExcel() {
