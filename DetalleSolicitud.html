@@ -10,6 +10,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body class="menu-page formulario-traspaso detalle-solicitud">
+  <div id="loader" class="loader-overlay">
+  <div class="spinner"></div>
+  </div>
   <div class="content">
     <a href="Traspaso.html" class="volver"><i class="fas fa-arrow-left"></i>Volver a Traspasos</a>
 
@@ -48,17 +51,26 @@
     const id = urlParams.get("id");
 
     document.addEventListener("DOMContentLoaded", async () => {
-      if (!id) return;
+  document.getElementById("loader").style.display = "flex"; // Mostrar loader
 
-      const { data: detalles, error: errorDetalles } = await supabase
-        .from("traspaso_detalle")
-        .select("*")
-        .eq("id_traspaso", id);
+ if (!id) {
+  document.getElementById("loader").style.display = "none";
+  Swal.fire({ icon: 'error', title: 'ID de solicitud no encontrado.' });
+  return;
+}
 
-      if (errorDetalles) {
-        Swal.fire({ icon: 'error', title: 'Error al cargar detalles' });
-        return;
-      }
+  const { data: detalles, error: errorDetalles } = await supabase
+    .from("traspaso_detalle")
+    .select("*")
+    .eq("id_traspaso", id);
+
+  document.getElementById("loader").style.display = "none"; // Ocultar loader
+
+  if (errorDetalles) {
+    Swal.fire({ icon: 'error', title: 'Error al cargar detalles' });
+    return;
+  }
+
 
       const tbody = document.querySelector("#tablaDetalle tbody");
 
