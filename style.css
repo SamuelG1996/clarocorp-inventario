@@ -782,4 +782,8 @@ body.formulario-traspaso .acciones-tabla button {
 .td-center {
   text-align: center;
 }
+
+.td-left {
+  text-align: left;
+}
 /* --- FIN ESTILOS PARA EL SUBMODULO DE DETALLE SOLICITUD --- */
