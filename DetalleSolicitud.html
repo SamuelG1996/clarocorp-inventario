@@ -50,25 +50,23 @@
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get("id");
 
- document.addEventListener("DOMContentLoaded", async () => {
-    mostrarLoader();
+document.addEventListener("DOMContentLoaded", async () => {
+  mostrarLoader();
 
-    if (!id) {
-      ocultarLoader();
-      Swal.fire({ icon: 'error', title: 'ID de solicitud no encontrado.' });
-      return;
-    }
+  if (!id) {
+    ocultarLoader();
+    Swal.fire({ icon: 'error', title: 'ID de solicitud no encontrado.' });
+    return;
+  }
 
+  try {
     const { data: detalles, error: errorDetalles } = await supabase
       .from("traspaso_detalle")
       .select("*")
       .eq("id_traspaso", id);
 
-    ocultarLoader();
-
     if (errorDetalles) {
-      Swal.fire({ icon: 'error', title: 'Error al cargar detalles' });
-      return;
+      throw errorDetalles;
     }
 
     const tbody = document.querySelector("#tablaDetalle tbody");
@@ -77,28 +75,34 @@
       const filaVacia = document.createElement("tr");
       filaVacia.innerHTML = `<td colspan="13" style="text-align:center;">No se encontraron detalles para esta solicitud.</td>`;
       tbody.appendChild(filaVacia);
+    } else {
+      detalles.forEach(det => {
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+          <td>${det.codigo}</td>
+          <td>${det.descripcion}</td>
+          <td class="td-center">${det.cantidad}</td>
+          <td class="td-left">${det.serie}</td>
+          <td class="td-center">${det.lote}</td>
+          <td class="td-center">${det.umb}</td>
+          <td class="td-center">${det.almacen_origen}</td>
+          <td class="td-center">${det.centro_origen}</td>
+          <td class="td-center">${det.contrata_entrega}</td>
+          <td class="td-center">${det.almacen_destino}</td>
+          <td class="td-center">${det.centro_destino}</td>
+          <td class="td-center">${det.contrata_recibe}</td>
+          <td class="td-center"><a href="${det.guia_remision}" target="_blank">Ver Guía</a></td>
+        `;
+        tbody.appendChild(fila);
+      });
     }
 
-    detalles.forEach(det => {
-      const fila = document.createElement("tr");
-      fila.innerHTML = `
-        <td>${det.codigo}</td>
-        <td>${det.descripcion}</td>
-        <td class="td-center">${det.cantidad}</td>
-        <td class="td-left">${det.serie}</td>
-        <td class="td-center">${det.lote}</td>
-        <td class="td-center">${det.umb}</td>
-        <td class="td-center">${det.almacen_origen}</td>
-        <td class="td-center">${det.centro_origen}</td>
-        <td class="td-center">${det.contrata_entrega}</td>
-        <td class="td-center">${det.almacen_destino}</td>
-        <td class="td-center">${det.centro_destino}</td>
-        <td class="td-center">${det.contrata_recibe}</td>
-        <td class="td-center"><a href="${det.guia_remision}" target="_blank">Ver Guía</a></td>
-      `;
-      tbody.appendChild(fila);
-    });
-  });
+  } catch (err) {
+    Swal.fire({ icon: 'error', title: 'Error al cargar datos', text: err.message });
+  } finally {
+    ocultarLoader(); // Siempre se oculta el loader, ocurra lo que ocurra
+  }
+});
 
   function exportarExcel() {
     const wb = XLSX.utils.book_new();
