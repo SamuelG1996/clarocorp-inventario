@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalle de Solicitud</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    .detalle-container {
+      padding: 20px;
+    }
+    .detalle-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .detalle-header h2 {
+      margin: 0;
+    }
+    .detalle-tabla {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .detalle-tabla th, .detalle-tabla td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    .acciones {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body class="menu-page">
+  <div class="sidebar">
+    <div>
+      <div class="logo">
+        <a href="Menu.html" style="text-decoration: none; color: inherit;">Portal Inventario</a>
+      </div>
+      <div class="menu">
+        <a href="Stock.html"><i class="fas fa-box"></i> Stock Contrata</a>
+        <a href="#"><i class="fas fa-warehouse"></i> Stock Claro</a>
+        <a href="Traspasos.html" class="active"><i class="fas fa-sync-alt"></i> Traspasos</a>
+        <a href="#"><i class="fas fa-truck"></i> Compras</a>
+        <a href="#"><i class="fas fa-chart-bar"></i> Reportes</a>
+        <a href="Perfil.html"><i class="fas fa-user-tie"></i> Mi Perfil</a>
+        <a href="#"><i class="fas fa-gear"></i> Configuración</a>
+      </div>
+    </div>
+    <div class="logout">
+      <a href="index.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </div>
+
+  <div class="content detalle-container">
+    <div class="detalle-header">
+      <h2><i class="fas fa-eye"></i> Detalle de Solicitud</h2>
+      <div class="acciones">
+        <button onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Descargar Excel</button>
+        <button onclick="location.href='Traspasos.html'"><i class="fas fa-arrow-left"></i> Regresar</button>
+      </div>
+    </div>
+
+    <div id="infoSolicitud"></div>
+    <table class="detalle-tabla" id="tablaDetalle">
+      <thead>
+        <tr>
+          <th>Código</th><th>Descripción</th><th>Cantidad</th><th>Serie</th><th>Lote</th><th>UMB</th>
+          <th>Alm. Origen</th><th>Centro Origen</th><th>Contrata Entrega</th>
+          <th>Alm. Destino</th><th>Centro Destino</th><th>Contrata Recibe</th><th>Guía</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    const supabase = supabaseClient;
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("id");
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (!id) return;
+
+      const { data: cabecera, error: errorCabecera } = await supabase
+        .from("traspasos")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      const { data: detalles, error: errorDetalles } = await supabase
+        .from("traspaso_detalle")
+        .select("*")
+        .eq("id_traspaso", id);
+
+      if (errorCabecera || errorDetalles) {
+        Swal.fire({ icon: 'error', title: 'Error al cargar solicitud' });
+        return;
+      }
+
+      document.getElementById("infoSolicitud").innerHTML = `
+        <p><strong>ID:</strong> ${cabecera.id}</p>
+        <p><strong>Contrata:</strong> ${cabecera.contrata}</p>
+        <p><strong>Solicitante:</strong> ${cabecera.solicitante}</p>
+        <p><strong>Estado:</strong> ${cabecera.estado}</p>
+        <p><strong>Fecha Registro:</strong> ${new Date(cabecera.fecha_registro).toLocaleString('es-PE')}</p>
+        <p><strong>Responsable:</strong> ${cabecera.responsable_nombre || '-'}</p>
+      `;
+
+      const tbody = document.querySelector("#tablaDetalle tbody");
+      detalles.forEach(det => {
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+          <td>${det.codigo}</td><td>${det.descripcion}</td><td>${det.cantidad}</td>
+          <td>${det.serie}</td><td>${det.lote}</td><td>${det.umb}</td>
+          <td>${det.almacen_origen}</td><td>${det.centro_origen}</td><td>${det.contrata_entrega}</td>
+          <td>${det.almacen_destino}</td><td>${det.centro_destino}</td><td>${det.contrata_recibe}</td>
+          <td><a href="${det.guia_remision}" target="_blank">Ver Guía</a></td>
+        `;
+        tbody.appendChild(fila);
+      });
+    });
+
+    function exportarExcel() {
+      const wb = XLSX.utils.book_new();
+      const tabla = document.getElementById("tablaDetalle");
+      const ws = XLSX.utils.table_to_sheet(tabla);
+      XLSX.utils.book_append_sheet(wb, ws, "DetalleSolicitud");
+      XLSX.writeFile(wb, `Solicitud_${id}.xlsx`);
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+  </script>
+  <script src="Js/Sesion.js"></script>
+</body>
+</html>
