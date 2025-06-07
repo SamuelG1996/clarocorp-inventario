@@ -32,10 +32,15 @@
         </table>
       </div>
 
-      <div class="acciones-tabla">
-        <button onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Descargar Excel</button>
-        <button onclick="location.href='Traspaso.html'"><i class="fas fa-arrow-left"></i> Regresar</button>
-      </div>
+    <div class="acciones-tabla">
+      <button onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Descargar Excel</button>
+      <button onclick="confirmarCambioEstado('Atendido')">
+        <i class="fas fa-check-circle"></i> Aprobar
+      </button>
+      <button onclick="confirmarCambioEstado('Observado')">
+        <i class="fas fa-exclamation-circle"></i> Observar
+      </button>
+    </div>
     </div>
   </div>
 
@@ -117,6 +122,74 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "index.html";
   }
 </script>
+
+<script>
+async function actualizarEstadoSolicitud(nuevoEstado) {
+  if (!id) return;
+
+  const { error } = await supabase
+    .from("traspasos")
+    .update({ estado: nuevoEstado, fecha_estado: new Date().toISOString() })
+    .eq("id", id);
+
+  if (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al actualizar estado',
+      text: error.message,
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#e74c3c'
+    });
+  } else {
+    Swal.fire({
+      icon: 'info',
+      title: `Solicitud ${nuevoEstado}`,
+      text: 'Se actualizó correctamente en Supabase.',
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
+    });
+
+    setTimeout(() => {
+      window.location.href = "Traspaso.html";
+    }, 1500);
+  }
+}
+</script>
+
+  <script>
+function confirmarCambioEstado(estado) {
+  Swal.fire({
+    title: `¿Confirmar cambio de estado a "${estado}"?`,
+    text: "Esta acción actualizará la solicitud en el sistema.",
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, confirmar',
+    cancelButtonText: 'Cancelar',
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12',
+    confirmButtonColor: '#28a745',
+    cancelButtonColor: '#dc3545'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      actualizarEstadoSolicitud(estado);
+    }
+  });
+}
+</script>
+  
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
 </body>
