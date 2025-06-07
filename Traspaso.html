@@ -15,6 +15,10 @@
 </script>
 </head>
 <body class="menu-page">
+  <!-- 🔄 LOADER -->
+  <div id="loader" class="loader-overlay">
+  <div class="spinner"></div>
+  </div>
   <div class="sidebar">
     <div>
       <div class="logo">
@@ -150,59 +154,66 @@
 }
   </script>
 
-<script>
-document.addEventListener("DOMContentLoaded", async () => {
-  const tbody = document.querySelector("#tablaTraspasos tbody");
-  const { data: solicitudes, error } = await supabaseClient
-    .from("traspasos")
-    .select("*")
-    .order("fecha_registro", { ascending: false });
 
-  if (error) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error al cargar datos',
-      text: error.message,
-      toast: true,
-      position: 'bottom-end',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      background: '#1e2022',
-      color: '#ffffff',
-      iconColor: '#e74c3c'
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      mostrarLoader(); // Mostrar loader antes de cargar datos
+
+      const tbody = document.querySelector("#tablaTraspasos tbody");
+
+      try {
+        const { data: solicitudes, error } = await supabaseClient
+          .from("traspasos")
+          .select("*")
+          .order("fecha_registro", { ascending: false });
+
+        if (error) throw error;
+
+        solicitudes.forEach(solicitud => {
+          const fila = document.createElement("tr");
+          fila.innerHTML = `
+            <td><input type="checkbox"></td>
+            <td>${solicitud.id}</td>
+            <td>${solicitud.contrata}</td>
+            <td>${solicitud.solicitante}</td>
+            <td>${new Date(solicitud.fecha_registro).toLocaleString('es-PE')}</td>
+            <td>${new Date(solicitud.fecha_estado).toLocaleString('es-PE')}</td>
+            <td>${solicitud.responsable_nombre}</td>
+            <td>${solicitud.estado}</td>
+          `;
+
+          const btnVer = document.createElement("button");
+          btnVer.innerHTML = `<i class="fa fa-eye"></i>`;
+          btnVer.onclick = () => {
+            window.location.href = `DetalleSolicitud.html?id=${solicitud.id}`;
+          };
+
+          const celdaVer = document.createElement("td");
+          celdaVer.appendChild(btnVer);
+          fila.appendChild(celdaVer);
+
+          tbody.appendChild(fila);
+        });
+
+      } catch (err) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al cargar datos',
+          text: err.message,
+          toast: true,
+          position: 'bottom-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          background: '#1e2022',
+          color: '#ffffff',
+          iconColor: '#e74c3c'
+        });
+      } finally {
+        ocultarLoader(); // Ocultar loader al finalizar
+      }
     });
-    return;
-  }
-
-  solicitudes.forEach(solicitud => {
-    const fila = document.createElement("tr");
-    fila.innerHTML = `
-      <td><input type="checkbox"></td>
-      <td>${solicitud.id}</td>
-      <td>${solicitud.contrata}</td>
-      <td>${solicitud.solicitante}</td>
-      <td>${new Date(solicitud.fecha_registro).toLocaleString('es-PE')}</td>
-      <td>${new Date(solicitud.fecha_estado).toLocaleString('es-PE')}</td>
-      <td>${solicitud.responsable_nombre}</td>
-      <td>${solicitud.estado}</td>
-    `;
-   
-    const btnVer = document.createElement("button");
-    btnVer.innerHTML = `<i class="fa fa-eye"></i>`;
-    btnVer.onclick = () => {
-      window.location.href = `DetalleSolicitud.html?id=${solicitud.id}`;
-    };
-      
-const celdaVer = document.createElement("td");
-celdaVer.appendChild(btnVer);
-fila.appendChild(celdaVer);
-
-tbody.appendChild(fila);
-  
-  });
-});
-</script>
+  </script>
 <script src="Js/Loader.js"></script>
 <script src="Js/Sesion.js"></script>
 </body>
