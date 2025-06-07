@@ -127,12 +127,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function actualizarEstadoSolicitud(nuevoEstado) {
   if (!id) return;
 
+  mostrarLoader(); // 🔄 Activar loader global
+
   const { error } = await supabase
     .from("traspasos")
     .update({ estado: nuevoEstado, fecha_estado: new Date().toISOString() })
     .eq("id", id);
 
   if (error) {
+    ocultarLoader(); // 🛑 Ocultar loader si hay error
+
     Swal.fire({
       icon: 'error',
       title: 'Error al actualizar estado',
