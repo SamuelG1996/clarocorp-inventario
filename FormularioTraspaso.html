@@ -251,7 +251,7 @@ async function subirArchivoGuia(idSolicitud, archivo) {
   const nombre = `${idSolicitud}_${archivo.name}`.replace(/\s+/g, "_");
 
   const { data, error } = await supabaseClient.storage
-    .from("traspasos")  // ← aquí usas tu bucket llamado "traspasos"
+    .from("traspasos")
     .upload(nombre, archivo, {
       cacheControl: "3600",
       upsert: true,
@@ -262,9 +262,15 @@ async function subirArchivoGuia(idSolicitud, archivo) {
     throw new Error("No se pudo subir la guía de remisión.");
   }
 
-  const { data: publicUrlData } = supabaseClient.storage
-    .from("traspasos")  // ← también aquí
+  // ✅ CORRECTO: Extraer el publicUrl del campo `data.publicUrl`
+  const { data: publicUrlData, error: urlError } = supabaseClient.storage
+    .from("traspasos")
     .getPublicUrl(nombre);
+
+  if (urlError || !publicUrlData) {
+    console.error("Error al obtener la URL pública:", urlError?.message);
+    throw new Error("No se pudo obtener la URL pública del archivo.");
+  }
 
   return publicUrlData.publicUrl;
 }
@@ -313,13 +319,33 @@ async function guardarSolicitud() {
     });
     return;
   }
+// 🚨 Validación de extensión permitida
+const extensionesPermitidas = ['pdf', 'jpg', 'jpeg', 'png'];
+const extension = archivo.name.split('.').pop().toLowerCase();
 
+if (!extensionesPermitidas.includes(extension)) {
+  Swal.fire({
+    icon: 'error',
+    title: 'Archivo no permitido',
+    text: 'Solo se permiten archivos PDF, JPG o PNG.',
+    toast: true,
+    position: 'bottom-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#e74c3c'
+  });
+  return;
+}
+  
   // 🚨 Validación de tamaño máximo 10MB
-if (archivo.size > 10 * 1024 * 1024) {
+if (archivo.size > 5 * 1024 * 1024) {
   Swal.fire({
     icon: 'error',
     title: 'Archivo muy grande',
-    text: 'El tamaño máximo permitido es 10 MB.',
+    text: 'El tamaño máximo permitido es 5 MB.',
     toast: true,
     position: 'bottom-end',
     showConfirmButton: false,
