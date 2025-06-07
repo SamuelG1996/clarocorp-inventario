@@ -40,6 +40,7 @@
       <button onclick="confirmarCambioEstado('Observado')">
         <i class="fas fa-exclamation-circle"></i> Observar
       </button>
+      <button id="btnDescargarGuia" style="display: none;"><i class="fas fa-download"></i> Descargar Guía Adjunta</button>
     </div>
     </div>
   </div>
@@ -74,8 +75,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       throw errorDetalles;
     }
 
+    const btnGuia = document.getElementById("btnDescargarGuia");
+    
+    if (detalles.length > 0 && detalles[0].guia_remision) {
+      btnGuia.style.display = "inline-block";
+      btnGuia.onclick = () => {
+        window.open(detalles[0].guia_remision, "_blank");
+      };
+    }
+    
     const tbody = document.querySelector("#tablaDetalle tbody");
-
+  
     if (detalles.length === 0) {
       const filaVacia = document.createElement("tr");
       filaVacia.innerHTML = `<td colspan="13" style="text-align:center;">No se encontraron detalles para esta solicitud.</td>`;
@@ -96,7 +106,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           <td class="td-center">${det.almacen_destino}</td>
           <td class="td-center">${det.centro_destino}</td>
           <td class="td-center">${det.contrata_recibe}</td>
-          <td class="td-center"><a href="${det.guia_remision}" target="_blank">Ver Guía</a></td>
+          <td class="td-center">${det.guia_remision_texto || '—'}</td>
         `;
         tbody.appendChild(fila);
       });
