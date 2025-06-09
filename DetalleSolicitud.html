@@ -61,7 +61,12 @@
 
 document.addEventListener("DOMContentLoaded", async () => {
   mostrarLoader();
+const rol = localStorage.getItem("rol");
 
+if (!["Administrador", "Supervisor", "Soporte"].includes(rol)) {
+  document.querySelector("button[onclick*='Aprobar']").style.display = "none";
+  document.querySelector("button[onclick*='Observar']").style.display = "none";
+}
   if (!id) {
     ocultarLoader();
     Swal.fire({ icon: 'error', title: 'ID de solicitud no encontrado.' });
