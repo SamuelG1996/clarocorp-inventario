@@ -232,7 +232,7 @@ async function editarDetalle() {
 
   const { data: solicitud, error } = await supabase
     .from("traspasos")
-    .select("estado, solicitante, responsable_nombre")
+    .select("estado, solicitante, responsable_nombre, responsable_codigo")
     .eq("id", id)
     .single();
 
@@ -247,6 +247,7 @@ async function editarDetalle() {
   const tieneRolPermitido = ["Administrador", "Supervisor"].includes(rol);
 
   if (estado === "Atendido" || estado === "Anulado") {
+    document.getElementById("btnEditar").disabled = true;
     Swal.fire({
       icon: 'info',
       title: `La solicitud tiene estado ${estado}`,
@@ -327,6 +328,8 @@ async function editarDetalle() {
             .update({ estado: "Pendiente", fecha_estado: new Date().toISOString() })
             .eq("id", id);
 
+          await enviarCorreo(solicitud.responsable_codigo, `La solicitud ID-${id} fue editada y actualmente se encuentra pendiente de atención.`);
+
           ocultarLoader();
           Swal.fire({
             icon: 'success',
@@ -348,8 +351,8 @@ async function editarDetalle() {
   } else {
     Swal.fire({
       icon: 'warning',
-      title: 'Acceso restringido',
-      text: 'La edición está permitida solo al solicitante o responsable, y solo si el estado es Observado.',
+      title: 'Sin permisos',
+      text: 'Solo puede editar la solicitud el solicitante o responsable y solo si la solicitud se encuentra observada.',
       toast: true,
       position: 'bottom-end',
       showConfirmButton: false,
