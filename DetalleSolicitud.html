@@ -335,8 +335,8 @@ async function editarDetalle() {
   } else {
     Swal.fire({
       icon: 'warning',
-      title: 'Sin permisos',
-      text: 'Solo puede editar la solicitud el solicitante, el responsable o un supervisor.',
+      title: 'Acceso restringido',
+      text: 'La edición está permitida solo al solicitante o responsable, y solo si el estado es Observado.',
       toast: true,
       position: 'bottom-end',
       showConfirmButton: false,
