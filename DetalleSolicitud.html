@@ -62,17 +62,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   mostrarLoader();
   const rol = localStorage.getItem("rol");
 
-  if (!["Administrador", "Supervisor", "Soporte"].includes(rol)) {
-    // Validar existencia de botones antes de ocultar
-    const btnAprobar = document.querySelector("button[onclick*='Aprobar']");
-    const btnObservar = document.querySelector("button[onclick*='Observar']");
-
-    if (btnAprobar) btnAprobar.style.display = "none";
-    if (btnObservar) btnObservar.style.display = "none";
-
-    ocultarLoader(); // ✅ Cierra loader
-    return; // ✅ Termina la ejecución completa
-  }
+// Ocultar botones para roles no autorizados, pero continuar carga
+if (!["Administrador", "Supervisor", "Soporte"].includes(rol)) {
+  const btnAprobar = document.querySelector("button[onclick*='Aprobar']");
+  const btnObservar = document.querySelector("button[onclick*='Observar']");
+  if (btnAprobar) btnAprobar.style.display = "none";
+  if (btnObservar) btnObservar.style.display = "none";
+}
+// NO hacemos return aquí, para que se cargue la tabla normalmente
 
   if (!id) {
     ocultarLoader();
