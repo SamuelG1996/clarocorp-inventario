@@ -25,7 +25,7 @@
             <tr>
               <th>Código</th><th>Descripción</th><th>Cantidad</th><th>Serie</th><th>Lote</th><th>UMB</th>
               <th>Alm. Origen</th><th>Centro Origen</th><th>Contrata Entrega</th>
-              <th>Alm. Destino</th><th>Centro Destino</th><th>Contrata Recibe</th><th>Guía</th>
+              <th>Alm. Destino</th><th>Centro Destino</th><th>Contrata Recibe</th><th>Guía</th><th>Observación</th><th>Contabilizado</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -107,6 +107,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           <td class="td-center">${det.centro_destino}</td>
           <td class="td-center">${det.contrata_recibe}</td>
           <td class="td-center">${det.guia_remision_texto || '—'}</td>
+          <td class="td-center">${det.contabilizado || '—'}</td>
+          <td class="td-left">${det.comentario_observacion || '—'}</td>
         `;
         tbody.appendChild(fila);
       });
@@ -134,19 +136,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 </script>
 
 <script>
-async function actualizarEstadoSolicitud(nuevoEstado) {
+async function actualizarEstadoSolicitud(nuevoEstado, campoExtra) {
   if (!id) return;
 
-  mostrarLoader(); // 🔄 Activar loader global
+  mostrarLoader();
+
+  const campos = {
+    estado: nuevoEstado,
+    fecha_estado: new Date().toISOString()
+  };
+
+  if (nuevoEstado === "Atendido") {
+    campos.contabilizado = campoExtra || null; // Guardar número de contabilizado
+  } else if (nuevoEstado === "Observado") {
+    campos.comentario_observacion = campoExtra || null; // Guardar comentario
+  }
 
   const { error } = await supabase
-    .from("traspasos")
-    .update({ estado: nuevoEstado, fecha_estado: new Date().toISOString() })
+    .from("traspaso_detalle")
+    .update(campos)
     .eq("id", id);
 
-  if (error) {
-    ocultarLoader(); // 🛑 Ocultar loader si hay error
+  ocultarLoader();
 
+  if (error) {
     Swal.fire({
       icon: 'error',
       title: 'Error al actualizar estado',
@@ -183,10 +196,26 @@ async function actualizarEstadoSolicitud(nuevoEstado) {
 </script>
 
   <script>
+<script>
 function confirmarCambioEstado(estado) {
+  let inputHtml = '';
+  
+  if (estado === 'Atendido') {
+    inputHtml = `
+      <input id="inputContabilizado" class="swal2-input" placeholder="Número de contabilizado (ej. 4954513366)" />
+    `;
+  } else if (estado === 'Observado') {
+    inputHtml = `
+      <textarea id="inputComentario" class="swal2-textarea" placeholder="Motivo de observación..."></textarea>
+    `;
+  }
+
   Swal.fire({
     title: `¿Confirmar cambio de estado a "${estado}"?`,
-    text: "Esta acción actualizará la solicitud en el sistema.",
+    html: `
+      <p>Esta acción actualizará la solicitud en el sistema.</p>
+      ${inputHtml}
+    `,
     icon: 'question',
     showCancelButton: true,
     confirmButtonText: 'Sí, confirmar',
@@ -195,10 +224,26 @@ function confirmarCambioEstado(estado) {
     color: '#ffffff',
     iconColor: '#f39c12',
     confirmButtonColor: '#28a745',
-    cancelButtonColor: '#dc3545'
+    cancelButtonColor: '#dc3545',
+    preConfirm: () => {
+      if (estado === 'Atendido') {
+        const val = document.getElementById("inputContabilizado").value.trim();
+        if (!val) {
+          Swal.showValidationMessage("Debe ingresar el número de contabilizado.");
+        }
+        return { campo: val };
+      } else if (estado === 'Observado') {
+        const val = document.getElementById("inputComentario").value.trim();
+        if (!val) {
+          Swal.showValidationMessage("Debe ingresar un comentario.");
+        }
+        return { campo: val };
+      }
+      return {};
+    }
   }).then((result) => {
     if (result.isConfirmed) {
-      actualizarEstadoSolicitud(estado);
+      actualizarEstadoSolicitud(estado, result.value?.campo || null);
     }
   });
 }
