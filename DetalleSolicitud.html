@@ -154,6 +154,7 @@ async function actualizarEstadoSolicitud(nuevoEstado, campoExtra) {
   let camposDetalle = {};
   if (nuevoEstado === "Atendido") {
     camposDetalle.contabilizado = campoExtra || null;
+      camposDetalle.comentario_observacion = "-"; // 👈 Sobrescribe cualquier comentario anterior
   } else if (nuevoEstado === "Observado") {
     camposDetalle.comentario_observacion = campoExtra || null;
   }
