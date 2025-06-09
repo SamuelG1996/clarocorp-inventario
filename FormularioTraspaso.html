@@ -272,18 +272,17 @@ async function subirArchivoGuia(idSolicitud, archivo) {
 
   // ✅ CORRECTO: Extraer el publicUrl del campo `data.publicUrl`
     const nombreSolo = extraerNombreArchivoDesdeURL(nombre);
-    
-    const { data: publicUrlData, error: urlError } = supabaseClient.storage
-      .from("traspasos")
-      .getPublicUrl(nombreSolo);
+    const { data: signedUrlData, error: signedUrlError } = await supabaseClient.storage
+  .from("traspasos")
+  .createSignedUrl(nombre, 60); // válido por 60 segundos
 
-  if (urlError || !publicUrlData) {
-    console.error("Error al obtener la URL pública:", urlError?.message);
-    throw new Error("No se pudo obtener la URL pública del archivo.");
-  }
-
-  return publicUrlData.publicUrl;
+if (signedUrlError) {
+  console.error("Error al obtener signed URL:", signedUrlError.message);
+  throw new Error("No se pudo generar el enlace de descarga.");
 }
+
+return signedUrlData.signedUrl;
+
 </script>
 
   
