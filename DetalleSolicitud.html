@@ -186,35 +186,41 @@ async function actualizarEstadoSolicitud(nuevoEstado, campoExtra) {
   }
 
   // 3. Enviar correo al solicitante si el estado es Atendido u Observado
-  let errorCorreo = null;
-  try {
-    const { data: solicitud, error: errorSolicitud } = await supabase
-      .from("traspasos")
-      .select("codigo_solicitante")
-      .eq("id", id)
-      .single();
+  const { data: solicitud, error: errorSolicitud } = await supabase
+  .from("traspasos")
+  .select("codigo_solicitante, solicitante")
+  .eq("id", id)
+  .single();
 
-    if (!errorSolicitud && solicitud?.codigo_solicitante) {
-      const { data: usuario, error: errorUsuario } = await supabase
-        .from("usuarios")
-        .select("email")
-        .eq("codigo", solicitud.codigo_solicitante)
-        .single();
-    
-    if (!errorUsuario && usuario?.email) {
-      await enviarCorreo({
-        to: usuario.email,
-        subject: `Solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}`,
-        body: nuevoEstado === "Pendiente"
-          ? `La solicitud ID-${id} fue editada y actualmente se encuentra pendiente de atención.`
-          : `La solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}.`
-      });
-    }
-    }
-  } catch (e) {
-    errorCorreo = e;
-    console.error("Error al enviar correo:", e);
+let codigoUsuario = solicitud?.codigo_solicitante;
+
+if (!codigoUsuario) {
+  const { data: userByName } = await supabase
+    .from("usuarios")
+    .select("codigo")
+    .ilike("nombre", `%${solicitud.solicitante}%`)
+    .maybeSingle();
+
+  codigoUsuario = userByName?.codigo;
+}
+
+if (codigoUsuario) {
+  const { data: usuario, error: errorUsuario } = await supabase
+    .from("usuarios")
+    .select("email")
+    .eq("codigo", codigoUsuario)
+    .single();
+
+  if (!errorUsuario && usuario?.email) {
+    await enviarCorreo({
+      to: usuario.email,
+      subject: `Solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}`,
+      body: nuevoEstado === "Pendiente"
+        ? `La solicitud ID-${id} fue editada y actualmente se encuentra pendiente de atención.`
+        : `La solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}.`
+    });
   }
+}
 
   ocultarLoader();
 
