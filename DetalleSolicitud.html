@@ -200,14 +200,16 @@ async function actualizarEstadoSolicitud(nuevoEstado, campoExtra) {
         .select("email")
         .eq("codigo", solicitud.codigo_solicitante)
         .single();
-
-      if (!errorUsuario && usuario?.email) {
-        await enviarCorreo({
-          to: usuario.email,
-          subject: `Solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}`,
-          body: `La solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}${nuevoEstado === "Pendiente" ? " y actualmente se encuentra pendiente de atención." : "."}`
-        });
-      }
+    
+    if (!errorUsuario && usuario?.email) {
+      await enviarCorreo({
+        to: usuario.email,
+        subject: `Solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}`,
+        body: nuevoEstado === "Pendiente"
+          ? `La solicitud ID-${id} fue editada y actualmente se encuentra pendiente de atención.`
+          : `La solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}.`
+      });
+    }
     }
   } catch (e) {
     errorCorreo = e;
