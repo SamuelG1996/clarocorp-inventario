@@ -58,17 +58,22 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get("id");
-
 document.addEventListener("DOMContentLoaded", async () => {
   mostrarLoader();
-const rol = localStorage.getItem("rol");
+  const rol = localStorage.getItem("rol");
 
-if (!["Administrador", "Supervisor", "Soporte"].includes(rol)) {
-  document.querySelector("button[onclick*='Aprobar']").style.display = "none";
-  document.querySelector("button[onclick*='Observar']").style.display = "none";
-  ocultarLoader(); // ✅ Añade esta línea
-  return; // ✅ Detén la ejecución del resto del código
-}
+  if (!["Administrador", "Supervisor", "Soporte"].includes(rol)) {
+    // Validar existencia de botones antes de ocultar
+    const btnAprobar = document.querySelector("button[onclick*='Aprobar']");
+    const btnObservar = document.querySelector("button[onclick*='Observar']");
+
+    if (btnAprobar) btnAprobar.style.display = "none";
+    if (btnObservar) btnObservar.style.display = "none";
+
+    ocultarLoader(); // ✅ Cierra loader
+    return; // ✅ Termina la ejecución completa
+  }
+
   if (!id) {
     ocultarLoader();
     Swal.fire({ icon: 'error', title: 'ID de solicitud no encontrado.' });
@@ -81,21 +86,25 @@ if (!["Administrador", "Supervisor", "Soporte"].includes(rol)) {
       .select("*")
       .eq("id_traspaso", id);
 
-    if (errorDetalles) {
-      throw errorDetalles;
-    }
+    if (errorDetalles) throw errorDetalles;
 
     const btnGuia = document.getElementById("btnDescargarGuia");
-    
     if (detalles.length > 0 && detalles[0].guia_remision) {
-      btnGuia.style.display = "inline-block";
-      btnGuia.onclick = () => {
-        window.open(detalles[0].guia_remision, "_blank");
-      };
+      if (btnGuia) {
+        btnGuia.style.display = "inline-block";
+        btnGuia.onclick = () => {
+          window.open(detalles[0].guia_remision, "_blank");
+        };
+      }
     }
-    
+
     const tbody = document.querySelector("#tablaDetalle tbody");
-  
+    if (!tbody) {
+      ocultarLoader();
+      Swal.fire({ icon: 'error', title: 'Tabla no encontrada.' });
+      return;
+    }
+
     if (detalles.length === 0) {
       const filaVacia = document.createElement("tr");
       filaVacia.innerHTML = `<td colspan="13" style="text-align:center;">No se encontraron detalles para esta solicitud.</td>`;
@@ -127,7 +136,7 @@ if (!["Administrador", "Supervisor", "Soporte"].includes(rol)) {
   } catch (err) {
     Swal.fire({ icon: 'error', title: 'Error al cargar datos', text: err.message });
   } finally {
-    ocultarLoader(); // Siempre se oculta el loader, ocurra lo que ocurra
+    ocultarLoader();
   }
 });
 
