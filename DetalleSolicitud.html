@@ -34,13 +34,16 @@
 
     <div class="acciones-tabla">
       <button onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Descargar Excel</button>
+            <button id="btnDescargarGuia" style="display: none;"><i class="fas fa-download"></i> Descargar Guía Adjunta</button>
       <button onclick="confirmarCambioEstado('Atendido')">
         <i class="fas fa-check-circle"></i> Aprobar
       </button>
       <button onclick="confirmarCambioEstado('Observado')">
         <i class="fas fa-exclamation-circle"></i> Observar
       </button>
-      <button id="btnDescargarGuia" style="display: none;"><i class="fas fa-download"></i> Descargar Guía Adjunta</button>
+      <button id="btnEditar" onclick="editarDetalle()">
+      <i class="fas fa-pen"></i> Editar Detalle
+      </button>
     </div>
     </div>
   </div>
@@ -207,6 +210,146 @@ async function actualizarEstadoSolicitud(nuevoEstado, campoExtra) {
 }
 </script>
 
+<script>
+async function editarDetalle() {
+  const usuarioActual = localStorage.getItem("usuario") || "";
+  const rol = localStorage.getItem("rol") || "";
+  
+  // Obtener estado + creador + responsable desde traspasos
+  const { data: solicitud, error } = await supabase
+    .from("traspasos")
+    .select("estado, usuario_creador, usuario_responsable")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    Swal.fire({ icon: 'error', title: 'Error al consultar solicitud', text: error.message });
+    return;
+  }
+
+  const estado = solicitud.estado;
+  const esCreador = solicitud.usuario_creador === usuarioActual;
+  const esResponsable = solicitud.usuario_responsable === usuarioActual;
+  const tieneRolPermitido = ["Administrador", "Supervisor"].includes(rol);
+
+  // Bloquear si ya está Atendido o Anulado
+  if (estado === "Atendido" || estado === "Anulado") {
+      btnEditar.disabled = true; // Desactiva botón editar
+    Swal.fire({
+      icon: 'info',
+      title: `La solicitud tiene estado ${estado}`,
+      text: 'No se puede editar una solicitud que ya fue atendida o anulada.',
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
+    });
+    return;
+  }
+
+  // Solo permitir edición si cumple las condiciones
+  if (estado === "Observado" && (esCreador || esResponsable || tieneRolPermitido)) {
+    // Reemplaza cada <td> editable por un <input> (excepto los campos observación y contabilizado)
+    const filas = document.querySelectorAll("#tablaDetalle tbody tr");
+    filas.forEach(fila => {
+      const celdas = fila.querySelectorAll("td");
+     // Índices de las columnas editables (ver tabla HTML original)
+    const camposEditables = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; 
+    
+    camposEditables.forEach(i => {
+      const texto = celdas[i].innerText;
+      celdas[i].innerHTML = `<input value="${texto}" class="swal2-input" style="width:100%; font-size: 12px;" />`;
+  });
+    });
+
+    // Confirmar cambios
+    Swal.fire({
+      title: '¿Guardar cambios?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Guardar',
+      cancelButtonText: 'Cancelar',
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        mostrarLoader();
+
+        // Obtener nuevas cantidades desde los inputs
+        const nuevasFilas = document.querySelectorAll("#tablaDetalle tbody tr");
+        const updates = [];
+
+        nuevasFilas.forEach(fila => {
+          const inputs = fila.querySelectorAll("input");
+          const codigo = fila.children[0].innerText; // Asumimos que código es PK compuesta
+
+          updates.push({
+            codigo: codigo,
+            cantidad: inputs[0].value.trim(),
+            serie: inputs[1].value.trim(),
+            lote: inputs[2].value.trim(),
+            umb: inputs[3].value.trim()
+          });
+        });
+
+        // Enviar actualizaciones una por una
+        for (let item of updates) {
+          await supabase
+            .from("traspaso_detalle")
+            .update({
+              cantidad: item.cantidad,
+              serie: item.serie,
+              lote: item.lote,
+              umb: item.umb
+            })
+            .eq("id_traspaso", id)
+            .eq("codigo", item.codigo); // Agrega más condiciones si tu PK es compuesta
+        }
+
+        // Cambiar estado a Pendiente
+        await supabase
+          .from("traspasos")
+          .update({ estado: "Pendiente", fecha_estado: new Date().toISOString() })
+          .eq("id", id);
+
+        ocultarLoader();
+        Swal.fire({
+          icon: 'success',
+          title: 'Editado con éxito',
+          text: 'La solicitud ha sido actualizada.',
+          toast: true,
+          position: 'bottom-end',
+          showConfirmButton: false,
+          timer: 3000,
+          background: '#1e2022',
+          color: '#ffffff',
+          iconColor: '#2ecc71'
+        });
+
+        setTimeout(() => location.reload(), 1500);
+      }
+    });
+
+  } else {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Sin permisos',
+      text: 'Solo puede editar la solicitud el usuario que la creo o el responsable.',
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
+    });
+  }
+}
+</script>
 
 <script>
 async function confirmarCambioEstado(estado) {
