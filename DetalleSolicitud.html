@@ -356,7 +356,24 @@ async function editarDetalle() {
 
 <script>
 async function confirmarCambioEstado(estado) {
- 
+  const rol = localStorage.getItem("rol") || "";
+
+  // Bloqueo por roles
+  if (!["Administrador", "Supervisor", "Soporte"].includes(rol)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Acción no permitida',
+      text: 'Tu rol no tiene permisos para aprobar u observar solicitudes.',
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#e74c3c'
+    });
+    return; // 🔒 Evita que continúe ejecutando
+  }
     // Verifica el estado actual desde la tabla 'traspasos'
   const { data: solicitudActual, error: errorEstado } = await supabase
     .from("traspasos")
