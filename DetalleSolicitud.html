@@ -170,7 +170,7 @@ async function actualizarEstadoSolicitud(nuevoEstado, campoExtra) {
   let camposDetalle = {};
   if (nuevoEstado === "Atendido") {
     camposDetalle.contabilizado = campoExtra || null;
-      camposDetalle.comentario_observacion = "-"; // 👈 Sobrescribe cualquier comentario anterior
+    camposDetalle.comentario_observacion = "-";
   } else if (nuevoEstado === "Observado") {
     camposDetalle.comentario_observacion = campoExtra || null;
   }
@@ -183,6 +183,35 @@ async function actualizarEstadoSolicitud(nuevoEstado, campoExtra) {
       .eq("id_traspaso", id);
 
     errorDetalle = error;
+  }
+
+  // 3. Enviar correo al solicitante si el estado es Atendido u Observado
+  let errorCorreo = null;
+  try {
+    const { data: solicitud, error: errorSolicitud } = await supabase
+      .from("traspasos")
+      .select("codigo_solicitante")
+      .eq("id", id)
+      .single();
+
+    if (!errorSolicitud && solicitud?.codigo_solicitante) {
+      const { data: usuario, error: errorUsuario } = await supabase
+        .from("usuarios")
+        .select("email")
+        .eq("codigo", solicitud.codigo_solicitante)
+        .single();
+
+      if (!errorUsuario && usuario?.email) {
+        await enviarCorreo({
+          to: usuario.email,
+          subject: `Solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}`,
+          body: `La solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}${nuevoEstado === "Pendiente" ? " y actualmente se encuentra pendiente de atención." : "."}`
+        });
+      }
+    }
+  } catch (e) {
+    errorCorreo = e;
+    console.error("Error al enviar correo:", e);
   }
 
   ocultarLoader();
@@ -222,6 +251,7 @@ async function actualizarEstadoSolicitud(nuevoEstado, campoExtra) {
   }
 }
 </script>
+
 
 <script>
 let modoEdicionActivo = false;
