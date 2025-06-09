@@ -66,6 +66,8 @@ const rol = localStorage.getItem("rol");
 if (!["Administrador", "Supervisor", "Soporte"].includes(rol)) {
   document.querySelector("button[onclick*='Aprobar']").style.display = "none";
   document.querySelector("button[onclick*='Observar']").style.display = "none";
+  ocultarLoader(); // ✅ Añade esta línea
+  return; // ✅ Detén la ejecución del resto del código
 }
   if (!id) {
     ocultarLoader();
