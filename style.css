@@ -606,7 +606,7 @@ body.menu-page .search-bar input {
 
 /* Tabla dentro del contenedor */
 .tabla-scroll table {
-  width: max-content; /* se adapta al contenido */
+
   min-width: 90%;
   border-collapse: collapse;
 }
