@@ -60,6 +60,50 @@
     </div>
   </div>
     </div>
+
+<script>
+    const supabase = window.supabase.createClient(
+      'https://bsrtuievwjtzwejuxqee.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6InB1YmxpYyIsImlhdCI6MTY4NzcwNTYwMCwiZXhwIjoxOTAzMjgxNjAwfQ.TjX_dPrKdw0lXEVwUlXtHJBFpCXDlWl9MM5txaxV-S0'
+    );
+
+    async function cargarSeries() {
+      const { data, error } = await supabase.from('series_contrata').select('*');
+      const tbody = document.getElementById("series-body");
+      tbody.innerHTML = "";
+
+      if (error) {
+        console.error("Error al cargar series:", error);
+        return;
+      }
+
+      data.forEach(serie => {
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+         <td>${serie.codigo || ''}</td>
+        <td>${serie.descripcion || ''}</td>
+        <td>${serie.centro || ''}</td>
+        <td>${serie.almacen || ''}</td>
+        <td>${serie.lote || ''}</td>
+        <td>${serie.numero_serie || ''}</td>
+        <td>${serie.empresa || ''}</td>
+        <td>${formatearFecha(serie.fecha_ingreso)}</td>
+        <td>${serie.estado_contrata || ''}</td>
+        <td>${serie.sot || ''}</td>
+        <td>${serie.cliente || ''}</td>
+        <td>${serie.id_devolucion || ''}</td>
+        <td>${formatearFecha(serie.fecha_estado_contrata)}</td>
+        <td>${serie.comentario_contrata || ''}</td>
+        <td>${serie.antiguamiento || ''}</td>
+        <td>${serie.estado_soporte || ''}</td>
+        <td>${serie.comentario_soporte || ''}</td>
+        <td>${formatearFecha(serie.fecha_estado_soporte)}</td>
+        `;
+        tbody.appendChild(fila);
+      });
+    }
+</script>
+  
   <script>
     function logout() {
       localStorage.clear();
@@ -101,6 +145,10 @@ async function guardarCambios() {
   });
 }
   </script>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", cargarSeries);
+</script>
   
   <script src="Js/Sesion.js"></script>
 </body>
