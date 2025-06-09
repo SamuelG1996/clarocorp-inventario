@@ -247,6 +247,14 @@ function cargarDesdeExcel() {
 </script>
 
 <script>
+  function extraerNombreArchivoDesdeURL(urlCompleta) {
+  // Extrae solo el nombre, después de "traspasos/"
+  const partes = urlCompleta.split("traspasos/");
+  return partes.length > 1 ? partes[1] : urlCompleta;
+}
+</script>
+  
+<script>
 async function subirArchivoGuia(idSolicitud, archivo) {
   const nombre = `${idSolicitud}_${archivo.name}`.replace(/\s+/g, "_");
 
@@ -263,9 +271,11 @@ async function subirArchivoGuia(idSolicitud, archivo) {
   }
 
   // ✅ CORRECTO: Extraer el publicUrl del campo `data.publicUrl`
-  const { data: publicUrlData, error: urlError } = supabaseClient.storage
-    .from("traspasos")
-    .getPublicUrl(nombre);
+    const nombreSolo = extraerNombreArchivoDesdeURL(nombre);
+    
+    const { data: publicUrlData, error: urlError } = supabaseClient.storage
+      .from("traspasos")
+      .getPublicUrl(nombreSolo);
 
   if (urlError || !publicUrlData) {
     console.error("Error al obtener la URL pública:", urlError?.message);
