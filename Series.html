@@ -18,16 +18,15 @@
     <h2><i class="fas fa-barcode"></i> Control de Series</h2>
 
     <div class="acciones-tabla acciones-series">
+          <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Buscar por serie, código, lote..." onkeyup="filtrarTabla()">
+    </div>
       <button onclick="descargarExcelSeries()">
         <i class="fas fa-file-excel"></i> Descargar Excel
       </button>
       <button onclick="guardarCambios()">
         <i class="fas fa-save"></i> Grabar
       </button>
-    </div>
-
-    <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Buscar por serie, código, lote..." onkeyup="filtrarTabla()">
     </div>
 
       <div class="tabla-datos">
