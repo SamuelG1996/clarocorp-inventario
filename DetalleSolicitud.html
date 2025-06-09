@@ -234,7 +234,6 @@ async function editarDetalle() {
   const tieneRolPermitido = ["Administrador", "Supervisor"].includes(rol);
 
   if (estado === "Atendido" || estado === "Anulado") {
-    document.getElementById("btnEditar").disabled = true;
     Swal.fire({
       icon: 'info',
       title: `La solicitud tiene estado ${estado}`,
