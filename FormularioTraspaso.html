@@ -454,17 +454,18 @@ if (archivo.size > 5 * 1024 * 1024) {
 
   const solicitudes = JSON.parse(localStorage.getItem("traspasos") || "[]");
 
-  const nuevaSolicitud = {
-    contrata: contrataSolicitante,
-    solicitante: usuarioSolicitante,
-    area: areaSolicitante,
-    datos: datosSolicitante,
-    fecha_registro: fechaActual,
-    fecha_estado: fechaActual,
-    responsable_nombre: responsableNombre,
-    responsable_codigo: responsableCodigo,
-    estado: "Pendiente"
-  };
+const nuevaSolicitud = {
+  contrata: contrataSolicitante,
+  solicitante: usuarioSolicitante,
+  area: areaSolicitante,
+  datos: datosSolicitante,
+  fecha_registro: fechaActual,
+  fecha_estado: fechaActual,
+  responsable_nombre: responsableNombre,
+  responsable_codigo: responsableCodigo,
+  estado: "Pendiente",
+  codigo_solicitante: localStorage.getItem("usuario") // ✅ ESTA ES LA NUEVA LÍNEA
+};
 
 const { data, error } = await supabaseClient
   .from("traspasos")
