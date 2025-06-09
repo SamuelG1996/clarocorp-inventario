@@ -604,12 +604,7 @@ body.menu-page .search-bar input {
   max-width: 100%;
 }
 
-/* Tabla dentro del contenedor */
-.tabla-scroll table {
 
-  min-width: 90%;
-  border-collapse: collapse;
-}
 /* --- FIN DE ESTILOS  PARA EL SUBMODULO SERIES --- */
 
 /* --- ESTILOS  PARA EL SUBMODULO FORMULARIO DE TRASPASOS --- */
