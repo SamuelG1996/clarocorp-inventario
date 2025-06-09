@@ -141,29 +141,40 @@ async function actualizarEstadoSolicitud(nuevoEstado, campoExtra) {
 
   mostrarLoader();
 
-  const campos = {
-    estado: nuevoEstado,
-    fecha_estado: new Date().toISOString()
-  };
+  // 1. Actualizar estado general en traspasos
+  const { error: errorTraspasos } = await supabase
+    .from("traspasos")
+    .update({
+      estado: nuevoEstado,
+      fecha_estado: new Date().toISOString()
+    })
+    .eq("id", id);
 
+  // 2. Actualizar detalle según estado
+  let camposDetalle = {};
   if (nuevoEstado === "Atendido") {
-    campos.contabilizado = campoExtra || null; // Guardar número de contabilizado
+    camposDetalle.contabilizado = campoExtra || null;
   } else if (nuevoEstado === "Observado") {
-    campos.comentario_observacion = campoExtra || null; // Guardar comentario
+    camposDetalle.comentario_observacion = campoExtra || null;
   }
 
-  const { error } = await supabase
-    .from("traspaso_detalle")
-    .update(campos)
-    .eq("id", id);
+  let errorDetalle = null;
+  if (Object.keys(camposDetalle).length > 0) {
+    const { error } = await supabase
+      .from("traspaso_detalle")
+      .update(camposDetalle)
+      .eq("id_traspaso", id);
+
+    errorDetalle = error;
+  }
 
   ocultarLoader();
 
-  if (error) {
+  if (errorTraspasos || errorDetalle) {
     Swal.fire({
       icon: 'error',
-      title: 'Error al actualizar estado',
-      text: error.message,
+      title: 'Error al actualizar',
+      text: (errorTraspasos || errorDetalle)?.message || 'Error desconocido.',
       toast: true,
       position: 'bottom-end',
       showConfirmButton: false,
