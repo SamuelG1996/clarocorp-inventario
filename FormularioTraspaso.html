@@ -288,6 +288,7 @@ return signedUrlData.signedUrl;
   
 <script>
 async function guardarSolicitud() {
+    mostrarLoader(); // <- Loader
   const tipoMaterial = document.getElementById("tipoMaterial").value;
   const areaSolicitante = document.getElementById("areaSolicitante").value;
   const datosSolicitante = document.getElementById("datosSolicitante").value;
@@ -309,6 +310,7 @@ async function guardarSolicitud() {
       color: '#ffffff',
       iconColor: '#f39c12'
     });
+      ocultarLoader(); 
     return;
   }
 
@@ -326,6 +328,7 @@ async function guardarSolicitud() {
       color: '#ffffff',
       iconColor: '#f39c12'
     });
+      ocultarLoader(); 
     return;
   }
 // 🚨 Validación de extensión permitida
@@ -346,6 +349,7 @@ if (!extensionesPermitidas.includes(extension)) {
     color: '#ffffff',
     iconColor: '#e74c3c'
   });
+    ocultarLoader(); 
   return;
 }
   
@@ -364,6 +368,7 @@ if (archivo.size > 5 * 1024 * 1024) {
     color: '#ffffff',
     iconColor: '#e74c3c'
   });
+    ocultarLoader(); 
   return;
 }
   
@@ -387,6 +392,7 @@ if (archivo.size > 5 * 1024 * 1024) {
           color: '#ffffff',
           iconColor: '#f39c12'
         });
+          ocultarLoader(); 
         return;
       }
 
@@ -406,6 +412,7 @@ if (archivo.size > 5 * 1024 * 1024) {
             color: '#ffffff',
             iconColor: '#f39c12'
           });
+            ocultarLoader(); 
           return;
         }
       }
@@ -475,6 +482,7 @@ if (error) {
     color: '#ffffff',
     iconColor: '#e74c3c'
   });
+    ocultarLoader(); 
   return;
 }
 const idSolicitud = data[0].id;
@@ -496,6 +504,7 @@ try {
     color: '#ffffff',
     iconColor: '#e74c3c'
   });
+  ocultarLoader(); // 👈 Asegura que el loader se oculte si falla la subida
   return;
 }
 // Inserta los detalles por cada fila a la tabla traspaso_detalle
@@ -539,6 +548,7 @@ for (let fila of filas) {
       color: '#ffffff',
       iconColor: '#e74c3c'
     });
+      ocultarLoader(); 
     return;
   }
 }
@@ -567,7 +577,7 @@ console.log("Enviando a Teams...");
     color: '#ffffff',
     iconColor: '#2ecc71'
   });
-
+ocultarLoader(); // <- Cierre Loader
 
   
 
@@ -575,7 +585,10 @@ console.log("Enviando a Teams...");
 }
 </script>
 
-
+<div id="loader" style="display:none;">
+  <div class="spinner"></div>
+</div>
+<script src="Js/Loader.js"></script>
 <script src="Js/Sesion.js"></script>
 </body>
 </html>
