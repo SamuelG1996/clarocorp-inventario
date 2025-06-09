@@ -211,11 +211,12 @@ async function actualizarEstadoSolicitud(nuevoEstado, campoExtra) {
 </script>
 
 <script>
+let modoEdicionActivo = false;
+
 async function editarDetalle() {
   const usuarioActual = localStorage.getItem("usuario") || "";
   const rol = localStorage.getItem("rol") || "";
 
-  // Obtener estado + solicitante + responsable desde traspasos
   const { data: solicitud, error } = await supabase
     .from("traspasos")
     .select("estado, solicitante, responsable_nombre")
@@ -232,9 +233,8 @@ async function editarDetalle() {
   const esResponsable = solicitud.responsable_nombre === usuarioActual;
   const tieneRolPermitido = ["Administrador", "Supervisor"].includes(rol);
 
-  // Bloquear si ya está Atendido o Anulado
   if (estado === "Atendido" || estado === "Anulado") {
-    document.getElementById("btnEditar").disabled = true; // Desactiva botón editar
+    document.getElementById("btnEditar").disabled = true;
     Swal.fire({
       icon: 'info',
       title: `La solicitud tiene estado ${estado}`,
@@ -250,90 +250,89 @@ async function editarDetalle() {
     return;
   }
 
-  // Solo permitir edición si cumple las condiciones
   if (estado === "Observado" && (esCreador || esResponsable || tieneRolPermitido)) {
     const filas = document.querySelectorAll("#tablaDetalle tbody tr");
 
-    filas.forEach(fila => {
-      const celdas = fila.querySelectorAll("td");
-
-      // Índices de columnas editables: cantidad, serie, lote, umb
-      const camposEditables = [2, 3, 4, 5];
-
-      camposEditables.forEach(i => {
-        const texto = celdas[i].innerText;
-        celdas[i].innerHTML = `<input value="${texto}" class="swal2-input" style="width:100%; font-size: 12px;" />`;
+    if (!modoEdicionActivo) {
+      filas.forEach(fila => {
+        const celdas = fila.querySelectorAll("td");
+        const camposEditables = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        camposEditables.forEach(i => {
+          const texto = celdas[i].innerText;
+          celdas[i].innerHTML = `<input value="${texto}" class="swal2-input" style="width:100%; font-size: 12px;" />`;
+        });
       });
-    });
+      modoEdicionActivo = true;
+      document.getElementById("btnEditar").innerHTML = `<i class="fas fa-save"></i> Guardar Cambios`;
+    } else {
+      Swal.fire({
+        title: '¿Guardar cambios?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar',
+        background: '#1e2022',
+        color: '#ffffff',
+        iconColor: '#f39c12'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          mostrarLoader();
 
-    // Confirmar cambios
-    Swal.fire({
-      title: '¿Guardar cambios?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Guardar',
-      cancelButtonText: 'Cancelar',
-      background: '#1e2022',
-      color: '#ffffff',
-      iconColor: '#f39c12',
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        mostrarLoader();
+          const nuevasFilas = document.querySelectorAll("#tablaDetalle tbody tr");
+          const updates = [];
 
-        const nuevasFilas = document.querySelectorAll("#tablaDetalle tbody tr");
-        const updates = [];
+          nuevasFilas.forEach(fila => {
+            const inputs = fila.querySelectorAll("input");
+            const codigo = fila.children[0].innerText;
 
-        nuevasFilas.forEach(fila => {
-          const inputs = fila.querySelectorAll("input");
-          const codigo = fila.children[0].innerText;
-
-          updates.push({
-            codigo: codigo,
-            cantidad: inputs[0].value.trim(),
-            serie: inputs[1].value.trim(),
-            lote: inputs[2].value.trim(),
-            umb: inputs[3].value.trim()
+            updates.push({
+              codigo: codigo,
+              descripcion: inputs[0].value.trim(),
+              cantidad: inputs[1].value.trim(),
+              serie: inputs[2].value.trim(),
+              lote: inputs[3].value.trim(),
+              umb: inputs[4].value.trim(),
+              almacen_origen: inputs[5].value.trim(),
+              centro_origen: inputs[6].value.trim(),
+              contrata_entrega: inputs[7].value.trim(),
+              almacen_destino: inputs[8].value.trim(),
+              centro_destino: inputs[9].value.trim(),
+              contrata_recibe: inputs[10].value.trim(),
+              guia_remision_texto: inputs[11].value.trim()
+            });
           });
-        });
 
-        // Enviar actualizaciones
-        for (let item of updates) {
+          for (let item of updates) {
+            await supabase
+              .from("traspaso_detalle")
+              .update(item)
+              .eq("id_traspaso", id)
+              .eq("codigo", item.codigo);
+          }
+
           await supabase
-            .from("traspaso_detalle")
-            .update({
-              cantidad: item.cantidad,
-              serie: item.serie,
-              lote: item.lote,
-              umb: item.umb
-            })
-            .eq("id_traspaso", id)
-            .eq("codigo", item.codigo);
+            .from("traspasos")
+            .update({ estado: "Pendiente", fecha_estado: new Date().toISOString() })
+            .eq("id", id);
+
+          ocultarLoader();
+          Swal.fire({
+            icon: 'success',
+            title: 'Editado con éxito',
+            text: 'La solicitud ha sido actualizada.',
+            toast: true,
+            position: 'bottom-end',
+            showConfirmButton: false,
+            timer: 3000,
+            background: '#1e2022',
+            color: '#ffffff',
+            iconColor: '#2ecc71'
+          });
+
+          setTimeout(() => location.reload(), 1500);
         }
-
-        // Cambiar estado a Pendiente
-        await supabase
-          .from("traspasos")
-          .update({ estado: "Pendiente", fecha_estado: new Date().toISOString() })
-          .eq("id", id);
-
-        ocultarLoader();
-        Swal.fire({
-          icon: 'success',
-          title: 'Editado con éxito',
-          text: 'La solicitud ha sido actualizada.',
-          toast: true,
-          position: 'bottom-end',
-          showConfirmButton: false,
-          timer: 3000,
-          background: '#1e2022',
-          color: '#ffffff',
-          iconColor: '#2ecc71'
-        });
-
-        setTimeout(() => location.reload(), 1500);
-      }
-    });
-
+      });
+    }
   } else {
     Swal.fire({
       icon: 'warning',
