@@ -209,7 +209,49 @@ async function actualizarEstadoSolicitud(nuevoEstado, campoExtra) {
 
 
 <script>
-function confirmarCambioEstado(estado) {
+async function confirmarCambioEstado(estado) {
+ 
+    // Verifica el estado actual desde la tabla 'traspasos'
+  const { data: solicitudActual, error: errorEstado } = await supabase
+    .from("traspasos")
+    .select("estado")
+    .eq("id", id)
+    .single();
+
+  if (errorEstado) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al verificar estado actual',
+      text: errorEstado.message,
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#e74c3c'
+    });
+    return;
+  }
+
+  if (solicitudActual.estado === "Atendido" || solicitudActual.estado === "Anulado") {
+    Swal.fire({
+      icon: 'info',
+      title: `Solicitud ${solicitudActual.estado.toLowerCase()}`,
+      text: 'No se puede modificar el estado una vez que ha sido atendido o anulado.',
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
+    });
+    return;
+  }
+  
   let inputHtml = '';
   
   if (estado === 'Atendido') {
@@ -237,22 +279,24 @@ function confirmarCambioEstado(estado) {
     iconColor: '#f39c12',
     confirmButtonColor: '#28a745',
     cancelButtonColor: '#dc3545',
-    preConfirm: () => {
-      if (estado === 'Atendido') {
-        const val = document.getElementById("inputContabilizado").value.trim();
-        if (!val) {
-          Swal.showValidationMessage("Debe ingresar el número de contabilizado.");
-        }
-        return { campo: val };
-      } else if (estado === 'Observado') {
-        const val = document.getElementById("inputComentario").value.trim();
-        if (!val) {
-          Swal.showValidationMessage("Debe ingresar un comentario.");
-        }
-        return { campo: val };
-      }
-      return {};
+   preConfirm: () => {
+  if (estado === 'Atendido') {
+    const val = document.getElementById("inputContabilizado").value.trim();
+    if (!val) {
+      Swal.showValidationMessage("Debe ingresar el número de contabilizado.");
+      return;
     }
+    return { campo: val };
+  } else if (estado === 'Observado') {
+    const val = document.getElementById("inputComentario").value.trim();
+    if (!val) {
+      Swal.showValidationMessage("Debe ingresar un comentario.");
+      return; // ✅ Este faltaba
+    }
+    return { campo: val };
+  }
+  return { campo: null };
+}
   }).then((result) => {
     if (result.isConfirmed) {
       actualizarEstadoSolicitud(estado, result.value?.campo || null);
