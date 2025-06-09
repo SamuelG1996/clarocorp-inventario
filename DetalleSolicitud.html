@@ -238,7 +238,7 @@ async function confirmarCambioEstado(estado) {
   if (solicitudActual.estado === "Atendido" || solicitudActual.estado === "Anulado") {
     Swal.fire({
       icon: 'info',
-      title: `Solicitud ${solicitudActual.estado.toLowerCase()}`,
+      title: `Solicitud se encuentra ${solicitudActual.estado.toLowerCase()}`,
       text: 'No se puede modificar el estado una vez que ha sido atendido o anulado.',
       toast: true,
       position: 'bottom-end',
