@@ -274,7 +274,7 @@ async function subirArchivoGuia(idSolicitud, archivo) {
     const nombreSolo = extraerNombreArchivoDesdeURL(nombre);
     const { data: signedUrlData, error: signedUrlError } = await supabaseClient.storage
   .from("traspasos")
-  .createSignedUrl(nombre, 60); // válido por 60 segundos
+   .createSignedUrl(nombre, 3888000); // ⏳ válido por 45 días
 
 if (signedUrlError) {
   console.error("Error al obtener signed URL:", signedUrlError.message);
