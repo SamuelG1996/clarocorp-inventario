@@ -8,42 +8,29 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
-<body class="menu-page">
+<body class="formulario-traspaso">
+  <div class="contenedor">
+    
+    <a href="Stock.html" class="volver">
+      <i class="fas fa-arrow-left"></i> Volver a Stock Contrata
+    </a>
 
-  <div class="sidebar">
-    <div>
-      <div class="logo">
-        <a href="Menu.html" style="text-decoration: none; color: inherit;">Portal Inventario</a>
-      </div>
-      <div class="menu">
-        <a href="Stock.html"><i class="fas fa-box"></i> Stock Contrata</a>
-        <a href="#"><i class="fas fa-warehouse"></i> Stock Claro</a>
-        <a href="Traspaso.html"><i class="fas fa-sync-alt"></i> Traspasos</a>
-        <a href="#"><i class="fas fa-truck"></i> Compras</a>
-        <a href="#"><i class="fas fa-chart-bar"></i> Reportes</a>
-        <a href="Perfil.html"><i class="fas fa-user-tie"></i> Mi Perfil</a>
-        <a href="#"><i class="fas fa-gear"></i> Configuración</a>
-      </div>
-    </div>
-    <div class="logout">
-      <a href="index.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i></a>
-    </div>
-  </div>
+    <h2><i class="fas fa-barcode"></i> Control de Series</h2>
 
- <div class="content">
-    <div class="encabezado-stock encabezado-series">
-      <h2><i class="fas fa-barcode"></i> Control de Series</h2>
-        <div class="acciones-tabla acciones-series">
-        <button onclick="descargarExcelSeries()">Descargar Excel</button>
-        <button onclick="guardarCambios()">Grabar</button>
-      </div>
+    <div class="acciones-tabla acciones-series">
+      <button onclick="descargarExcelSeries()">
+        <i class="fas fa-file-excel"></i> Descargar Excel
+      </button>
+      <button onclick="guardarCambios()">
+        <i class="fas fa-save"></i> Grabar
+      </button>
     </div>
 
     <div class="search-bar">
       <input type="text" id="searchInput" placeholder="Buscar por serie, código, lote..." onkeyup="filtrarTabla()">
     </div>
 
-    <div class="tabla-scroll">
+      <div class="contenedor-tabla tabla-series">
       <table id="tablaSeries">
         <thead>
           <tr>
@@ -56,20 +43,15 @@
             <th>Empresa</th>
             <th>Fecha Ingreso</th>
             <th>Estado Contrata</th>            
-            <th>Proyecto</th>    
-            <th>SOT</th>    
-            <th>Cliente</th>    
-            <th>Documentado</th>    
-            <th>ID Devolución</th>    
-            <th>Guia de remisión</th>    
-            <th>Comentario Contrata</th>               
-            <th>Fecha SAP</th>
+            <th>SOT/PY</th>      
+            <th>Cliente</th>       
+            <th>ID Devolución/GR</th> 
             <th>Fecha Estado Contrata</th>
+            <th>Comentario Contrata</th>
             <th>Antiguamiento</th>
             <th>Estado Soporte</th>
             <th>Comentario Soporte</th>
             <th>Fecha Estado Soporte</th>
-
           </tr>
         </thead>
         <tbody id="series-body">
@@ -84,11 +66,6 @@
       localStorage.clear();
       window.location.href = "index.html";
     }
-
-    // Placeholder si aún no tienes guardarCambios implementado
-  function guardarCambios() {
-    console.log("Función guardarCambios aún no implementada.");
-  }
 
       function descargarExcelSeries() {
     const tabla = document.getElementById("tablaSeries");
@@ -110,6 +87,22 @@
       });
     }
   </script>
+  <script>
+async function guardarCambios() {
+  Swal.fire({
+    icon: 'info',
+    title: 'Guardar Cambios',
+    text: 'Esta función aún no está implementada.',
+    position: 'bottom-end',
+    showConfirmButton: false,
+    timer: 3000,
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  });
+}
+  </script>
+  
   <script src="Js/Sesion.js"></script>
 </body>
 </html>
