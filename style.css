@@ -596,7 +596,7 @@ body.menu-page .search-bar input {
 
 /* Contenedor para scroll horizontal en tablas anchas */
 .tabla-scroll {
-  width: 95%;
+  width: 100%;
   overflow-x: auto;
   background-color: white;
   border: 1px solid #ccc;
