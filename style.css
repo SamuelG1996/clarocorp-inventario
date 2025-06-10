@@ -614,6 +614,15 @@ body.menu-page .search-bar input {
   max-width: 100%;
 }
 
+.rojo-suave {
+  background-color: #f8d7da !important;
+}
+.naranja-suave {
+  background-color: #fff3cd !important;
+}
+.verde-suave {
+  background-color: #d4edda !important;
+}
 
 /* --- FIN DE ESTILOS  PARA EL SUBMODULO SERIES --- */
 
