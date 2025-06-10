@@ -332,7 +332,7 @@ async function procesarExcelSeries(file) {
       const campos = {
         estado_contrata: estado,
         sot: fila.SOT || '-',
-        cliente: fila.Cliente || '-',
+        cliente: (fila.Cliente || '-').toString().trim(),
         id_devolucion: fila['ID Devolución/Traspaso'] || '-',
         comentario_contrata: fila['Comentario Contrata'] || '-',
         estado_soporte: fila['Estado Soporte'] || '-',
@@ -340,11 +340,18 @@ async function procesarExcelSeries(file) {
       };
 
       // Validaciones
-      if (['INSTALADO', 'RESERVADO'].includes(estado)) {
-        if (!fila.SOT || !fila.Cliente) { fallos++; continue; }
+       if (['INSTALADO', 'RESERVADO'].includes(estado)) {
+        if (!fila.SOT || !fila.Cliente || fila.Cliente.toString().trim() === '') { 
+          fallos++; 
+          continue; 
+        }
       }
+      
       if (['DEVOLUCION', 'TRASPASO'].includes(estado)) {
-        if (!fila['ID Devolución/Traspaso']) { fallos++; continue; }
+        if (!fila['ID Devolución/Traspaso'] || fila['ID Devolución/Traspaso'].toString().trim() === '') { 
+          fallos++; 
+          continue; 
+        }
       }
 
       // Actualizar en Supabase
@@ -390,24 +397,7 @@ async function procesarExcelSeries(file) {
   
 <script>
 function mostrarMenuCarga() {
-  Swal.fire({
-    title: '¿Qué deseas hacer?',
-    icon: 'question',
-    showCancelButton: true,
-    showDenyButton: true,
-    confirmButtonText: 'Grabar cambios manuales',
-    denyButtonText: 'Cargar plantilla Excel',
-    cancelButtonText: 'Cancelar',
-    background: '#1e2022',
-    color: '#ffffff',
-    iconColor: '#f39c12'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      guardarCambios();
-    } else if (result.isDenied) {
-      document.getElementById('excelInput').click();
-    }
-  });
+  document.getElementById('excelInput').click();
 }
 
 function confirmarCargaExcel(file) {
