@@ -372,7 +372,9 @@ document.addEventListener('change', async (e) => {
   }
 
   const { codigo, centro, almacen, lote, nro_serie } = input.dataset;
-
+console.log('Valores para actualizar:', {
+  campo, valor, codigo, centro, almacen, lote, nro_serie
+});
   const { error } = await supabase
     .from('series_contrata')
     .update({ [campo]: valor })
