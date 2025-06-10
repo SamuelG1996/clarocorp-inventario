@@ -540,6 +540,10 @@ body, html {
   overflow-x: hidden;
 }
 
+#tablaSeries td {
+  font-size: 12px;
+}
+
 .tabla-series-container {
   max-width: 95vw;
   overflow-x: auto;
