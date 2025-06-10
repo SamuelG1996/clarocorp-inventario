@@ -23,15 +23,21 @@
       <button onclick="descargarExcelSeries()">
         <i class="fas fa-file-excel"></i> Descargar Excel
       </button>
+      
       <button onclick="guardarCambios()">
         <i class="fas fa-save"></i> Grabar
       </button>
-        
-  <div id="paginacion" style="text-align: center; margin-top: 10px;">
+      
+      <button onclick="alternarOrden()">
+      <i class="fas fa-sort-amount-down-alt"></i> Ordenar por Antiguamiento
+      </button>
+      
+  <div id="paginacion" style="display: inline-block; margin-left: 20px;">
   <button onclick="paginaAnterior()">← Anterior</button>
   <span id="paginaInfo" style="margin: 0 10px;">Página 1</span>
   <button onclick="paginaSiguiente()">Siguiente →</button>
 </div>
+      
     </div>
  <div class="search-bar">
       <input type="text" id="searchInput" placeholder="Buscar por serie, código, lote..." onkeyup="filtrarTabla()">
@@ -98,7 +104,8 @@ function formatearFechaSegura(fechaString) {
 let paginaActual = 0;
 const tamañoPagina = 1000;
 let filtroActual = '';
-    
+let modoOrden = 'empresa'; // valores posibles: 'empresa' o 'antiguamiento'
+  
    async function cargarSeries(filtro = '', pagina = 0) {
   mostrarLoader();
   const tbody = document.getElementById("series-body");
@@ -107,19 +114,24 @@ let filtroActual = '';
   filtroActual = filtro;
   paginaActual = pagina;
 
-  let query = supabase
+  let queryBase = supabase
     .from('series_contrata')
-    .select('*', { count: 'exact' })
-    .order('empresa', { ascending: true }) // ordena por empresa
-    .range(pagina * tamañoPagina, (pagina + 1) * tamañoPagina - 1);
+    .select('*', { count: 'exact' });
+  
+  if (modoOrden === 'empresa') {
+    queryBase = queryBase.order('empresa', { ascending: true });
+  } else {
+    queryBase = queryBase.order('fecha_ingreso', { ascending: true }); // más antiguos primero
+  }
+  
+  queryBase = queryBase.range(pagina * tamañoPagina, (pagina + 1) * tamañoPagina - 1);
 
   if (filtro.trim() !== '') {
-    query = query.or(
+    queryBase = queryBase.or(
       `codigo.ilike.%${filtro}%,descripcion.ilike.%${filtro}%,lote.ilike.%${filtro}%,nro_serie.ilike.%${filtro}%,cliente.ilike.%${filtro}%,empresa.ilike.%${filtro}%`
     );
   }
-
-  const { data, error, count } = await query;
+  const { data, error, count } = await queryBase;
 
   if (error) {
     console.error("Error al cargar series:", error);
@@ -186,6 +198,23 @@ function filtrarTabla() {
   tiempoEspera = setTimeout(() => {
     cargarSeries(input, 0); // Siempre reiniciar desde página 0 al filtrar
   }, 300);
+}
+
+
+    function alternarOrden() {
+   const boton = document.querySelector("button[onclick='alternarOrden()']");
+  
+  if (modoOrden === 'empresa') {
+    modoOrden = 'antiguamiento';
+    boton.innerHTML = '<i class="fas fa-sort-amount-down-alt"></i> Ordenar por Empresa';
+    Swal.fire({ /* mensaje */ });
+  } else {
+    modoOrden = 'empresa';
+    boton.innerHTML = '<i class="fas fa-sort-amount-down-alt"></i> Ordenar por Antiguamiento';
+    Swal.fire({ /* mensaje */ });
+  }
+
+  cargarSeries(filtroActual, 0);
 }
   </script>
 
