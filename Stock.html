@@ -119,98 +119,133 @@
     const supabase = createClient(supabaseUrl, supabaseKey)
 
     function formatearNumero(valor) {
-      const numero = parseFloat(valor);
-      if (isNaN(numero)) return valor;
-      return Number.isInteger(numero) ? numero.toString() : numero.toFixed(2);
-    }
+    const numero = parseFloat(valor);
+    if (isNaN(numero)) return valor;
+    return Number.isInteger(numero) ? numero.toString() : numero.toFixed(2);
+  }
 
-    function recalcularDisponibleDesdeTabla(fila) {
-      const stockTexto = fila.cells[9].innerText.trim();
-      const reservaTexto = fila.cells[10].innerText.trim();
-      const celdaDisponible = fila.cells[11];
-
-      const stock = parseFloat(stockTexto);
-      const reserva = parseFloat(reservaTexto);
-
-      if (!isNaN(stock) && !isNaN(reserva)) {
-        celdaDisponible.innerText = formatearNumero(stock - reserva);
-      } else {
-        celdaDisponible.innerText = "No calculable";
-      }
-    }
-
-    async function cargarStockContrata() {
-    document.getElementById("loader").style.display = "flex"; // Muestra el loader
-  
+  window.cargarStockContrata = async function() {
+    document.getElementById("loader").style.display = "flex";
     const empresaUsuario = localStorage.getItem("empresa");
     const rolUsuario = localStorage.getItem("rol");
-  
+
     let query = supabase.from("stock_contrata").select("*");
     if (rolUsuario === "Contratista") {
       query = query.eq("empresa", empresaUsuario);
     }
-  
+
     const { data, error } = await query;
-  
-    document.getElementById("loader").style.display = "none"; // Oculta el loader
-  
+    document.getElementById("loader").style.display = "none";
+
     if (error) {
       console.error("Error cargando stock:", error.message);
       return;
     }
-      
-      const tbody = document.getElementById("stock-body");
-      tbody.innerHTML = "";
 
-     data.forEach((item) => {
-  const disponible = item.stock_real != null && item.stock_reservado != null
-    ? item.stock_real - item.stock_reservado
-    : "No calculable";
+    const tbody = document.getElementById("stock-body");
+    tbody.innerHTML = "";
 
-  // Formatear fecha de carga SAP
-  const fechaSAP = item.fecha_carga_sap
-    ? new Date(item.fecha_carga_sap).toLocaleString("es-PE", {
-        day: "2-digit", month: "2-digit", year: "numeric",
-        hour: "2-digit", minute: "2-digit", hour12: false
-      }).replace(",", "")
-    : "—";
+    data.forEach((item) => {
+      const disponible = item.stock_real != null && item.stock_reservado != null
+        ? item.stock_real - item.stock_reservado
+        : "No calculable";
 
-  //  Fecha de actualizacion
-const fechaEditada = item.fecha_actualizacion
-  ? new Date(item.fecha_actualizacion).toLocaleString("es-PE", {
-      day: "2-digit", month: "2-digit", year: "numeric",
-      hour: "2-digit", minute: "2-digit", hour12: false
-    }).replace(",", "")
-  : "—";
-       
-  //  Inserta la fila con la columna de fechaSAP
- const fila = `
-  <tr>
-    <td>${item.codigo}</td>
-    <td>${item.descripcion}</td>
-    <td>${item.centro}</td>
-    <td>${item.almacen}</td>
-    <td>${formatearNumero(item.cantidad_sap)}</td>
-    <td>${item.lote}</td>
-    <td>${fechaSAP}</td> <!-- Actualización SAP -->
-    <td>${item.empresa}</td>
-    <td>${item.zona}</td>
- <td>${formatearNumero(item.stock_real ?? "")}</td>
- <td>${formatearNumero(item.stock_reservado ?? "")}</td>
-    <td>${formatearNumero(disponible)}</td>
-    <td>${fechaEditada}</td>
-  </tr>
-`;
-  tbody.insertAdjacentHTML("beforeend", fila);
-});
+      const fechaSAP = item.fecha_carga_sap
+        ? new Date(item.fecha_carga_sap).toLocaleString("es-PE", {
+            day: "2-digit", month: "2-digit", year: "numeric",
+            hour: "2-digit", minute: "2-digit", hour12: false
+          }).replace(",", "")
+        : "—";
 
+      const fechaEditada = item.fecha_actualizacion
+        ? new Date(item.fecha_actualizacion).toLocaleString("es-PE", {
+            day: "2-digit", month: "2-digit", year: "numeric",
+            hour: "2-digit", minute: "2-digit", hour12: false
+          }).replace(",", "")
+        : "—";
 
-    }
+      const fila = `
+        <tr>
+          <td>${item.codigo}</td>
+          <td>${item.descripcion}</td>
+          <td>${item.centro}</td>
+          <td>${item.almacen}</td>
+          <td>${formatearNumero(item.cantidad_sap)}</td>
+          <td>${item.lote}</td>
+          <td>${fechaSAP}</td>
+          <td>${item.empresa}</td>
+          <td>${item.zona}</td>
+          <td>${formatearNumero(item.stock_real ?? "")}</td>
+          <td>${formatearNumero(item.stock_reservado ?? "")}</td>
+          <td>${formatearNumero(disponible)}</td>
+          <td>${fechaEditada}</td>
+        </tr>`;
+      tbody.insertAdjacentHTML("beforeend", fila);
+    });
+  }
 
-   (async () => {
-  await cargarStockContrata();
-})();
-  </script>
+  window.procesarExcelStock = async function(file) {
+    document.getElementById("loader").style.display = "flex";
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+      const workbook = XLSX.read(e.target.result, { type: 'binary' });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const data = XLSX.utils.sheet_to_json(sheet);
+
+      let exitos = 0, fallos = 0;
+
+      for (const fila of data) {
+        const codigo = fila['Código']?.toString().trim();
+        const centro = fila['Centro']?.toString().trim();
+        const almacen = fila['Almacén']?.toString().trim();
+        const lote = fila['Lote']?.toString().trim();
+        if (!codigo || !centro || !almacen || !lote) { fallos++; continue; }
+
+        const stock_real = parseFloat(fila['Stock físico']);
+        const stock_reservado = parseFloat(fila['Reservado']);
+        if (isNaN(stock_real) || isNaN(stock_reservado) || stock_real < 0 || stock_reservado < 0) {
+          fallos++;
+          continue;
+        }
+
+        const fecha_actualizacion = new Date().toISOString();
+        const { error } = await supabase
+          .from('stock_contrata')
+          .update({ stock_real, stock_reservado, fecha_actualizacion })
+          .eq('codigo', codigo)
+          .eq('centro', centro)
+          .eq('almacen', almacen)
+          .eq('lote', lote);
+
+        if (error) fallos++;
+        else exitos++;
+      }
+
+      Swal.fire({
+        icon: 'info',
+        title: 'Carga finalizada',
+        html: `✅ Registros actualizados: <b>${exitos}</b><br>❌ Registros con error: <b>${fallos}</b>`,
+        toast: true,
+        position: 'bottom-end',
+        showConfirmButton: false,
+        timer: 4000,
+        timerProgressBar: true,
+        background: '#1e2022',
+        color: '#ffffff',
+        iconColor: '#f39c12'
+      });
+
+      await window.cargarStockContrata();
+      document.getElementById("loader").style.display = "none";
+    };
+
+    reader.readAsBinaryString(file);
+  }
+
+  // Ejecutar carga inicial
+  window.cargarStockContrata();
+</script>
 
   <script>
 function mostrarMenuCargaStock() {
@@ -235,62 +270,6 @@ function confirmarCargaExcelStock(file) {
   });
 }
 
-async function procesarExcelStock(file) {
-    document.getElementById("loader").style.display = "flex"; // Mostrar loader
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    const workbook = XLSX.read(e.target.result, { type: 'binary' });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(sheet);
-
-    let exitos = 0, fallos = 0;
-    for (const fila of data) {
-      const codigo = fila['Código']?.toString().trim();
-      const centro = fila['Centro']?.toString().trim();
-      const almacen = fila['Almacén']?.toString().trim();
-      const lote = fila['Lote']?.toString().trim();
-
-      if (!codigo || !centro || !almacen || !lote) { fallos++; continue; }
-
-      const stock_real = parseFloat(fila['Stock físico']);
-      const stock_reservado = parseFloat(fila['Reservado']);
-       if (isNaN(stock_real) || isNaN(stock_reservado) || stock_real < 0 || stock_reservado < 0) {
-        fallos++;
-        continue;
-      }
-      const fecha_actualizacion = new Date().toISOString();
-
-      const { error } = await supabase
-        .from('stock_contrata')
-        .update({ stock_real, stock_reservado, fecha_actualizacion })
-        .eq('codigo', codigo)
-        .eq('centro', centro)
-        .eq('almacen', almacen)
-        .eq('lote', lote);
-
-      if (error) { fallos++; }
-      else { exitos++; }
-    }
-
-    Swal.fire({
-      icon: 'info',
-      title: 'Carga finalizada',
-      html: `✅ Registros actualizados: <b>${exitos}</b><br>❌ Registros con error: <b>${fallos}</b>`,
-      toast: true,
-      position: 'bottom-end',
-      showConfirmButton: false,
-      timer: 4000,
-      timerProgressBar: true,
-      background: '#1e2022',
-      color: '#ffffff',
-      iconColor: '#f39c12'
-    });
-
-    cargarStockContrata(); // Refrescar la tabla
-    document.getElementById("loader").style.display = "none"; // Ocultar loader después de actualizar
-  };
-  reader.readAsBinaryString(file);
-}
 </script>
 
   <script src="Js/Sesion.js"></script>
