@@ -33,3 +33,59 @@ setInterval(() => {
     window.location.href = "index.html";
   }
 }, 30000); // Verifica cada minuto
+
+// Control de modulos visibles en la sidebar
+document.addEventListener("DOMContentLoaded", () => {
+  const rol = localStorage.getItem("rol");
+
+  if (!rol) return;
+
+  if (rol === "Contratista") {
+    const ocultarRutas = [
+      "Stock Claro",
+      "Compras",
+      "Reportes",
+      "Configuración"
+    ];
+    
+// Restriccion de paginas
+    const paginasRestringidasContratista = [
+  "/StockClaro.html",
+  "/Compras.html",
+  "/Reportes.html",
+  "/Configuracion.html",
+  "/StockClaro",
+  "/Compras",
+  "/Reportes",
+  "/Configuracion"
+];
+
+if (paginasRestringidasContratista.includes(window.location.pathname)) {
+  Swal.fire({
+    icon: 'warning',
+    title: 'Acceso restringido',
+    text: 'No tienes permiso para acceder a este módulo.',
+    toast: true,
+    position: 'bottom-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  });
+
+  setTimeout(() => {
+    window.location.href = "/Menu"; // o tu página de inicio permitida
+  }, 3100);
+}
+
+
+    document.querySelectorAll(".menu a").forEach(enlace => {
+      const texto = enlace.textContent.trim();
+      if (ocultarRutas.includes(texto)) {
+        enlace.style.display = "none";
+      }
+    });
+  }
+});
