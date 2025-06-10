@@ -24,19 +24,15 @@
         <i class="fas fa-file-excel"></i> Descargar Excel
       </button>
       
-      <button onclick="guardarCambios()">
-        <i class="fas fa-save"></i> Grabar
-      </button>
+    <input type="file" id="excelInput" accept=".xlsx" style="display:none;" onchange="confirmarCargaExcel(this.files[0])">
+    <button onclick="mostrarMenuCarga()">
+      <i class="fas fa-upload"></i> Actualizar Datos
+    </button>
       
       <button onclick="alternarOrden()">
       <i class="fas fa-sort-amount-down-alt"></i> Ordenar por Antiguamiento
       </button>
 
-      <input type="file" id="excelInput" accept=".xlsx" onchange="procesarExcelSeries(this.files[0])" style="display:none;">
-      <button onclick="document.getElementById('excelInput').click()">
-        <i class="fas fa-upload"></i> Cargar Plantilla
-      </button>
-      
   <div id="paginacion" style="display: inline-block; margin-left: 20px;">
   <button onclick="paginaAnterior()">← Anterior</button>
   <span id="paginaInfo" style="margin: 0 10px;">Página 1</span>
@@ -152,15 +148,7 @@ let modoOrden = 'empresa'; // valores posibles: 'empresa' o 'antiguamiento'
     actualizarControlesPaginacion(0, 0); // limpiar
     return;
   }
-  function agregarKeys(serie) {
-    return `
-      data-codigo="${serie.codigo}" 
-      data-centro="${serie.centro}" 
-      data-almacen="${serie.almacen}" 
-      data-lote="${serie.lote}" 
-      data-nro_serie="${serie.nro_serie}" 
-    `;
-  }
+ 
   data.forEach(serie => {
     const diasAntiguos = calcularAntiguamiento(serie.fecha_ingreso);
     let claseColor = '';
@@ -182,14 +170,14 @@ let modoOrden = 'empresa'; // valores posibles: 'empresa' o 'antiguamiento'
   <td><input type="text" class="editable editable-estado_contrata" value="${(serie.estado_contrata || '').toUpperCase()}" 
     data-campo="estado_contrata" ${agregarKeys(serie)}></td>
 
-  <td><input type="text" class="editable" value="${serie.sot || ''}" data-campo="sot" ${agregarKeys(serie)}></td>
-  <td><input type="text" class="editable" value="${serie.cliente || ''}" data-campo="cliente" ${agregarKeys(serie)}></td>
-  <td><input type="text" class="editable" value="${serie.id_devolucion || ''}" data-campo="id_devolucion" ${agregarKeys(serie)}></td>
+  <td>${serie.sot || ''}</td>
+  <td>${serie.cliente || ''}</td>
+  <td>${serie.id_devolucion || ''}</td>
   <td>${formatearFechaSegura(serie.fecha_estado_contrata)}</td>
-  <td><input type="text" class="editable" value="${serie.comentario_contrata || ''}" data-campo="comentario_contrata" ${agregarKeys(serie)}></td>
+  <td>${serie.comentario_contrata || ''}</td>
   <td class="${claseColor}">${diasAntiguos !== null ? diasAntiguos + ' días' : ''}</td>
-  <td><input type="text" class="editable" value="${serie.estado_soporte || ''}" data-campo="estado_soporte" ${agregarKeys(serie)}></td>
-  <td><input type="text" class="editable" value="${serie.comentario_soporte || ''}" data-campo="comentario_soporte" ${agregarKeys(serie)}></td>
+  <td>${serie.estado_soporte || ''}</td>
+  <td>${serie.comentario_soporte || ''}</td>
   <td>${formatearFechaSegura(serie.fecha_estado_soporte)}</td>
 `;
     tbody.appendChild(fila);
@@ -201,10 +189,6 @@ let modoOrden = 'empresa'; // valores posibles: 'empresa' o 'antiguamiento'
 </script>
   
   <script>
-    function logout() {
-      localStorage.clear();
-      window.location.href = "index.html";
-    }
 
  let tiempoEspera = null;
 
@@ -344,26 +328,29 @@ async function procesarExcelSeries(file) {
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(sheet);
 
+    let exitos = 0, fallos = 0;
+
     for (const fila of data) {
+      const estado = (fila['Estado Contrata'] || '').toUpperCase();
       const campos = {
+        estado_contrata: estado,
         sot: fila.SOT || '-',
         cliente: fila.Cliente || '-',
         id_devolucion: fila['ID Devolución/Traspaso'] || '-',
-        estado_contrata: (fila['Estado Contrata'] || '').toUpperCase(),
         comentario_contrata: fila['Comentario Contrata'] || '-',
         estado_soporte: fila['Estado Soporte'] || '-',
         comentario_soporte: fila['Comentario Soporte'] || '-'
       };
 
       // Validaciones
-      if (['INSTALADO', 'RESERVADO'].includes(campos.estado_contrata)) {
-        if (!fila.SOT || !fila.Cliente) continue; // omitir si no cumple
+      if (['INSTALADO', 'RESERVADO'].includes(estado)) {
+        if (!fila.SOT || !fila.Cliente) { fallos++; continue; }
       }
-      if (['DEVOLUCION', 'TRASPASO'].includes(campos.estado_contrata)) {
-        if (!fila['ID Devolución/Traspaso']) continue;
+      if (['DEVOLUCION', 'TRASPASO'].includes(estado)) {
+        if (!fila['ID Devolución/Traspaso']) { fallos++; continue; }
       }
 
-      // Update Supabase
+      // Actualizar en Supabase
       const { error } = await supabase
         .from('series_contrata')
         .update(campos)
@@ -373,125 +360,79 @@ async function procesarExcelSeries(file) {
         .eq('lote', fila.Lote)
         .eq('nro_serie', fila['N° Serie']);
 
-      if (error) console.error(`Error al actualizar ${fila['N° Serie']}:`, error);
+      if (error) {
+        console.error("Error:", error);
+        fallos++;
+      } else {
+        exitos++;
+      }
     }
 
+    // Mostrar resultado
     Swal.fire({
-      icon: 'success',
-      title: 'Plantilla cargada correctamente',
-      toast: true,
-      position: 'bottom-end',
-      timer: 3000,
-      background: '#1e2022',
-      color: '#ffffff',
-      iconColor: '#11a24e'
-    });
-
-    cargarSeries(filtroActual, paginaActual); // refresca vista
-  };
-
-  reader.readAsBinaryString(file);
-}
-  </script>
-
-  
-  <script>
-async function guardarCambios() {
-  await cargarSeries(filtroActual, paginaActual);
-  Swal.fire({
-    icon: 'success',
-    title: 'Cambios sincronizados',
-    toast: true,
-    position: 'bottom-end',
-    showConfirmButton: false,
-    timer: 2500,
-    background: '#1e2022',
-    color: '#ffffff',
-    iconColor: '#11a24e'
-  });
-}
-  </script>
-
-<script>
-const ESTADOS_VALIDOS = ["INSTALADO", "DISPONIBLE", "RESERVADO", "FACTURAR", "TRASPASO", "DEVOLUCIÓN"];
-
-document.addEventListener('change', async (e) => {
-  const input = e.target;
-  if (!input.classList.contains('editable')) return;
-
-  const campo = input.dataset.campo;
-  let valor = input.value.trim();
-
-  // Validación solo para estado_contrata
-  if (campo === 'estado_contrata') {
-    valor = valor.toUpperCase();
-    input.value = valor;
-
-    if (!ESTADOS_VALIDOS.includes(valor)) {
-      input.style.backgroundColor = '#ffcccc';
-      return;
-    } else {
-      input.style.backgroundColor = '';
-    }
-  }
-
-  const { codigo, centro, almacen, lote, nro_serie } = input.dataset;
-console.log('Valores para actualizar:', {
-  campo, valor, codigo, centro, almacen, lote, nro_serie
-});
-  const { data, error } = await supabase
-  .from('series_contrata')
-  .update({ [campo]: valor })
-  .eq('codigo', codigo)
-  .eq('centro', centro)
-  .eq('almacen', almacen)
-  .eq('lote', lote)
-  .eq('nro_serie', nro_serie)
-  .select();  // 👈 Esto fuerza a devolver los datos actualizados
-
-  if (error) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: `No se pudo actualizar el campo ${campo}.`,
+      icon: 'info',
+      title: 'Carga finalizada',
+      html: `✅ Registros actualizados: <b>${exitos}</b><br>❌ Registros omitidos por error o validación: <b>${fallos}</b>`,
       toast: true,
       position: 'bottom-end',
       showConfirmButton: false,
-      timer: 3000,
-      background: '#1e2022',
-      color: '#ffffff',
-      iconColor: '#f27474'
-    });
-  } else {
-    Swal.fire({
-      icon: 'success',
-      title: El campo `${campo.replaceAll('_', ' ')} fue actualizado`,
-      toast: true,
-      position: 'bottom-end',
-      showConfirmButton: false,
-      timer: 2500,
+      timer: 5000,
       timerProgressBar: true,
       background: '#1e2022',
       color: '#ffffff',
-      iconColor: '#11a24e'
+      iconColor: '#f39c12'
     });
-          // ✅ Color temporal para indicar éxito visual en el campo
-    input.style.backgroundColor = '#d4edda'; // verde suave
-    setTimeout(() => {
-      input.style.backgroundColor = '';
-    }, 1200);
- }
-});
+
+    // Refrescar la vista
+    cargarSeries(filtroActual, paginaActual);
+  };
+  reader.readAsBinaryString(file);
+}
 </script>
-    
+
+  
 <script>
-document.addEventListener('keydown', async (e) => {
-  if (e.key === 'Enter' && e.target.classList.contains('editable')) {
-    e.preventDefault(); // evita salto de línea u otro comportamiento por defecto
-    e.target.blur();    // forza el evento change
-  }
-});
+function mostrarMenuCarga() {
+  Swal.fire({
+    title: '¿Qué deseas hacer?',
+    icon: 'question',
+    showCancelButton: true,
+    showDenyButton: true,
+    confirmButtonText: 'Grabar cambios manuales',
+    denyButtonText: 'Cargar plantilla Excel',
+    cancelButtonText: 'Cancelar',
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      guardarCambios();
+    } else if (result.isDenied) {
+      document.getElementById('excelInput').click();
+    }
+  });
+}
+
+function confirmarCargaExcel(file) {
+  Swal.fire({
+    title: '¿Deseas continuar con la carga?',
+    text: 'Se actualizarán los datos según el archivo que selecciones.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, cargar',
+    cancelButtonText: 'Cancelar',
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      procesarExcelSeries(file);
+    }
+  });
+}
 </script>
+
+    
   <script>
   document.addEventListener("DOMContentLoaded", () => cargarSeries(''));
 </script>
