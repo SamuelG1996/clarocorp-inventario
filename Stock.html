@@ -131,7 +131,7 @@
 
     let query = supabase.from("stock_contrata").select("*");
     if (rolUsuario === "Contratista") {
-      query = query.eq("empresa", empresaUsuario);
+      query = query.ilike("empresa", empresaUsuario.toUpperCase());
     }
 
     const { data, error } = await query;
