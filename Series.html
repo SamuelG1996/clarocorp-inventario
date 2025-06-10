@@ -118,7 +118,21 @@
       window.location.href = "index.html";
     }
 
-     async function descargarExcelSeries() {
+    function filtrarTabla() {
+      const input = document.getElementById("searchInput").value.toLowerCase().trim();
+      const filtros = input.split(/\s+/);
+      const filas = document.querySelectorAll("#tablaSeries tbody tr");
+
+      filas.forEach(fila => {
+        const textoFila = Array.from(fila.cells).map(td => td.textContent.toLowerCase()).join(" ");
+        const coincide = filtros.every(f => textoFila.includes(f));
+        fila.style.display = coincide ? "" : "none";
+      });
+    }
+  </script>
+
+  <script>
+ async function descargarExcelSeries() {
   const { data, error } = await supabase.from('series_contrata').select('*');
 
   if (error) {
@@ -132,7 +146,7 @@
     Centro: serie.centro,
     Almacén: serie.almacen,
     Lote: serie.lote,
-    "N° Serie": serie.numero_serie,
+    "N° Serie": serie.nro_serie,
     Empresa: serie.empresa,
     "Fecha Ingreso": formatearFecha(serie.fecha_ingreso),
     "Estado Contrata": serie.estado_contrata,
@@ -152,19 +166,9 @@
   XLSX.utils.book_append_sheet(wb, ws, "Series FIFO");
   XLSX.writeFile(wb, "Series_FIFO_ClaroCorp.xlsx");
 }
-
-    function filtrarTabla() {
-      const input = document.getElementById("searchInput").value.toLowerCase().trim();
-      const filtros = input.split(/\s+/);
-      const filas = document.querySelectorAll("#tablaSeries tbody tr");
-
-      filas.forEach(fila => {
-        const textoFila = Array.from(fila.cells).map(td => td.textContent.toLowerCase()).join(" ");
-        const coincide = filtros.every(f => textoFila.includes(f));
-        fila.style.display = coincide ? "" : "none";
-      });
-    }
   </script>
+
+  
   <script>
 async function guardarCambios() {
   Swal.fire({
