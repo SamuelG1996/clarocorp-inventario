@@ -62,12 +62,19 @@
   </div>
     </div>
 
-<script>
-    const supabase = window.supabase.createClient(
-    const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co'
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI'
-    );
 
+<script>
+  function formatearFecha(fechaISO) {
+  if (!fechaISO) return '';
+  const fecha = new Date(fechaISO);
+  return fecha.toLocaleDateString('es-PE');
+}
+
+</script>
+<script>
+    const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
     async function cargarSeries() {
       const { data, error } = await supabase.from('series_contrata').select('*');
       const tbody = document.getElementById("series-body");
