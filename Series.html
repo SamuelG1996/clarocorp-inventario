@@ -331,7 +331,7 @@ async function procesarExcelSeries(file) {
       const estado = (fila['Estado Contrata'] || '').toUpperCase();
       const campos = {
         estado_contrata: estado,
-        sot: fila.SOT || '-',
+        proyecto_sot: fila.SOT || '-',
         cliente: (fila.Cliente || '-').toString().trim(),
         id_devolucion: fila['ID Devolución/Traspaso'] || '-',
         comentario_contrata: fila['Comentario Contrata'] || '-',
