@@ -195,13 +195,15 @@ async function descargarExcelSeries() {
     icon: 'success',
     title: 'Excel generado',
     text: 'La descarga ha comenzado.',
+    toast: true,
     position: 'bottom-end',
     showConfirmButton: false,
     timer: 2500,
+    timerProgressBar: true,
     background: '#1e2022',
     color: '#ffffff',
     iconColor: '#11a24e'
-});
+  });
 
   } catch (error) {
     console.error("Error al exportar Excel:", error);
