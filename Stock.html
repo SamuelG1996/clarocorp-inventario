@@ -185,63 +185,71 @@
   }
 
   window.procesarExcelStock = async function(file) {
-    document.getElementById("loader").style.display = "flex";
-    const reader = new FileReader();
+  document.getElementById("loader").style.display = "flex";
+  const reader = new FileReader();
 
-    reader.onload = async (e) => {
-      const workbook = XLSX.read(e.target.result, { type: 'binary' });
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const data = XLSX.utils.sheet_to_json(sheet);
+  reader.onload = async (e) => {
+    const workbook = XLSX.read(e.target.result, { type: 'binary' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const data = XLSX.utils.sheet_to_json(sheet);
 
-      let exitos = 0, fallos = 0;
+    let exitos = 0, fallos = 0;
 
-      for (const fila of data) {
-        const codigo = fila['Código']?.toString().trim();
-        const centro = fila['Centro']?.toString().trim();
-        const almacen = fila['Almacén']?.toString().trim();
-        const lote = fila['Lote']?.toString().trim();
-        if (!codigo || !centro || !almacen || !lote) { fallos++; continue; }
+    // Creamos un array de promesas para actualizaciones paralelas
+    const promesas = data.map(async (fila) => {
+      const codigo = fila['Código']?.toString().trim();
+      const centro = fila['Centro']?.toString().trim();
+      const almacen = fila['Almacén']?.toString().trim();
+      const lote = fila['Lote']?.toString().trim();
 
-        const stock_real = parseFloat(fila['Stock físico']);
-        const stock_reservado = parseFloat(fila['Reservado']);
-        if (isNaN(stock_real) || isNaN(stock_reservado) || stock_real < 0 || stock_reservado < 0) {
-          fallos++;
-          continue;
-        }
+      if (!codigo || !centro || !almacen || !lote) return false;
 
-        const fecha_actualizacion = new Date().toISOString();
-        const { error } = await supabase
-          .from('stock_contrata')
-          .update({ stock_real, stock_reservado, fecha_actualizacion })
-          .eq('codigo', codigo)
-          .eq('centro', centro)
-          .eq('almacen', almacen)
-          .eq('lote', lote);
+      const stock_real = parseFloat(fila['Stock físico']);
+      const stock_reservado = parseFloat(fila['Reservado']);
 
-        if (error) fallos++;
-        else exitos++;
+      if (isNaN(stock_real) || isNaN(stock_reservado) || stock_real < 0 || stock_reservado < 0) {
+        return false;
       }
 
-      Swal.fire({
-        icon: 'info',
-        title: 'Carga finalizada',
-        html: `✅ Registros actualizados: <b>${exitos}</b><br>❌ Registros con error: <b>${fallos}</b>`,
-        toast: true,
-        position: 'bottom-end',
-        showConfirmButton: false,
-        timer: 4000,
-        timerProgressBar: true,
-        background: '#1e2022',
-        color: '#ffffff',
-        iconColor: '#f39c12'
-      });
+      const fecha_actualizacion = new Date().toISOString();
 
-      await window.cargarStockContrata();
-      document.getElementById("loader").style.display = "none";
-    };
+      const { error } = await supabase
+        .from('stock_contrata')
+        .update({ stock_real, stock_reservado, fecha_actualizacion })
+        .eq('codigo', codigo)
+        .eq('centro', centro)
+        .eq('almacen', almacen)
+        .eq('lote', lote);
 
-    reader.readAsBinaryString(file);
-  }
+      return !error;
+    });
+
+    // Ejecutamos todas las promesas en paralelo
+    const resultados = await Promise.all(promesas);
+
+    // Contamos éxitos y fallos
+    resultados.forEach(r => r ? exitos++ : fallos++);
+
+    Swal.fire({
+      icon: 'info',
+      title: 'Carga finalizada',
+      html: `✅ Registros actualizados: <b>${exitos}</b><br>❌ Registros con error: <b>${fallos}</b>`,
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 4000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
+    });
+
+    await window.cargarStockContrata();
+    document.getElementById("loader").style.display = "none";
+  };
+
+  reader.readAsBinaryString(file);
+}
 
   // Ejecutar carga inicial
   window.cargarStockContrata();
