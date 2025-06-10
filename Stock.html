@@ -236,6 +236,7 @@ function confirmarCargaExcelStock(file) {
 }
 
 async function procesarExcelStock(file) {
+    document.getElementById("loader").style.display = "flex"; // Mostrar loader
   const reader = new FileReader();
   reader.onload = async (e) => {
     const workbook = XLSX.read(e.target.result, { type: 'binary' });
@@ -286,6 +287,7 @@ async function procesarExcelStock(file) {
     });
 
     cargarStockContrata(); // Refrescar la tabla
+    document.getElementById("loader").style.display = "none"; // Ocultar loader después de actualizar
   };
   reader.readAsBinaryString(file);
 }
