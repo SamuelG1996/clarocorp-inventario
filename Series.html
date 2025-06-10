@@ -132,8 +132,11 @@
   </script>
 
   <script>
- async function descargarExcelSeries() {
-  const { data, error } = await supabase.from('series_contrata').select('*');
+async function descargarExcelSeries() {
+  const { data, error } = await supabase
+    .from('series_contrata')
+    .select('*', { count: 'exact' })
+    .limit(30000); // Asegura traer todos los registros
 
   if (error) {
     console.error("Error al obtener datos para Excel:", error);
@@ -164,7 +167,7 @@
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.json_to_sheet(datos);
   XLSX.utils.book_append_sheet(wb, ws, "Series FIFO");
-  XLSX.writeFile(wb, "Series_FIFO_ClaroCorp.xlsx");
+  XLSX.writeFile(wb, "Series_FIFO_ClaroCorp.xls");
 }
   </script>
 
