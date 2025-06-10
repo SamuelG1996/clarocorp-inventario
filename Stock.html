@@ -39,8 +39,9 @@
       <h2><i class="fas fa-box-open"></i> Visualización de Stock</h2>
       <div class="acciones-tabla">
         <button onclick="descargarExcel()">Descargar Excel</button>
-        <button onclick="guardarCambios()">Grabar</button>
+        <button onclick="mostrarMenuCargaStock()"><i class="fas fa-upload"></i> Actualizar Datos</button>
          <button onclick="irASeries()">Ver Series</button>
+        <input type="file" id="excelInput" accept=".xlsx" style="display:none;" onchange="confirmarCargaExcelStock(this.files[0])">
       </div>
     </div>
 
@@ -90,44 +91,6 @@
         fila.style.display = coincide ? "" : "none";
       });
     }
-
-   function guardarCambios() {
-  const filas = document.querySelectorAll("#stock-body tr");
-  const updates = [];
-
-  filas.forEach(fila => {
-    const codigo = fila.cells[0].innerText.trim();
-    const centro = fila.cells[2].innerText.trim();
-    const almacen = fila.cells[3].innerText.trim();
-    const lote = fila.cells[5].innerText.trim();
-
-    const celdaReal = fila.cells[9];
-    const celdaReservado = fila.cells[10];
-
-    const stockReal = parseFloat(celdaReal.innerText.trim());
-    const stockReservado = parseFloat(celdaReservado.innerText.trim());
-
-    const stockRealAnterior = parseFloat(celdaReal.getAttribute('data-anterior'));
-    const stockReservadoAnterior = parseFloat(celdaReservado.getAttribute('data-anterior'));
-
-    const cambioReal = stockReal !== stockRealAnterior;
-    const cambioReservado = stockReservado !== stockReservadoAnterior;
-
-    if ((cambioReal || cambioReservado) && (!isNaN(stockReal) || !isNaN(stockReservado))) {
-      updates.push({ codigo, centro, almacen, lote, stock_real: stockReal, stock_reservado: stockReservado });
-      fila.classList.add('fila-editada');
-    }
-
-
-  });
-
-  if (updates.length === 0) {
-    alert("No hay cambios válidos para guardar.");
-    return;
-  }
-
-  window.postMessage({ type: "GUARDAR_DATOS_STOCK", payload: updates }, "*");
-}
 
     function descargarExcel() {
       const tabla = document.getElementById("tablaStock");
@@ -232,8 +195,8 @@ const fechaEditada = item.fecha_actualizacion
     <td>${fechaSAP}</td> <!-- Actualización SAP -->
     <td>${item.empresa}</td>
     <td>${item.zona}</td>
- <td contenteditable="true" data-anterior="${item.stock_real ?? ""}">${formatearNumero(item.stock_real ?? "")}</td>
-<td contenteditable="true" data-anterior="${item.stock_reservado ?? ""}">${formatearNumero(item.stock_reservado ?? "")}</td>
+ <td>${formatearNumero(item.stock_real ?? "")}</td>
+ <td>${formatearNumero(item.stock_reservado ?? "")}</td>
     <td>${formatearNumero(disponible)}</td>
     <td>${fechaEditada}</td>
   </tr>
@@ -241,68 +204,92 @@ const fechaEditada = item.fecha_actualizacion
   tbody.insertAdjacentHTML("beforeend", fila);
 });
 
-      document.querySelectorAll('#stock-body td[contenteditable="true"]').forEach((celda) => {
-        celda.addEventListener('input', () => {
-          const fila = celda.parentElement;
-          recalcularDisponibleDesdeTabla(fila);
-        });
-      });
+
     }
 
    (async () => {
   await cargarStockContrata();
 })();
+  </script>
 
-    window.addEventListener("message", async (event) => {
-      if (event.data?.type === "GUARDAR_DATOS_STOCK") {
-        const updates = event.data.payload;
-        let errores = [];
-
-       for (const { codigo, centro, almacen, lote, stock_real, stock_reservado } of updates) {
-  const fecha_actualizacion = new Date().toISOString(); // cada fila genera su propio timestamp
-
-  const { error } = await supabase
-    .from("stock_contrata")
-    .update({
-      stock_real,
-      stock_reservado,
-      fecha_actualizacion
-    })
-    .eq("codigo", codigo)
-    .eq("centro", centro)
-    .eq("almacen", almacen)
-    .eq("lote", lote);
-
-  if (error) {
-    errores.push(`Error con ${codigo} - ${lote}: ${error.message}`);
-  }
+  <script>
+function mostrarMenuCargaStock() {
+  document.getElementById('excelInput').click();
 }
 
-      if (errores.length > 0) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al guardar',
-          html: 'Se produjeron errores:<br>' + errores.join('<br>'),
-          confirmButtonColor: '#d33'
-        });
-      } else {
-        Swal.fire({
-          icon: 'success',
-          title: '¡Guardado!',
-          text: 'Cambios guardados correctamente en la base de datos.',
-          showConfirmButton: false,
-          timer: 2500,
-          timerProgressBar: true,
-          position: 'bottom-end',
-          toast: true
-        });
-      }
+function confirmarCargaExcelStock(file) {
+  Swal.fire({
+    title: '¿Deseas continuar con la actualización?',
+    text: 'Se reemplazarán los datos editables según el archivo seleccionado.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, actualizar',
+    cancelButtonText: 'Cancelar',
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      procesarExcelStock(file);
+    }
+  });
+}
 
-        cargarStockContrata();
+async function procesarExcelStock(file) {
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const workbook = XLSX.read(e.target.result, { type: 'binary' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const data = XLSX.utils.sheet_to_json(sheet);
+
+    let exitos = 0, fallos = 0;
+    for (const fila of data) {
+      const codigo = fila['Código']?.toString().trim();
+      const centro = fila['Centro']?.toString().trim();
+      const almacen = fila['Almacén']?.toString().trim();
+      const lote = fila['Lote']?.toString().trim();
+
+      if (!codigo || !centro || !almacen || !lote) { fallos++; continue; }
+
+      const stock_real = parseFloat(fila['Stock físico']);
+      const stock_reservado = parseFloat(fila['Reservado']);
+       if (isNaN(stock_real) || isNaN(stock_reservado) || stock_real < 0 || stock_reservado < 0) {
+        fallos++;
+        continue;
       }
+      const fecha_actualizacion = new Date().toISOString();
+
+      const { error } = await supabase
+        .from('stock_contrata')
+        .update({ stock_real, stock_reservado, fecha_actualizacion })
+        .eq('codigo', codigo)
+        .eq('centro', centro)
+        .eq('almacen', almacen)
+        .eq('lote', lote);
+
+      if (error) { fallos++; }
+      else { exitos++; }
+    }
+
+    Swal.fire({
+      icon: 'info',
+      title: 'Carga finalizada',
+      html: `✅ Registros actualizados: <b>${exitos}</b><br>❌ Registros con error: <b>${fallos}</b>`,
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 4000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
     });
-    
-  </script>
+
+    cargarStockContrata(); // Refrescar la tabla
+  };
+  reader.readAsBinaryString(file);
+}
+</script>
 
   <script src="Js/Sesion.js"></script>
 
