@@ -116,8 +116,8 @@ let modoOrden = 'empresa'; // valores posibles: 'empresa' o 'antiguamiento'
   paginaActual = pagina;
 
   const rolUsuario = localStorage.getItem("rol");
-const empresaUsuario = localStorage.getItem("empresa");
-
+const empresaUsuario = (localStorage.getItem("empresa") || '').toUpperCase();
+     
 let queryBase = supabase
   .from('series_contrata')
   .select('*', { count: 'exact' });
