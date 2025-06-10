@@ -133,17 +133,33 @@
 
   <script>
 async function descargarExcelSeries() {
-  const { data, error } = await supabase
-    .from('series_contrata')
-    .select('*', { count: 'exact' })
-    .limit(30000); // Asegura traer todos los registros
+  const pageSize = 1000;
+  let page = 0;
+  let allData = [];
+  let fetched = [];
 
-  if (error) {
-    console.error("Error al obtener datos para Excel:", error);
+  do {
+    const { data, error } = await supabase
+      .from('series_contrata')
+      .select('*')
+      .range(page * pageSize, (page + 1) * pageSize - 1);
+
+    if (error) {
+      console.error("Error al obtener datos:", error);
+      break;
+    }
+
+    fetched = data;
+    allData = allData.concat(fetched);
+    page++;
+  } while (fetched.length === pageSize); // continúa si aún hay más
+
+  if (allData.length === 0) {
+    console.warn("No se encontraron datos.");
     return;
   }
 
-  const datos = data.map(serie => ({
+  const datos = allData.map(serie => ({
     Código: serie.codigo,
     Descripción: serie.descripcion,
     Centro: serie.centro,
@@ -166,8 +182,8 @@ async function descargarExcelSeries() {
 
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.json_to_sheet(datos);
-  XLSX.utils.book_append_sheet(wb, ws, "Series FIFO");
-  XLSX.writeFile(wb, "Series_FIFO_ClaroCorp.xls");
+  XLSX.utils.book_append_sheet(wb, ws, "Series Contrata");
+  XLSX.writeFile(wb, "Series_Contrata.xls");
 }
   </script>
 
