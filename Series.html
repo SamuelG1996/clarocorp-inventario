@@ -329,6 +329,14 @@ async function procesarExcelSeries(file) {
 
     for (const fila of data) {
       const estado = (fila['Estado Contrata'] || '').toUpperCase();
+
+      const ESTADOS_VALIDOS = ["INSTALADO", "DISPONIBLE", "RESERVADO", "FACTURAR", "TRASPASO", "DEVOLUCION"];
+
+      if (!ESTADOS_VALIDOS.includes(estado)) {
+        fallos++;
+        continue; // ❌ Ignorar el registro si no es un estado válido
+      }
+      
       const campos = {
         estado_contrata: estado,
         proyecto_sot: fila.SOT || '-',
