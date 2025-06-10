@@ -115,9 +115,16 @@ let modoOrden = 'empresa'; // valores posibles: 'empresa' o 'antiguamiento'
   filtroActual = filtro;
   paginaActual = pagina;
 
-  let queryBase = supabase
-    .from('series_contrata')
-    .select('*', { count: 'exact' });
+  const rolUsuario = localStorage.getItem("rol");
+const empresaUsuario = localStorage.getItem("empresa");
+
+let queryBase = supabase
+  .from('series_contrata')
+  .select('*', { count: 'exact' });
+
+if (rolUsuario === "Contratista") {
+  queryBase = queryBase.eq("empresa", empresaUsuario);
+}
   
   if (modoOrden === 'empresa') {
     queryBase = queryBase.order('empresa', { ascending: true });
