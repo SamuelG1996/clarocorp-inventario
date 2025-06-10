@@ -334,9 +334,11 @@ async function procesarExcelSeries(file) {
         proyecto_sot: fila.SOT || '-',
         cliente: (fila.Cliente || '-').toString().trim(),
         id_devolucion: fila['ID Devolución/Traspaso'] || '-',
+                  fecha_estado_contrata: new Date().toISOString().split('T')[0] // ✅ Fecha actual
         comentario_contrata: fila['Comentario Contrata'] || '-',
         estado_soporte: fila['Estado Soporte'] || '-',
         comentario_soporte: fila['Comentario Soporte'] || '-'
+
       };
 
       // Validaciones
