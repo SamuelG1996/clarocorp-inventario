@@ -334,16 +334,17 @@ async function descargarExcelSeries() {
   
   <script>
 async function guardarCambios() {
+  await cargarSeries(filtroActual, paginaActual);
   Swal.fire({
-    icon: 'info',
-    title: 'Guardar Cambios',
-    text: 'Esta función aún no está implementada.',
+    icon: 'success',
+    title: 'Cambios sincronizados',
+    toast: true,
     position: 'bottom-end',
     showConfirmButton: false,
-    timer: 3000,
+    timer: 2500,
     background: '#1e2022',
     color: '#ffffff',
-    iconColor: '#f39c12'
+    iconColor: '#11a24e'
   });
 }
   </script>
