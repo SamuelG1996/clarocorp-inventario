@@ -1,0 +1,56 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/index",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/Menu",
+      "destination": "/Menu.html"
+    },
+    {
+      "source": "/Stock",
+      "destination": "/Stock.html"
+    },
+    {
+      "source": "/FormularioTraspaso",
+      "destination": "/FormularioTraspaso.html"
+    },
+    {
+      "source": "/Traspaso",
+      "destination": "/Traspaso.html"
+    },
+    {
+      "source": "/DetalleSolicitud",
+      "destination": "/DetalleSolicitud.html"
+    },
+    {
+      "source": "/MiPerfil",
+      "destination": "/MiPerfil.html"
+    },
+    {
+      "source": "/StockClaro",
+      "destination": "/StockClaro.html"
+    },
+    {
+      "source": "/Reportes",
+      "destination": "/Reportes.html"
+    },
+    {
+      "source": "/Compras",
+      "destination": "/Compras.html"
+    },
+    {
+      "source": "/Configuracion",
+      "destination": "/Configuracion.html"
+    },
+    {
+      "source": "/Series",
+      "destination": "/Series.html"
+    }
+  ]
+}
