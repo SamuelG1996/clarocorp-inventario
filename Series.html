@@ -147,7 +147,15 @@ let modoOrden = 'empresa'; // valores posibles: 'empresa' o 'antiguamiento'
     actualizarControlesPaginacion(0, 0); // limpiar
     return;
   }
-
+  function agregarKeys(serie) {
+    return `
+      data-codigo="${serie.codigo}" 
+      data-centro="${serie.centro}" 
+      data-almacen="${serie.almacen}" 
+      data-lote="${serie.lote}" 
+      data-nro_serie="${serie.nro_serie}" 
+    `;
+  }
   data.forEach(serie => {
     const diasAntiguos = calcularAntiguamiento(serie.fecha_ingreso);
     let claseColor = '';
@@ -156,26 +164,29 @@ let modoOrden = 'empresa'; // valores posibles: 'empresa' o 'antiguamiento'
     else claseColor = 'verde-suave';
 
     const fila = document.createElement("tr");
-    fila.innerHTML = `
-      <td>${serie.codigo || ''}</td>
-      <td>${serie.descripcion || ''}</td>
-      <td>${serie.centro || ''}</td>
-      <td>${serie.almacen || ''}</td>
-      <td>${serie.lote || ''}</td>
-      <td>${serie.nro_serie || ''}</td>
-      <td>${serie.empresa || ''}</td>
-      <td>${formatearFechaSegura(serie.fecha_ingreso)}</td>
-      <td>${serie.estado_contrata || ''}</td>
-      <td>${serie.sot || ''}</td>
-      <td>${serie.cliente || ''}</td>
-      <td>${serie.id_devolucion || ''}</td>
-      <td>${formatearFechaSegura(serie.fecha_estado_contrata)}</td>
-      <td>${serie.comentario_contrata || ''}</td>
-      <td class="${claseColor}">${diasAntiguos !== null ? diasAntiguos + ' días' : ''}</td>
-      <td>${serie.estado_soporte || ''}</td>
-      <td>${serie.comentario_soporte || ''}</td>
-      <td>${formatearFechaSegura(serie.fecha_estado_soporte)}</td>
-    `;
+   fila.innerHTML = `
+  <td>${serie.codigo || ''}</td>
+  <td>${serie.descripcion || ''}</td>
+  <td>${serie.centro || ''}</td>
+  <td>${serie.almacen || ''}</td>
+  <td>${serie.lote || ''}</td>
+  <td>${serie.nro_serie || ''}</td>
+  <td>${serie.empresa || ''}</td>
+  <td>${formatearFechaSegura(serie.fecha_ingreso)}</td>
+
+  <td><input type="text" class="editable editable-estado_contrata" value="${(serie.estado_contrata || '').toUpperCase()}" 
+    data-campo="estado_contrata" ${agregarKeys(serie)}></td>
+
+  <td><input type="text" class="editable" value="${serie.sot || ''}" data-campo="sot" ${agregarKeys(serie)}></td>
+  <td><input type="text" class="editable" value="${serie.cliente || ''}" data-campo="cliente" ${agregarKeys(serie)}></td>
+  <td><input type="text" class="editable" value="${serie.id_devolucion || ''}" data-campo="id_devolucion" ${agregarKeys(serie)}></td>
+  <td>${formatearFechaSegura(serie.fecha_estado_contrata)}</td>
+  <td><input type="text" class="editable" value="${serie.comentario_contrata || ''}" data-campo="comentario_contrata" ${agregarKeys(serie)}></td>
+  <td class="${claseColor}">${diasAntiguos !== null ? diasAntiguos + ' días' : ''}</td>
+  <td><input type="text" class="editable" value="${serie.estado_soporte || ''}" data-campo="estado_soporte" ${agregarKeys(serie)}></td>
+  <td><input type="text" class="editable" value="${serie.comentario_soporte || ''}" data-campo="comentario_soporte" ${agregarKeys(serie)}></td>
+  <td>${formatearFechaSegura(serie.fecha_estado_soporte)}</td>
+`;
     tbody.appendChild(fila);
   });
 
@@ -337,6 +348,83 @@ async function guardarCambios() {
 }
   </script>
 
+<script>
+const ESTADOS_VALIDOS = ["INSTALADO", "DISPONIBLE", "RESERVADO", "FACTURAR", "TRASPASO", "DEVOLUCIÓN"];
+
+document.addEventListener('change', async (e) => {
+  const input = e.target;
+  if (!input.classList.contains('editable')) return;
+
+  const campo = input.dataset.campo;
+  let valor = input.value.trim();
+
+  // Validación solo para estado_contrata
+  if (campo === 'estado_contrata') {
+    valor = valor.toUpperCase();
+    input.value = valor;
+
+    if (!ESTADOS_VALIDOS.includes(valor)) {
+      input.style.backgroundColor = '#ffcccc';
+      return;
+    } else {
+      input.style.backgroundColor = '';
+    }
+  }
+
+  const { codigo, centro, almacen, lote, nro_serie } = input.dataset;
+
+  const { error } = await supabase
+    .from('series_contrata')
+    .update({ [campo]: valor })
+    .eq('codigo', codigo)
+    .eq('centro', centro)
+    .eq('almacen', almacen)
+    .eq('lote', lote)
+    .eq('nro_serie', nro_serie);
+
+  if (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: `No se pudo actualizar el campo ${campo}.`,
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f27474'
+    });
+  } else {
+    Swal.fire({
+      icon: 'success',
+      title: `${campo.replaceAll('_', ' ')} actualizado`,
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 2500,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#11a24e'
+    });
+          // ✅ Color temporal para indicar éxito visual en el campo
+    input.style.backgroundColor = '#d4edda'; // verde suave
+    setTimeout(() => {
+      input.style.backgroundColor = '';
+    }, 1200);
+ }
+});
+</script>
+    
+<script>
+document.addEventListener('keydown', async (e) => {
+  if (e.key === 'Enter' && e.target.classList.contains('editable')) {
+    e.preventDefault(); // evita salto de línea u otro comportamiento por defecto
+    e.target.blur();    // forza el evento change
+  }
+});
+</script>
   <script>
   document.addEventListener("DOMContentLoaded", () => cargarSeries(''));
 </script>
