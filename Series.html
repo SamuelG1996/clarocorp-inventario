@@ -67,13 +67,16 @@
 </div>
 
 <script>
-  function formatearFecha(fechaISO) {
+function formatearFecha(fechaISO) {
   if (!fechaISO) return '';
-  const fecha = new Date(fechaISO);
-  return fecha.toLocaleDateString('es-PE');
+  const fecha = new Date(Date.parse(fechaISO)); // asegura que sea válida
+  const dia = fecha.getDate().toString().padStart(2, '0');
+  const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+  const anio = fecha.getFullYear();
+  return `${dia}/${mes}/${anio}`;
 }
-
 </script>
+  
 <script>
     const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI';
