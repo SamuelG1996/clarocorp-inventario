@@ -78,44 +78,63 @@ function formatearFechaSegura(fechaString) {
     const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI';
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-    async function cargarSeries() {
-        mostrarLoader(); // 👈 Mostrar spinner
-      const { data, error } = await supabase.from('series_contrata').select('*');
-      const tbody = document.getElementById("series-body");
-      tbody.innerHTML = "";
+   async function cargarSeries(filtro = '') {
+  mostrarLoader();
+  const tbody = document.getElementById("series-body");
+  tbody.innerHTML = "";
 
-      if (error) {
-        console.error("Error al cargar series:", error);
-        ocultarLoader()
-        return;
-      }
+  let query = supabase.from('series_contrata').select('*', { count: 'exact' }).limit(1000);
 
-      data.forEach(serie => {
-        const fila = document.createElement("tr");
-        fila.innerHTML = `
-         <td>${serie.codigo || ''}</td>
-        <td>${serie.descripcion || ''}</td>
-        <td>${serie.centro || ''}</td>
-        <td>${serie.almacen || ''}</td>
-        <td>${serie.lote || ''}</td>
-        <td>${serie.nro_serie || ''}</td>
-        <td>${serie.empresa || ''}</td>
-        <td>${formatearFechaSegura(serie.fecha_ingreso)}</td>
-        <td>${serie.estado_contrata || ''}</td>
-        <td>${serie.sot || ''}</td>
-        <td>${serie.cliente || ''}</td>
-        <td>${serie.id_devolucion || ''}</td>
-        <td>${formatearFechaSegura(serie.fecha_estado_contrata)}</td>
-        <td>${serie.comentario_contrata || ''}</td>
-        <td>${serie.antiguamiento || ''}</td>
-        <td>${serie.estado_soporte || ''}</td>
-        <td>${serie.comentario_soporte || ''}</td>
-        <td>${formatearFechaSegura(serie.fecha_estado_soporte)}</td>
-        `;
-        tbody.appendChild(fila);
-      });
-        ocultarLoader(); // 👈 Ocultar spinner
-    }
+  if (filtro.trim() !== '') {
+    // Buscar en múltiples columnas combinando filtros con OR
+    query = query.or(
+      `codigo.ilike.%${filtro}%,descripcion.ilike.%${filtro}%,lote.ilike.%${filtro}%,nro_serie.ilike.%${filtro}%,cliente.ilike.%${filtro}%`
+    );
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("Error al cargar series:", error);
+    ocultarLoader();
+    return;
+  }
+
+  if (data.length === 0) {
+    const fila = document.createElement("tr");
+    fila.innerHTML = `<td colspan="18" style="text-align:center; color:gray;">No se encontraron resultados.</td>`;
+    tbody.appendChild(fila);
+    ocultarLoader();
+    return;
+  }
+
+  data.forEach(serie => {
+    const fila = document.createElement("tr");
+    fila.innerHTML = `
+      <td>${serie.codigo || ''}</td>
+      <td>${serie.descripcion || ''}</td>
+      <td>${serie.centro || ''}</td>
+      <td>${serie.almacen || ''}</td>
+      <td>${serie.lote || ''}</td>
+      <td>${serie.nro_serie || ''}</td>
+      <td>${serie.empresa || ''}</td>
+      <td>${formatearFechaSegura(serie.fecha_ingreso)}</td>
+      <td>${serie.estado_contrata || ''}</td>
+      <td>${serie.sot || ''}</td>
+      <td>${serie.cliente || ''}</td>
+      <td>${serie.id_devolucion || ''}</td>
+      <td>${formatearFechaSegura(serie.fecha_estado_contrata)}</td>
+      <td>${serie.comentario_contrata || ''}</td>
+      <td>${serie.antiguamiento || ''}</td>
+      <td>${serie.estado_soporte || ''}</td>
+      <td>${serie.comentario_soporte || ''}</td>
+      <td>${formatearFechaSegura(serie.fecha_estado_soporte)}</td>
+    `;
+    tbody.appendChild(fila);
+  });
+
+  ocultarLoader();
+}
 </script>
   
   <script>
@@ -124,17 +143,17 @@ function formatearFechaSegura(fechaString) {
       window.location.href = "index.html";
     }
 
-    function filtrarTabla() {
-      const input = document.getElementById("searchInput").value.toLowerCase().trim();
-      const filtros = input.split(/\s+/);
-      const filas = document.querySelectorAll("#tablaSeries tbody tr");
+ let tiempoEspera = null;
 
-      filas.forEach(fila => {
-        const textoFila = Array.from(fila.cells).map(td => td.textContent.toLowerCase()).join(" ");
-        const coincide = filtros.every(f => textoFila.includes(f));
-        fila.style.display = coincide ? "" : "none";
-      });
-    }
+function filtrarTabla() {
+  clearTimeout(tiempoEspera);
+  const input = document.getElementById("searchInput").value.toLowerCase().trim();
+
+  // Esperar 300ms tras dejar de escribir antes de hacer la consulta
+  tiempoEspera = setTimeout(() => {
+    cargarSeries(input);
+  }, 300);
+}
   </script>
 
   <script>
@@ -231,7 +250,7 @@ async function guardarCambios() {
   </script>
 
   <script>
-  document.addEventListener("DOMContentLoaded", cargarSeries);
+  document.addEventListener("DOMContentLoaded", () => cargarSeries(''));
 </script>
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
