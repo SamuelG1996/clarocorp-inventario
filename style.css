@@ -785,12 +785,6 @@ body.formulario-traspaso .acciones-tabla button {
 /* --- FIN ESTILOS PARA EL MODULO DE TRASPASOS --- */
 
 /* ---  ESTILOS PARA EL SUBMODULO DE DETALLE SOLICITUD --- */
-html, body {
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-}
-
 .detalle-solicitud .tabla-scroll {
   width: 100%;
   overflow-x: auto;
@@ -803,10 +797,17 @@ html, body {
   font-size: 13px;
 }
 
+body.detalle-solicitud.menu-page {
+  overflow-x: hidden;         /* Evita scroll lateral */
+  width: 100vw;               /* Limita al ancho de la ventana */
+}
+
 body.detalle-solicitud .content {
-  padding: 20px 10px;
-  max-width: 100vw;
-  overflow-x: hidden;
+  width: calc(100vw - 220px); /* 220px es el ancho de la sidebar */
+  max-width: calc(100vw - 220px);
+  padding: 20px 15px;
+  box-sizing: border-box;
+  overflow-x: auto;           /* Solo la tabla hará scroll si necesita */
 }
 
 .td-center {
