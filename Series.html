@@ -26,6 +26,12 @@
       <button onclick="guardarCambios()">
         <i class="fas fa-save"></i> Grabar
       </button>
+        
+  <div id="paginacion" style="text-align: center; margin-top: 10px;">
+  <button onclick="paginaAnterior()">← Anterior</button>
+  <span id="paginaInfo" style="margin: 0 10px;">Página 1</span>
+  <button onclick="paginaSiguiente()">Siguiente →</button>
+</div>
     </div>
  <div class="search-bar">
       <input type="text" id="searchInput" placeholder="Buscar por serie, código, lote..." onkeyup="filtrarTabla()">
@@ -61,12 +67,7 @@
     </div>
   </div>
     </div>
-  
-  <div id="paginacion" style="text-align: center; margin-top: 10px;">
-  <button onclick="paginaAnterior()">← Anterior</button>
-  <span id="paginaInfo" style="margin: 0 10px;">Página 1</span>
-  <button onclick="paginaSiguiente()">Siguiente →</button>
-</div>
+
 <div id="loader" class="loader-overlay" style="display: none;">
   <div class="spinner"></div>
 </div>
@@ -94,9 +95,9 @@ function formatearFechaSegura(fechaString) {
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
     // 🔽⬅️ INICIO DE SCRIPT
-  let paginaActual = 0;
-  const tamañoPagina = 1000;
-  let filtroActual = '
+let paginaActual = 0;
+const tamañoPagina = 1000;
+let filtroActual = '';
     
    async function cargarSeries(filtro = '', pagina = 0) {
   mostrarLoader();
