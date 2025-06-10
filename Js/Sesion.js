@@ -1,7 +1,7 @@
 // === SESIÓN AUTOMÁTICA Y RECARGA ===
 
 // Configuración: excluye módulos donde NO se quiere recargar al volver a la pestaña
-const excludedPages = ["Perfil.html", "Stock.html", "Series.html","FormularioTraspaso.html", "Traspaso.html","DetalleSolicitud.html"];
+const excludedPages = ["Perfil.html", "Stock.html", "Series.html","FormularioTraspaso.html", "index.html","DetalleSolicitud.html"];
 const ENABLE_AUTO_RELOAD_ON_RETURN = !excludedPages.some(page =>
   window.location.pathname.includes(page)
 );
