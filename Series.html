@@ -166,10 +166,7 @@ let modoOrden = 'empresa'; // valores posibles: 'empresa' o 'antiguamiento'
   <td>${serie.nro_serie || ''}</td>
   <td>${serie.empresa || ''}</td>
   <td>${formatearFechaSegura(serie.fecha_ingreso)}</td>
-
-  <td><input type="text" class="editable editable-estado_contrata" value="${(serie.estado_contrata || '').toUpperCase()}" 
-    data-campo="estado_contrata" ${agregarKeys(serie)}></td>
-
+<td>${(serie.estado_contrata || '').toUpperCase()}</td>
   <td>${serie.sot || ''}</td>
   <td>${serie.cliente || ''}</td>
   <td>${serie.id_devolucion || ''}</td>
