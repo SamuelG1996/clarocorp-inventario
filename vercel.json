@@ -29,8 +29,8 @@
       "destination": "/DetalleSolicitud.html"
     },
     {
-      "source": "/MiPerfil",
-      "destination": "/MiPerfil.html"
+      "source": "/Perfil",
+      "destination": "/Perfil.html"
     },
     {
       "source": "/StockClaro",
