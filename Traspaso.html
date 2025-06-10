@@ -20,22 +20,22 @@
   <div class="spinner"></div>
   </div>
   <div class="sidebar">
-    <div>
+     <div>
       <div class="logo">
-        <a href="Menu.html" style="text-decoration: none; color: inherit;">Portal Inventario</a>
+  	<a href="/Menu" style="text-decoration: none; color: inherit;">Portal Inventario </a>
       </div>
       <div class="menu">
-        <a href="Stock.html"><i class="fas fa-box"></i> Stock Contrata</a>
+        <a href="/Stock"><i class="fas fa-box"></i> Stock Contrata</a>
         <a href="#"><i class="fas fa-warehouse"></i> Stock Claro</a>
-        <a href="Traspasos.html" class="active"><i class="fas fa-sync-alt"></i> Traspasos</a>
+        <a href="/Traspaso"><i class="fas fa-sync-alt"></i> Traspasos</a>
         <a href="#"><i class="fas fa-truck"></i> Compras</a>
         <a href="#"><i class="fas fa-chart-bar"></i> Reportes</a>
-        <a href="Perfil.html"><i class="fas fa-user-tie"></i> Mi Perfil</a>
+        <a href="/Perfil"><i class="fas fa-user-tie"></i> Mi Perfil</a>
         <a href="#"><i class="fas fa-gear"></i> Configuración</a>
       </div>
     </div>
     <div class="logout">
-      <a href="index.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i></a>
+      <a href="/index" onclick="logout()"><i class="fas fa-sign-out-alt"></i></a>
     </div>
   </div>
 
@@ -43,7 +43,7 @@
     <div class="encabezado-stock">
       <h2><i class="fas fa-sync-alt"></i> Solicitudes de Traspaso</h2>
       <div class="acciones-tabla">
-        <button onclick="location.href='FormularioTraspaso.html'"><i class="fas fa-plus-circle"></i> Nueva Solicitud</button>
+        <button onclick="location.href='/FormularioTraspaso'"><i class="fas fa-plus-circle"></i> Nueva Solicitud</button>
         <button id="btnEliminarSeleccionados" onclick="eliminarSeleccionados()" style="display:none;">
         <i class="fas fa-trash"></i> Eliminar Seleccionados
         </button>
@@ -75,7 +75,7 @@
   <script>
     function logout() {
       localStorage.clear();
-      window.location.href = "index.html";
+      window.location.href = "/index";
     }
 
     function toggleTodos(checkbox) {
@@ -191,7 +191,7 @@
           const btnVer = document.createElement("button");
           btnVer.innerHTML = `<i class="fa fa-eye"></i>`;
           btnVer.onclick = () => {
-            window.location.href = `DetalleSolicitud.html?id=${solicitud.id}`;
+            window.location.href = `/DetalleSolicitud?id=${solicitud.id}`;
           };
 
           const celdaVer = document.createElement("td");
