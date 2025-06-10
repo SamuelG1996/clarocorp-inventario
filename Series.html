@@ -61,7 +61,10 @@
     </div>
   </div>
     </div>
-
+  
+<div id="loader" class="loader-overlay" style="display: none;">
+  <div class="spinner"></div>
+</div>
 
 <script>
   function formatearFecha(fechaISO) {
@@ -76,12 +79,14 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI';
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
     async function cargarSeries() {
+        mostrarLoader(); // 👈 Mostrar spinner
       const { data, error } = await supabase.from('series_contrata').select('*');
       const tbody = document.getElementById("series-body");
       tbody.innerHTML = "";
 
       if (error) {
         console.error("Error al cargar series:", error);
+        ocultarLoader()
         return;
       }
 
@@ -109,6 +114,7 @@
         `;
         tbody.appendChild(fila);
       });
+        ocultarLoader(); // 👈 Ocultar spinner
     }
 </script>
   
@@ -133,57 +139,75 @@
 
   <script>
 async function descargarExcelSeries() {
+  mostrarLoader(); // 👈 Mostrar
   const pageSize = 1000;
   let page = 0;
   let allData = [];
   let fetched = [];
 
-  do {
-    const { data, error } = await supabase
-      .from('series_contrata')
-      .select('*')
-      .range(page * pageSize, (page + 1) * pageSize - 1);
+  try {
+    do {
+      const { data, error } = await supabase
+        .from('series_contrata')
+        .select('*')
+        .range(page * pageSize, (page + 1) * pageSize - 1);
 
-    if (error) {
-      console.error("Error al obtener datos:", error);
-      break;
+      if (error) throw error;
+
+      fetched = data;
+      allData = allData.concat(fetched);
+      page++;
+    } while (fetched.length === pageSize);
+
+    if (allData.length === 0) {
+      console.warn("No se encontraron datos.");
+      ocultarLoader();
+      return;
     }
 
-    fetched = data;
-    allData = allData.concat(fetched);
-    page++;
-  } while (fetched.length === pageSize); // continúa si aún hay más
+    const datos = allData.map(serie => ({
+      Código: serie.codigo,
+      Descripción: serie.descripcion,
+      Centro: serie.centro,
+      Almacén: serie.almacen,
+      Lote: serie.lote,
+      "N° Serie": serie.nro_serie,
+      Empresa: serie.empresa,
+      "Fecha Ingreso": formatearFecha(serie.fecha_ingreso),
+      "Estado Contrata": serie.estado_contrata,
+      SOT: serie.sot,
+      Cliente: serie.cliente,
+      "ID Devolución/Traspaso": serie.id_devolucion,
+      "Fecha Estado Contrata": formatearFecha(serie.fecha_estado_contrata),
+      "Comentario Contrata": serie.comentario_contrata,
+      Antiguamiento: serie.antiguamiento,
+      "Estado Soporte": serie.estado_soporte,
+      "Comentario Soporte": serie.comentario_soporte,
+      "Fecha Estado Soporte": formatearFecha(serie.fecha_estado_soporte)
+    }));
 
-  if (allData.length === 0) {
-    console.warn("No se encontraron datos.");
-    return;
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(datos);
+    XLSX.utils.book_append_sheet(wb, ws, "Series Contrata");
+    XLSX.writeFile(wb, "Series_Contrata.xlsx");
+
+          Swal.fire({
+    icon: 'success',
+    title: 'Excel generado',
+    text: 'La descarga ha comenzado.',
+    position: 'bottom-end',
+    showConfirmButton: false,
+    timer: 2500,
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#11a24e'
+});
+
+  } catch (error) {
+    console.error("Error al exportar Excel:", error);
+  } finally {
+    ocultarLoader(); // 👈 Siempre ocultar al final
   }
-
-  const datos = allData.map(serie => ({
-    Código: serie.codigo,
-    Descripción: serie.descripcion,
-    Centro: serie.centro,
-    Almacén: serie.almacen,
-    Lote: serie.lote,
-    "N° Serie": serie.nro_serie,
-    Empresa: serie.empresa,
-    "Fecha Ingreso": formatearFecha(serie.fecha_ingreso),
-    "Estado Contrata": serie.estado_contrata,
-    SOT: serie.sot,
-    Cliente: serie.cliente,
-    "ID Devolución/Traspaso": serie.id_devolucion,
-    "Fecha Estado Contrata": formatearFecha(serie.fecha_estado_contrata),
-    "Comentario Contrata": serie.comentario_contrata,
-    Antiguamiento: serie.antiguamiento,
-    "Estado Soporte": serie.estado_soporte,
-    "Comentario Soporte": serie.comentario_soporte,
-    "Fecha Estado Soporte": formatearFecha(serie.fecha_estado_soporte)
-  }));
-
-  const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.json_to_sheet(datos);
-  XLSX.utils.book_append_sheet(wb, ws, "Series Contrata");
-  XLSX.writeFile(wb, "Series_Contrata.xlsx"); // Cambiado a xlsx
 }
   </script>
 
@@ -207,7 +231,7 @@ async function guardarCambios() {
   <script>
   document.addEventListener("DOMContentLoaded", cargarSeries);
 </script>
-  
+  <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
 </body>
 </html>
