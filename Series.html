@@ -375,14 +375,15 @@ document.addEventListener('change', async (e) => {
 console.log('Valores para actualizar:', {
   campo, valor, codigo, centro, almacen, lote, nro_serie
 });
-  const { error } = await supabase
-    .from('series_contrata')
-    .update({ [campo]: valor })
-    .eq('codigo', codigo)
-    .eq('centro', centro)
-    .eq('almacen', almacen)
-    .eq('lote', lote)
-    .eq('nro_serie', nro_serie);
+  const { data, error } = await supabase
+  .from('series_contrata')
+  .update({ [campo]: valor })
+  .eq('codigo', codigo)
+  .eq('centro', centro)
+  .eq('almacen', almacen)
+  .eq('lote', lote)
+  .eq('nro_serie', nro_serie)
+  .select();  // 👈 Esto fuerza a devolver los datos actualizados
 
   if (error) {
     Swal.fire({
