@@ -62,6 +62,11 @@
   </div>
     </div>
   
+  <div id="paginacion" style="text-align: center; margin-top: 10px;">
+  <button onclick="paginaAnterior()">← Anterior</button>
+  <span id="paginaInfo" style="margin: 0 10px;">Página 1</span>
+  <button onclick="paginaSiguiente()">Siguiente →</button>
+</div>
 <div id="loader" class="loader-overlay" style="display: none;">
   <div class="spinner"></div>
 </div>
@@ -87,21 +92,33 @@ function formatearFechaSegura(fechaString) {
     const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI';
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-   async function cargarSeries(filtro = '') {
+
+    // 🔽⬅️ INICIO DE SCRIPT
+  let paginaActual = 0;
+  const tamañoPagina = 1000;
+  let filtroActual = '
+    
+   async function cargarSeries(filtro = '', pagina = 0) {
   mostrarLoader();
   const tbody = document.getElementById("series-body");
   tbody.innerHTML = "";
 
-  let query = supabase.from('series_contrata').select('*', { count: 'exact' }).limit(1000);
+  filtroActual = filtro;
+  paginaActual = pagina;
+
+  let query = supabase
+    .from('series_contrata')
+    .select('*', { count: 'exact' })
+    .order('empresa', { ascending: true }) // ordena por empresa
+    .range(pagina * tamañoPagina, (pagina + 1) * tamañoPagina - 1);
 
   if (filtro.trim() !== '') {
-    // Buscar en múltiples columnas combinando filtros con OR
     query = query.or(
-      `codigo.ilike.%${filtro}%,descripcion.ilike.%${filtro}%,lote.ilike.%${filtro}%,nro_serie.ilike.%${filtro}%,cliente.ilike.%${filtro}%`
+      `codigo.ilike.%${filtro}%,descripcion.ilike.%${filtro}%,lote.ilike.%${filtro}%,nro_serie.ilike.%${filtro}%,cliente.ilike.%${filtro}%,empresa.ilike.%${filtro}%`
     );
   }
 
-  const { data, error } = await query;
+  const { data, error, count } = await query;
 
   if (error) {
     console.error("Error al cargar series:", error);
@@ -109,45 +126,48 @@ function formatearFechaSegura(fechaString) {
     return;
   }
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     const fila = document.createElement("tr");
     fila.innerHTML = `<td colspan="18" style="text-align:center; color:gray;">No se encontraron resultados.</td>`;
     tbody.appendChild(fila);
     ocultarLoader();
+    actualizarControlesPaginacion(0, 0); // limpiar
     return;
   }
 
   data.forEach(serie => {
-  const diasAntiguos = calcularAntiguamiento(serie.fecha_ingreso);
-  let claseColor = '';
-  if (diasAntiguos > 90) claseColor = 'rojo-suave';
-  else if (diasAntiguos > 60) claseColor = 'naranja-suave';
-  else claseColor = 'verde-suave';
+    const diasAntiguos = calcularAntiguamiento(serie.fecha_ingreso);
+    let claseColor = '';
+    if (diasAntiguos > 90) claseColor = 'rojo-suave';
+    else if (diasAntiguos > 60) claseColor = 'naranja-suave';
+    else claseColor = 'verde-suave';
 
-  const fila = document.createElement("tr");
-  fila.innerHTML = `
-    <td>${serie.codigo || ''}</td>
-    <td>${serie.descripcion || ''}</td>
-    <td>${serie.centro || ''}</td>
-    <td>${serie.almacen || ''}</td>
-    <td>${serie.lote || ''}</td>
-    <td>${serie.nro_serie || ''}</td>
-    <td>${serie.empresa || ''}</td>
-    <td>${formatearFechaSegura(serie.fecha_ingreso)}</td>
-    <td>${serie.estado_contrata || ''}</td>
-    <td>${serie.sot || ''}</td>
-    <td>${serie.cliente || ''}</td>
-    <td>${serie.id_devolucion || ''}</td>
-    <td>${formatearFechaSegura(serie.fecha_estado_contrata)}</td>
-    <td>${serie.comentario_contrata || ''}</td>
-    <td class="${claseColor}">${diasAntiguos !== null ? diasAntiguos + ' días' : ''}</td>
-    <td>${serie.estado_soporte || ''}</td>
-    <td>${serie.comentario_soporte || ''}</td>
-    <td>${formatearFechaSegura(serie.fecha_estado_soporte)}</td>
-  `;
-  tbody.appendChild(fila);
-});
+    const fila = document.createElement("tr");
+    fila.innerHTML = `
+      <td>${serie.codigo || ''}</td>
+      <td>${serie.descripcion || ''}</td>
+      <td>${serie.centro || ''}</td>
+      <td>${serie.almacen || ''}</td>
+      <td>${serie.lote || ''}</td>
+      <td>${serie.nro_serie || ''}</td>
+      <td>${serie.empresa || ''}</td>
+      <td>${formatearFechaSegura(serie.fecha_ingreso)}</td>
+      <td>${serie.estado_contrata || ''}</td>
+      <td>${serie.sot || ''}</td>
+      <td>${serie.cliente || ''}</td>
+      <td>${serie.id_devolucion || ''}</td>
+      <td>${formatearFechaSegura(serie.fecha_estado_contrata)}</td>
+      <td>${serie.comentario_contrata || ''}</td>
+      <td class="${claseColor}">${diasAntiguos !== null ? diasAntiguos + ' días' : ''}</td>
+      <td>${serie.estado_soporte || ''}</td>
+      <td>${serie.comentario_soporte || ''}</td>
+      <td>${formatearFechaSegura(serie.fecha_estado_soporte)}</td>
+    `;
+    tbody.appendChild(fila);
+  });
+
   ocultarLoader();
+  actualizarControlesPaginacion(pagina, Math.ceil(count / tamañoPagina));
 }
 </script>
   
@@ -162,10 +182,8 @@ function formatearFechaSegura(fechaString) {
 function filtrarTabla() {
   clearTimeout(tiempoEspera);
   const input = document.getElementById("searchInput").value.toLowerCase().trim();
-
-  // Esperar 300ms tras dejar de escribir antes de hacer la consulta
   tiempoEspera = setTimeout(() => {
-    cargarSeries(input);
+    cargarSeries(input, 0); // Siempre reiniciar desde página 0 al filtrar
   }, 300);
 }
   </script>
@@ -265,6 +283,27 @@ async function guardarCambios() {
   <script>
   document.addEventListener("DOMContentLoaded", () => cargarSeries(''));
 </script>
+
+  <script>
+function paginaSiguiente() {
+  cargarSeries(filtroActual, paginaActual + 1);
+}
+
+function paginaAnterior() {
+  if (paginaActual > 0) {
+    cargarSeries(filtroActual, paginaActual - 1);
+  }
+}
+
+function actualizarControlesPaginacion(pagina, totalPaginas) {
+  const info = document.getElementById("paginaInfo");
+  info.textContent = `Página ${pagina + 1} de ${totalPaginas}`;
+
+  document.querySelector('#paginacion button:nth-child(1)').disabled = pagina <= 0;
+  document.querySelector('#paginacion button:nth-child(3)').disabled = pagina + 1 >= totalPaginas;
+}
+</script>
+
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
 </body>
