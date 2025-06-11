@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ping ClaroCorp+</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1e2022;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .status {
+      margin-top: 20px;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h2>✔️ Supabase fue consultado exitosamente.</h2>
+  <div class="status">
+    Último ping: <span id="hora"></span>
+  </div>
+
+  <script>
+    const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI';
+    const client = supabase.createClient(supabaseUrl, supabaseKey);
+
+    async function pingSupabase() {
+      try {
+        await client.from('usuarios').select('id').limit(1);
+        console.log("Supabase activado correctamente");
+      } catch (error) {
+        console.error("Error al calentar Supabase", error);
+      }
+    }
+
+    function actualizarHora() {
+      const horaActual = new Date().toLocaleString("es-PE", {
+        hour12: false,
+        timeZone: "America/Lima"
+      });
+      document.getElementById("hora").textContent = horaActual;
+    }
+
+    pingSupabase();
+    actualizarHora();
+  </script>
+</body>
+</html>
