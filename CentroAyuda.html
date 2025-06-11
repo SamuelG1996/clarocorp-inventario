@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Portal Inventario || Centro de Ayuda</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body class="menu-page">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div>
+      <div class="logo">
+        <a href="Menu.html" style="text-decoration: none; color: inherit;">Portal Inventario</a>
+      </div>
+      <div class="menu">
+        <a href="Stock.html"><i class="fas fa-box"></i> Stock Contrata</a>
+        <a href="#"><i class="fas fa-warehouse"></i> Stock Claro</a>
+        <a href="Traspaso.html"><i class="fas fa-sync-alt"></i> Traspasos</a>
+        <a href="#"><i class="fas fa-truck"></i> Compras</a>
+        <a href="#"><i class="fas fa-chart-bar"></i> Reportes</a>
+        <a href="Perfil.html"><i class="fas fa-user-tie"></i> Mi Perfil</a>
+        <a href="Ayuda.html"><i class="fas fa-question-circle"></i> Ayuda</a>
+        <a href="#"><i class="fas fa-gear"></i> Configuración</a>
+      </div>
+    </div>
+    <div class="logout">
+      <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </div>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <div class="perfil-content">
+    <div class="perfil-box">
+      <div class="encabezado-stock">
+        <h2><i class="fas fa-life-ring"></i> Centro de Ayuda</h2>
+      </div>
+
+      <form id="ayudaForm" class="formulario-perfil">
+        <div class="grupo-form">
+          <label for="codigo_usuario">Código de usuario</label>
+          <input type="text" id="codigo_usuario" disabled>
+        </div>
+        <div class="grupo-form">
+          <label for="nombres">Nombres</label>
+          <input type="text" id="nombres" disabled>
+        </div>
+        <div class="grupo-form">
+          <label for="telefono">Teléfono</label>
+          <input type="text" id="telefono" disabled>
+        </div>
+        <div class="grupo-form">
+          <label for="correo">Correo electrónico</label>
+          <input type="email" id="correo" disabled>
+        </div>
+        <div class="grupo-form">
+          <label for="empresa">Empresa</label>
+          <input type="text" id="empresa" disabled>
+        </div>
+        <div class="grupo-form">
+          <label for="tipo">Tipo</label>
+          <select id="tipo">
+            <option value="Incidencia">Incidencia</option>
+            <option value="Solicitud">Solicitud</option>
+          </select>
+        </div>
+        <div class="grupo-form">
+          <label for="modulo">Módulo afectado</label>
+          <select id="modulo">
+            <option value="Login">Login</option>
+            <option value="Menu">Menu</option>
+            <option value="Stock Contrata">Stock Contrata</option>
+            <option value="Traspasos">Traspasos</option>
+            <option value="Perfil">Perfil</option>
+            <option value="Otros">Otros</option>
+          </select>
+        </div>
+        <div class="grupo-form">
+          <label for="detalle">Detalle del incidente o solicitud</label>
+          <textarea id="detalle" rows="4" required style="resize: vertical; padding: 8px; font-size: 13px; border-radius: 4px; border: 1px solid #ccc;"></textarea>
+        </div>
+        <div class="grupo-form">
+          <label for="archivo">Adjuntar evidencia (5MB max)</label>
+          <input type="file" id="archivo" accept=".jpg,.jpeg,.png,.pdf">
+        </div>
+        <div class="form-boton">
+          <button type="button" onclick="enviarFormularioAyuda()">Enviar</button>
+          <button type="reset" style="background-color:#e74c3c; margin-left: 10px;">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const supabase = supabase.createClient(
+      'https://bsrtuievwjtzwejuxqee.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI'
+    );
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("codigo_usuario").value = localStorage.getItem("codigo_usuario") || "";
+      document.getElementById("nombres").value = localStorage.getItem("nombres") || "";
+      document.getElementById("telefono").value = localStorage.getItem("telefono") || "";
+      document.getElementById("correo").value = localStorage.getItem("correo") || "";
+      document.getElementById("empresa").value = localStorage.getItem("empresa") || "";
+    });
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+
+    function enviarFormularioAyuda() {
+      const tipo = document.getElementById("tipo").value;
+      const modulo = document.getElementById("modulo").value;
+      const detalle = document.getElementById("detalle").value.trim();
+      const archivo = document.getElementById("archivo").files[0];
+
+      if (tipo === "Incidencia" && !archivo) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Archivo requerido',
+          text: 'Debes adjuntar un archivo si se trata de una incidencia.'
+        });
+        return;
+      }
+
+      if (archivo && archivo.size > 5 * 1024 * 1024) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Archivo demasiado grande',
+          text: 'El archivo no debe superar los 5 MB.'
+        });
+        return;
+      }
+
+      // Aquí va la lógica para guardar en Supabase y enviar (en desarrollo)
+      Swal.fire({
+        icon: 'success',
+        title: 'Formulario enviado',
+        text: 'Tu solicitud ha sido registrada correctamente.'
+      });
+      document.getElementById("ayudaForm").reset();
+    }
+  </script>
+<script src="Js/Sesion.js"></script>
+</body>
+</html>
