@@ -35,10 +35,13 @@
 
     async function pingSupabase() {
       try {
+        // Calienta Supabase y registra el log
         await client.from('usuarios').select('id').limit(1);
-        console.log("Supabase activado correctamente");
+        await client.from('ping_log').insert({ origen: 'uptimerobot' });
+
+        console.log("Ping registrado correctamente");
       } catch (error) {
-        console.error("Error al calentar Supabase", error);
+        console.error("Error al registrar ping:", error);
       }
     }
 
