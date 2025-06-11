@@ -52,5 +52,9 @@
       "source": "/Series",
       "destination": "/Series.html"
     }
+        {
+      "source": "/CentrodeAyuda",
+      "destination": "/CentroAyuda.html"
+    },
   ]
 }
