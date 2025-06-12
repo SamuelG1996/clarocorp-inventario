@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (rol === "Contratista") {
     ocultarRutas = ["Stock Claro", "Compras", "Reportes", "Configuración"];
   } else if (rol === "Analista" || rol === "Soporte") {
-    ocultarRutas = ["Configuración"];
+    ocultarRutas = ["Configuración", "Compras", "Reportes"];
   }
 
   // Oculta elementos del sidebar
