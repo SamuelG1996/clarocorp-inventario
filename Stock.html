@@ -384,9 +384,36 @@ function confirmarCargaExcelStock(file) {
 
   <script>
 function mostrarMenuCargaSAP() {
-  document.getElementById('excelSAPInput').click();
+  Swal.fire({
+    title: 'Gestión SAP',
+    text: '¿Qué deseas hacer?',
+    icon: 'question',
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: 'Subir carga',
+    denyButtonText: 'Descargar plantilla',
+    cancelButtonText: 'Cancelar',
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      document.getElementById('excelSAPInput').click();
+    } else if (result.isDenied) {
+      generarPlantillaSAP();
+    }
+  });
 }
 
+function generarPlantillaSAP() {
+  const wb = XLSX.utils.book_new();
+  const ws_data = [
+    ['Código', 'Centro', 'Almacén', 'Lote', 'Cantidad SAP']
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(ws_data);
+  XLSX.utils.book_append_sheet(wb, ws, 'Plantilla_SAP');
+  XLSX.writeFile(wb, 'Plantilla_Actualizacion_SAP.xlsx');
+}
 function confirmarCargaExcelSAP(file) {
   Swal.fire({
     title: '¿Actualizar cantidades SAP?',
