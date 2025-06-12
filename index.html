@@ -31,7 +31,7 @@
 	</form>
 	</div>
 
-	<div class="copyright">© 2025 ClaroCorp+ | Desarrollado por Samuel Guardia</div>
+	<div class="copyright">© 2025 Portal Inventario | Desarrollado por Samuel Guardia</div>
 
 	<script>
 	const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co';
@@ -102,6 +102,21 @@ window.addEventListener('load', async () => {
     document.getElementById('loader').style.display = 'none';
   }, 300);
 });
+</script>
+
+<script>
+	function togglePassword() {
+	  const pass = document.getElementById("pass");
+	  const icon = document.getElementById("eye-icon");
+	  if (pass.type === "password") {
+		pass.type = "text";
+		icon.src = "https://raw.githubusercontent.com/SamuelG1996/clarocorp-inventario/main/Imagenes/Ojo%20Cerrado(2).png";
+	  } else {
+		pass.type = "password";
+		icon.src = "https://raw.githubusercontent.com/SamuelG1996/clarocorp-inventario/main/Imagenes/Ojo%20Abierto.png";
+	  }
+	}
+
 </script>
 	
 	<div id="loader" class="loader-overlay" style="display: none;">
