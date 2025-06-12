@@ -14,7 +14,6 @@
 <body class="login-page">
 
 	<div class="login-container">
-	<h2></h2>
 	<form onsubmit="login(event)">
 		<div class="input-group">
 		<img alt="user" class="icon-left" src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png"/>
@@ -39,68 +38,59 @@
 	const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI';
 	const client = supabase.createClient(supabaseUrl, supabaseKey);
 
-	async function login(event) {
-	  event.preventDefault();
-	  document.getElementById('loader').style.display = 'flex';
-	  const codigo = document.querySelector('input[name="codigo"]').value.trim().toUpperCase();
-	  const password = document.querySelector('input[name="contrasena"]').value.trim();
+	let isSubmitting = false;
 
-	  console.log("Código enviado:", codigo);
-	  console.log("Contraseña enviada:", password);
+async function login(event) {
+  event.preventDefault();
 
-	 const { data, error } = await client
-	  .from('usuarios')
-	  .select('*')
-	  .eq('codigo_usuario', codigo)
-	  .eq('contrasena', password)
-	  .single();
-	
-	if (!data) {
-		    document.getElementById("loader").style.display = "none"; // Oculta loader primero
-		Swal.fire({
-		  icon: 'error',
-		  title: '<strong>Acceso Denegado</strong>',
-		  html: '<small>Código de usuario o contraseña<br>incorrectos</small>',
-		  background: '#1e2022',
-		  color: '#ffffff',
-		  iconColor: '#e74c3c',
-		  confirmButtonColor: '#e74c3c',
-		  confirmButtonText: 'Entendido',
-		  width: '320px',
-		  padding: '1.5em',
-		  customClass: {
-		    title: 'swal2-title-custom',
-		    popup: 'swal2-popup-clean',
-		    confirmButton: 'swal2-btn-rounded'
-		  }
-		});
+  if (isSubmitting) return;
+  isSubmitting = true;
 
-		return;
-		
-	  }
-		localStorage.setItem('codigo_usuario', data.codigo_usuario);
-		localStorage.setItem('usuario', data.codigo_usuario); // 🔧 NUEVA LÍNEA
-		localStorage.setItem('nombres', data.nombre);
-		localStorage.setItem('correo', data.email);
-		localStorage.setItem('telefono', data.telefono);
-		localStorage.setItem('rol', data.rol);
-		localStorage.setItem('empresa', data.empresa);
-		document.getElementById("loader").style.display = "none";
-		window.location.href = "/Menu";
-	}
-	
-	function togglePassword() {
-	  const pass = document.getElementById("pass");
-	  const icon = document.getElementById("eye-icon");
-	  if (pass.type === "password") {
-		pass.type = "text";
-		icon.src = "https://raw.githubusercontent.com/SamuelG1996/clarocorp-inventario/main/Imagenes/Ojo%20Cerrado(2).png";
-	  } else {
-		pass.type = "password";
-		icon.src = "https://raw.githubusercontent.com/SamuelG1996/clarocorp-inventario/main/Imagenes/Ojo%20Abierto.png";
-	  }
-	}
+  document.getElementById('loader').style.display = 'flex';
+  const codigo = document.querySelector('input[name="codigo"]').value.trim().toUpperCase();
+  const password = document.querySelector('input[name="contrasena"]').value.trim();
 
+  try {
+    const { data, error } = await client
+      .from('usuarios')
+      .select('*')
+      .eq('codigo_usuario', codigo)
+      .eq('contrasena', password)
+      .single();
+
+    if (error || !data) {
+      throw new Error("Credenciales incorrectas");
+    }
+
+    localStorage.setItem('codigo_usuario', data.codigo_usuario);
+    localStorage.setItem('usuario', data.codigo_usuario);
+    localStorage.setItem('nombres', data.nombre);
+    localStorage.setItem('correo', data.email);
+    localStorage.setItem('telefono', data.telefono);
+    localStorage.setItem('rol', data.rol);
+    localStorage.setItem('empresa', data.empresa);
+setTimeout(() => {
+    window.location.href = "/Menu"; // Asegúrate que este archivo exista
+}, 300);
+
+  } catch (err) {
+    Swal.fire({
+      icon: 'error',
+      title: '<strong>Acceso Denegado</strong>',
+      html: '<small>Código de usuario o contraseña<br>incorrectos</small>',
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#e74c3c',
+      confirmButtonColor: '#e74c3c',
+      confirmButtonText: 'Entendido',
+      width: '320px',
+      padding: '1.5em',
+    });
+  } finally {
+    document.getElementById('loader').style.display = 'none';
+    isSubmitting = false;
+  }
+}
 </script>
 <script>
 window.addEventListener('load', async () => {
