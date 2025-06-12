@@ -42,7 +42,11 @@
         <button onclick="descargarExcel()">Descargar Excel</button>
         <button onclick="mostrarMenuCargaStock()"><i class="fas fa-upload"></i> Actualizar Datos</button>
          <button onclick="irASeries()">Ver Series</button>
+        <button id="btnActualizarSAP" style="display: none;" onclick="mostrarMenuCargaSAP()">
+        <i class="fas fa-file-upload"></i> Actualizar SAP
+      </button>
         <input type="file" id="excelInput" accept=".xlsx" style="display:none;" onchange="confirmarCargaExcelStock(this.files[0])">
+        <input type="file" id="excelSAPInput" accept=".xlsx" style="display: none;" onchange="confirmarCargaExcelSAP(this.files[0])">
       </div>
     </div>
 
@@ -119,6 +123,13 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI'
     const supabase = createClient(supabaseUrl, supabaseKey)
 
+ document.addEventListener("DOMContentLoaded", () => {
+    const rolUsuario = localStorage.getItem("rol");
+    if (rolUsuario === "Administrador") {
+      document.getElementById("btnActualizarSAP").style.display = "inline-block";
+    }
+  });
+    
     function formatearNumero(valor) {
     const numero = parseFloat(valor);
     if (isNaN(numero)) return valor;
@@ -252,8 +263,98 @@
   reader.readAsBinaryString(file);
 }
 
+
   // Ejecutar carga inicial
   window.cargarStockContrata();
+
+window.procesarExcelSAP = async function(file) {
+  document.getElementById("loader").style.display = "flex";
+  const reader = new FileReader();
+
+  reader.onload = async (e) => {
+    const workbook = XLSX.read(e.target.result, { type: 'binary' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const data = XLSX.utils.sheet_to_json(sheet);
+
+    let insertados = 0, actualizados = 0, errores = 0;
+
+    for (const fila of data) {
+      const codigo = fila["Código"]?.toString().trim();
+      const centro = fila["Centro"]?.toString().trim();
+      const almacen = fila["Almacén"]?.toString().trim();
+      const lote = fila["Lote"]?.toString().trim();
+      const cantidad_sap = parseFloat(fila["Cantidad SAP"]);
+
+      if (!codigo || !centro || !almacen || !lote || isNaN(cantidad_sap)) {
+        errores++;
+        continue;
+      }
+
+      const { data: existe, error: errorSelect } = await supabase
+        .from("stock_contrata")
+        .select("codigo")
+        .eq("codigo", codigo)
+        .eq("centro", centro)
+        .eq("almacen", almacen)
+        .eq("lote", lote)
+        .maybeSingle();
+
+      const fecha_carga_sap = new Date().toISOString();
+
+      if (existe) {
+        const { error: errorUpdate } = await supabase
+          .from("stock_contrata")
+          .update({ cantidad_sap, fecha_carga_sap })
+          .eq("codigo", codigo)
+          .eq("centro", centro)
+          .eq("almacen", almacen)
+          .eq("lote", lote);
+
+        errorUpdate ? errores++ : actualizados++;
+      } else {
+        const empresa = localStorage.getItem("empresa") || "SIN EMPRESA";
+        const { error: errorInsert } = await supabase
+          .from("stock_contrata")
+          .insert([{
+            codigo,
+            centro,
+            almacen,
+            lote,
+            cantidad_sap,
+            empresa,
+            fecha_carga_sap
+          }]);
+
+        errorInsert ? errores++ : insertados++;
+      }
+    }
+
+    Swal.fire({
+      icon: 'info',
+      title: 'Carga completada',
+      html: `
+        ✅ <b>${actualizados}</b> registros actualizados<br>
+        ➕ <b>${insertados}</b> registros insertados<br>
+        ⚠️ <b>${errores}</b> errores`,
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 5000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
+    });
+
+    await window.cargarStockContrata();
+    document.getElementById("loader").style.display = "none";
+  };
+
+  reader.readAsBinaryString(file);
+}
+
+
+    
 </script>
 
   <script>
@@ -279,6 +380,30 @@ function confirmarCargaExcelStock(file) {
   });
 }
 
+</script>
+
+  <script>
+function mostrarMenuCargaSAP() {
+  document.getElementById('excelSAPInput').click();
+}
+
+function confirmarCargaExcelSAP(file) {
+  Swal.fire({
+    title: '¿Actualizar cantidades SAP?',
+    text: 'Se actualizarán o insertarán registros según el archivo.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, continuar',
+    cancelButtonText: 'Cancelar',
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      procesarExcelSAP(file);
+    }
+  });
+}
 </script>
 
   <script src="Js/Sesion.js"></script>
