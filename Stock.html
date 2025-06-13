@@ -408,6 +408,29 @@ window.procesarExcelSAP = async function(file) {
   reader.readAsBinaryString(file);
 }
 
+    
+    function renderizarControlesPaginacion() {
+  const contenedor = document.getElementById("paginacion");
+  contenedor.innerHTML = "";
+
+  const btnAnterior = document.createElement("button");
+  btnAnterior.textContent = "← Anterior";
+  btnAnterior.disabled = paginaActual === 0;
+  btnAnterior.onclick = () => window.cargarStockContrata(paginaActual - 1);
+  contenedor.appendChild(btnAnterior);
+
+  const texto = document.createElement("span");
+  texto.textContent = ` Página ${paginaActual + 1} de ${totalPaginas} `;
+  texto.style.margin = "0 10px";
+  contenedor.appendChild(texto);
+
+  const btnSiguiente = document.createElement("button");
+  btnSiguiente.textContent = "Siguiente →";
+  btnSiguiente.disabled = paginaActual + 1 >= totalPaginas;
+  btnSiguiente.onclick = () => window.cargarStockContrata(paginaActual + 1);
+  contenedor.appendChild(btnSiguiente);
+}
+
 
     
 </script>
@@ -487,29 +510,7 @@ function confirmarCargaExcelSAP(file) {
   });
 }
 </script>
-<script>
-    function renderizarControlesPaginacion() {
-  const contenedor = document.getElementById("paginacion");
-  contenedor.innerHTML = "";
 
-  const btnAnterior = document.createElement("button");
-  btnAnterior.textContent = "← Anterior";
-  btnAnterior.disabled = paginaActual === 0;
-  btnAnterior.onclick = () => window.cargarStockContrata(paginaActual - 1);
-  contenedor.appendChild(btnAnterior);
-
-  const texto = document.createElement("span");
-  texto.textContent = ` Página ${paginaActual + 1} de ${totalPaginas} `;
-  texto.style.margin = "0 10px";
-  contenedor.appendChild(texto);
-
-  const btnSiguiente = document.createElement("button");
-  btnSiguiente.textContent = "Siguiente →";
-  btnSiguiente.disabled = paginaActual + 1 >= totalPaginas;
-  btnSiguiente.onclick = () => window.cargarStockContrata(paginaActual + 1);
-  contenedor.appendChild(btnSiguiente);
-}
-</script>
   
   <script src="Js/Sesion.js"></script>
 
