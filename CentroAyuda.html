@@ -46,14 +46,14 @@
           <label for="nombres">Nombres</label>
           <input type="text" id="nombres" disabled>
         </div>
-        <div class="grupo-form">
-          <label for="telefono">Teléfono</label>
-          <input type="text" id="telefono" disabled>
-        </div>
-        <div class="grupo-form">
-          <label for="correo">Correo electrónico</label>
-          <input type="email" id="correo" disabled>
-        </div>
+       <div class="grupo-form" style="display: none;">
+        <label for="telefono">Teléfono</label>
+        <input type="text" id="telefono">
+      </div>
+      <div class="grupo-form" style="display: none;">
+        <label for="correo">Correo electrónico</label>
+        <input type="email" id="correo">
+      </div>
         <div class="grupo-form">
           <label for="empresa">Empresa</label>
           <input type="text" id="empresa" disabled>
@@ -161,6 +161,29 @@
       document.getElementById("ayudaForm").reset();
     }
   </script>
+ <script>
+function abrirEditorDetalle() {
+  Swal.fire({
+    title: 'Redacta el detalle',
+    input: 'textarea',
+    inputLabel: 'Incidencia o solicitud',
+    inputPlaceholder: 'Describe lo ocurrido o lo que solicitas...',
+    inputAttributes: {
+      'aria-label': 'Detalle del incidente o solicitud'
+    },
+    showCancelButton: true,
+    confirmButtonText: 'Guardar',
+    cancelButtonText: 'Cancelar',
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  }).then((result) => {
+    if (result.isConfirmed && result.value.trim()) {
+      document.getElementById("detalle").value = result.value.trim();
+    }
+  });
+}
+  </script> 
 <script src="Js/Sesion.js"></script>
 </body>
 </html>
