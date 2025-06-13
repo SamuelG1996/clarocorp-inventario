@@ -129,39 +129,103 @@
       window.location.href = "/index";
     }
 
-   function enviarFormularioAyuda() {
+  async function enviarFormularioAyuda() {
   const tipo = document.getElementById("tipo").value;
   const modulo = document.getElementById("modulo").value;
   const detalle = document.getElementById("detalle").value.trim();
   const archivo = document.getElementById("archivo").files[0];
+  const codigo_usuario = document.getElementById("codigo_usuario").value;
+  const nombres = document.getElementById("nombres").value;
+  const telefono = document.getElementById("telefono").value;
+  const correo = document.getElementById("correo").value;
+  const empresa = document.getElementById("empresa").value;
 
   if (tipo === "Incidencia" && !archivo) {
-    Swal.fire({
+    return Swal.fire({
       icon: 'warning',
       title: 'Archivo requerido',
       text: 'Debes adjuntar un archivo si se trata de una incidencia.',
-      background: '#1e2022',
-      color: '#ffffff',
-      confirmButtonColor: '#e74c3c'
+      background: '#1e2022', color: '#ffffff'
     });
-    return;
   }
-
-  if (archivo && archivo.size > 1 * 1024 * 1024) {
-    Swal.fire({
+if (!tipo || !modulo || !detalle) {
+  return Swal.fire({
+    icon: 'warning',
+    title: 'Faltan campos',
+    text: 'Por favor completa todos los campos obligatorios.',
+    background: '#1e2022',
+    color: '#ffffff'
+  });
+}
+  if (archivo && archivo.size > 1024 * 1024) {
+    return Swal.fire({
       icon: 'error',
-      title: 'Archivo demasiado grande',
+      title: 'Archivo muy grande',
       text: 'El archivo no debe superar los 1 MB.',
-      background: '#1e2022',
-      color: '#ffffff',
-      confirmButtonColor: '#e74c3c'
+      background: '#1e2022', color: '#ffffff'
     });
-    return;
   }
 
-  // Aquí iría tu lógica de envío a Supabase (pendiente de implementación)
+  let archivo_url = null;
 
-  // Notificación SweetAlert con estilo que te gusta
+  if (archivo) {
+    const nombreArchivo = `${codigo_usuario}_${Date.now()}_${archivo.name}`;
+    const { error: errorUpload } = await supabase.storage
+      .from("ayuda")
+      .upload(nombreArchivo, archivo);
+
+    if (errorUpload) {
+      return Swal.fire({
+        icon: 'error',
+        title: 'Error al subir archivo',
+        text: errorUpload.message,
+        background: '#1e2022', color: '#ffffff'
+      });
+    }
+
+    const { data: archivoPublico } = supabase.storage
+      .from("ayuda")
+      .getPublicUrl(nombreArchivo);
+    archivo_url = archivoPublico.publicUrl;
+  }
+
+  const { error: errorInsert } = await supabase
+    .from("centro_ayuda")
+    .insert([{
+      codigo_usuario,
+      nombres,
+      telefono,
+      correo,
+      empresa,
+      tipo,
+      modulo,
+      detalle,
+      archivo_url,
+      fecha_registro: new Date().toISOString()
+    }]);
+
+  if (errorInsert) {
+    return Swal.fire({
+      icon: 'error',
+      title: 'Error al registrar',
+      text: errorInsert.message,
+      background: '#1e2022', color: '#ffffff'
+    });
+  }
+
+  // ✅ Envío de notificación a Teams
+  await fetch("https://tu-api-webhook-de-teams.com", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      text: `📢 Nueva solicitud de ayuda registrada:
+• 👤 *${nombres}*
+• 🏢 *${empresa}*
+• 💡 Tipo: *${tipo}*
+• 🧩 Módulo: *${modulo}*`
+    })
+  });
+
   Swal.fire({
     icon: 'info',
     title: 'Formulario enviado',
@@ -175,11 +239,8 @@
     color: '#ffffff',
     iconColor: '#f39c12'
   });
-
-  // Espera 3.1 segundos y luego recarga
-  setTimeout(() => {
-    location.reload();
-  }, 3100);
+console.log('Formulario enviado')
+  setTimeout(() => location.reload(), 3100);
 }
   </script>
  <script>
