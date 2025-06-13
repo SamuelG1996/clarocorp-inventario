@@ -282,8 +282,15 @@ function abrirEditorDetalle() {
       localStorage.clear();
       window.location.href = "/index";
     }
-
   </script> 
+
+<script>
+  // Asegura que el loader se oculte al cargar la página
+  window.addEventListener('load', () => {
+    const loader = document.getElementById('loader');
+    if (loader) loader.style.display = 'none';
+  });
+</script>
 <script src="Js/Sesion.js"></script>
 </body>
 </html>
