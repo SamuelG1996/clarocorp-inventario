@@ -93,12 +93,23 @@
     </div>
   </div>
 
+    <div id="loader" class="loader-overlay">
+  <div class="spinner"></div>
+  </div>
+
 <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
       const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co'
       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI'
       const supabase = createClient(supabaseUrl, supabaseKey)
 
+  function mostrarLoaderSoporte() {
+  document.getElementById("loader-soporte").style.display = "flex";
+}
+
+function ocultarLoaderSoporte() {
+  document.getElementById("loader-soporte").style.display = "none";
+}
      document.addEventListener("DOMContentLoaded", async () => {
     const codigoUsuario = localStorage.getItem("codigo_usuario");
 
@@ -124,7 +135,7 @@
   });
 
  async function enviarFormularioAyuda() {
-   mostrarLoader();
+  mostrarLoaderSoporte();
   const tipo = document.getElementById("tipo").value;
   const modulo = document.getElementById("modulo").value;
   const detalle = document.getElementById("detalle").value.trim();
@@ -220,7 +231,7 @@ if (!tipo || !modulo || !detalle) {
 • 🧩 Módulo: *${modulo}*`
     })
   });
-ocultarLoader(); 
+  ocultarLoaderSoporte();
   Swal.fire({
     icon: 'success',
     title: 'Formulario enviado',
