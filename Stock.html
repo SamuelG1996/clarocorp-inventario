@@ -157,8 +157,9 @@ while (true) {
 
   const { data: pagina, error } = await query;
 
-if (data.length === 0) {
+if (pagina.length === 0 && data.length === 0) {
   console.warn("No se encontraron datos de stock.");
+  document.getElementById("loader").style.display = "none";
   return;
 }
 
@@ -169,11 +170,6 @@ if (data.length === 0) {
 }
 
     document.getElementById("loader").style.display = "none";
-
-    if (error) {
-      console.error("Error cargando stock:", error.message);
-      return;
-    }
 
     const tbody = document.getElementById("stock-body");
     tbody.innerHTML = "";
