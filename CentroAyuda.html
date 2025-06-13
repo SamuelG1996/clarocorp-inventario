@@ -250,9 +250,17 @@ if (!tipo || !modulo || !detalle) {
     color: '#ffffff',
     iconColor: '#2ecc71'
   });
+   // 🧹 Limpiar campos manualmente
+document.getElementById("tipo").value = "Incidencia";
+document.getElementById("modulo").value = "Login";
+document.getElementById("detalle").value = "";
+document.getElementById("archivo").value = "";
 console.log('Formulario enviado')
-  setTimeout(() => location.reload(), 3100);
-}
+setTimeout(() => {
+  document.getElementById("ayudaForm").reset(); // Borra el resto del formulario
+  location.reload();
+}, 3100);
+   }
  window.enviarFormularioAyuda = enviarFormularioAyuda;
   </script>
  <script>
