@@ -122,14 +122,8 @@
     document.getElementById("telefono").value = data.telefono;
     document.getElementById("empresa").value = data.empresa;
   });
-</script>
-<script>
-    function logout() {
-      localStorage.clear();
-      window.location.href = "/index";
-    }
 
-  async function enviarFormularioAyuda() {
+ async function enviarFormularioAyuda() {
   const tipo = document.getElementById("tipo").value;
   const modulo = document.getElementById("modulo").value;
   const detalle = document.getElementById("detalle").value.trim();
@@ -268,6 +262,14 @@ function abrirEditorDetalle() {
     }
   });
 }
+  
+</script>
+<script>
+    function logout() {
+      localStorage.clear();
+      window.location.href = "/index";
+    }
+
   </script> 
 <script src="Js/Sesion.js"></script>
 </body>
