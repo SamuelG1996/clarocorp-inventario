@@ -47,9 +47,11 @@
       </button>
         <input type="file" id="excelInput" accept=".xlsx" style="display:none;" onchange="confirmarCargaExcelStock(this.files[0])">
         <input type="file" id="excelSAPInput" accept=".xlsx" style="display: none;" onchange="confirmarCargaExcelSAP(this.files[0])">
-      </div>
-              <div id="paginacion" class="paginacion" style="text-align:center; margin-top: 15px;"></div>
-    </div>
+<div id="paginacion" style="display: inline-block; margin-left: 20px;">
+  <button onclick="paginaAnterior()" class="accion-boton">← Anterior</button>
+  <span id="paginaInfo" style="margin: 0 10px;">Página 1</span>
+  <button onclick="paginaSiguiente()" class="accion-boton">Siguiente →</button>
+</div>
 
     <div class="search-bar">
       <input type="text" id="searchInput" placeholder="Buscar por código, descripción, almacén, zona..." onkeyup="filtrarTabla()">
@@ -458,6 +460,25 @@ function confirmarCargaExcelStock(file) {
   });
 }
 
+function actualizarControlesPaginacion() {
+  const info = document.getElementById("paginaInfo");
+  if (info) {
+    info.textContent = `Página ${paginaActual + 1} de ${totalPaginas}`;
+  }
+}
+
+function paginaAnterior() {
+  if (paginaActual > 0) {
+    window.cargarStockContrata(paginaActual - 1);
+  }
+}
+
+function paginaSiguiente() {
+  if (paginaActual + 1 < totalPaginas) {
+    window.cargarStockContrata(paginaActual + 1);
+  }
+}
+    
 </script>
 
   <script>
