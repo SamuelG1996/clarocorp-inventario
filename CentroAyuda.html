@@ -82,7 +82,7 @@
         <textarea id="detalle" style="display:none;"></textarea>
       </div>
         <div class="grupo-form">
-          <label for="archivo">Adjuntar evidencia (5MB max)</label>
+          <label for="archivo">Adjuntar evidencia (1MB max)</label>
           <input type="file" id="archivo" accept=".jpg,.jpeg,.png,.pdf">
         </div>
         <div class="form-boton">
@@ -144,11 +144,11 @@
         return;
       }
 
-      if (archivo && archivo.size > 5 * 1024 * 1024) {
+      if (archivo && archivo.size > 1 * 1024 * 1024) {
         Swal.fire({
           icon: 'error',
           title: 'Archivo demasiado grande',
-          text: 'El archivo no debe superar los 5 MB.'
+          text: 'El archivo no debe superar los 1 MB.'
         });
         return;
       }
