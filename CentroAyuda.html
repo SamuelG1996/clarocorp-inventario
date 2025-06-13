@@ -104,11 +104,11 @@
       const supabase = createClient(supabaseUrl, supabaseKey)
 
   function mostrarLoaderSoporte() {
-  document.getElementById("loader-soporte").style.display = "flex";
+  document.getElementById("loader").style.display = "flex";
 }
 
 function ocultarLoaderSoporte() {
-  document.getElementById("loader-soporte").style.display = "none";
+  document.getElementById("loader").style.display = "none";
 }
      document.addEventListener("DOMContentLoaded", async () => {
     const codigoUsuario = localStorage.getItem("codigo_usuario");
