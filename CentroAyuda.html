@@ -147,6 +147,7 @@ function ocultarLoaderSoporte() {
   const empresa = document.getElementById("empresa").value;
 
   if (tipo === "Incidencia" && !archivo) {
+      ocultarLoaderSoporte();
     return Swal.fire({
       icon: 'warning',
       title: 'Archivo requerido',
@@ -155,6 +156,7 @@ function ocultarLoaderSoporte() {
     });
   }
 if (!tipo || !modulo || !detalle) {
+    ocultarLoaderSoporte();
   return Swal.fire({
     icon: 'warning',
     title: 'Faltan campos',
@@ -164,6 +166,7 @@ if (!tipo || !modulo || !detalle) {
   });
 }
   if (archivo && archivo.size > 1024 * 1024) {
+      ocultarLoaderSoporte();
     return Swal.fire({
       icon: 'error',
       title: 'Archivo muy grande',
@@ -181,6 +184,7 @@ if (!tipo || !modulo || !detalle) {
       .upload(nombreArchivo, archivo);
 
     if (errorUpload) {
+      ocultarLoaderSoporte();
       return Swal.fire({
         icon: 'error',
         title: 'Error al subir archivo',
@@ -211,6 +215,7 @@ if (!tipo || !modulo || !detalle) {
     }]);
 
   if (errorInsert) {
+      ocultarLoaderSoporte();
     return Swal.fire({
       icon: 'error',
       title: 'Error al registrar',
