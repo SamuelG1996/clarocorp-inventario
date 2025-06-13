@@ -157,10 +157,10 @@ while (true) {
 
   const { data: pagina, error } = await query;
 
-  if (error) {
-    console.error("Error cargando stock:", error.message);
-    break;
-  }
+if (data.length === 0) {
+  console.warn("No se encontraron datos de stock.");
+  return;
+}
 
   if (pagina.length === 0) break;
 
