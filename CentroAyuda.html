@@ -129,38 +129,58 @@
       window.location.href = "/index";
     }
 
-    function enviarFormularioAyuda() {
-      const tipo = document.getElementById("tipo").value;
-      const modulo = document.getElementById("modulo").value;
-      const detalle = document.getElementById("detalle").value.trim();
-      const archivo = document.getElementById("archivo").files[0];
+   function enviarFormularioAyuda() {
+  const tipo = document.getElementById("tipo").value;
+  const modulo = document.getElementById("modulo").value;
+  const detalle = document.getElementById("detalle").value.trim();
+  const archivo = document.getElementById("archivo").files[0];
 
-      if (tipo === "Incidencia" && !archivo) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Archivo requerido',
-          text: 'Debes adjuntar un archivo si se trata de una incidencia.'
-        });
-        return;
-      }
+  if (tipo === "Incidencia" && !archivo) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Archivo requerido',
+      text: 'Debes adjuntar un archivo si se trata de una incidencia.',
+      background: '#1e2022',
+      color: '#ffffff',
+      confirmButtonColor: '#e74c3c'
+    });
+    return;
+  }
 
-      if (archivo && archivo.size > 1 * 1024 * 1024) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Archivo demasiado grande',
-          text: 'El archivo no debe superar los 1 MB.'
-        });
-        return;
-      }
+  if (archivo && archivo.size > 1 * 1024 * 1024) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Archivo demasiado grande',
+      text: 'El archivo no debe superar los 1 MB.',
+      background: '#1e2022',
+      color: '#ffffff',
+      confirmButtonColor: '#e74c3c'
+    });
+    return;
+  }
 
-      // Aquí va la lógica para guardar en Supabase y enviar (en desarrollo)
-      Swal.fire({
-        icon: 'success',
-        title: 'Formulario enviado',
-        text: 'Tu solicitud ha sido registrada correctamente.'
-      });
-      document.getElementById("ayudaForm").reset();
-    }
+  // Aquí iría tu lógica de envío a Supabase (pendiente de implementación)
+
+  // Notificación SweetAlert con estilo que te gusta
+  Swal.fire({
+    icon: 'info',
+    title: 'Formulario enviado',
+    text: 'Tu solicitud ha sido registrada correctamente.',
+    toast: true,
+    position: 'bottom-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  });
+
+  // Espera 3.1 segundos y luego recarga
+  setTimeout(() => {
+    location.reload();
+  }, 3100);
+}
   </script>
  <script>
 function abrirEditorDetalle() {
