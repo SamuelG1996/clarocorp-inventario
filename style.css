@@ -818,3 +818,33 @@ body.detalle-solicitud .content {
   text-align: left !important; 
 }
 /* --- FIN ESTILOS PARA EL SUBMODULO DE DETALLE SOLICITUD --- */
+
+/* Solo para el formulario de Centro de Ayuda */
+.formulario-ayuda input,
+.formulario-ayuda select,
+.formulario-ayuda textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 13px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  box-sizing: border-box;
+}
+
+.formulario-ayuda select {
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.formulario-ayuda textarea {
+  resize: both;
+  max-width: 100%;
+  max-height: 300px;
+  min-height: 100px;
+  min-width: 100%;
+}
+
+.formulario-ayuda .grupo-form {
+  margin-bottom: 15px;
+}
