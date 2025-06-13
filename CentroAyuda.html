@@ -208,7 +208,7 @@ if (!tipo || !modulo || !detalle) {
   }
 
   // ✅ Envío de notificación a Teams
-  await fetch("https://tu-api-webhook-de-teams.com", {
+  await fetch("/api/soporte", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
