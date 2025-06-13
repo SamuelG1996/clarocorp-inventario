@@ -48,6 +48,7 @@
         <input type="file" id="excelInput" accept=".xlsx" style="display:none;" onchange="confirmarCargaExcelStock(this.files[0])">
         <input type="file" id="excelSAPInput" accept=".xlsx" style="display: none;" onchange="confirmarCargaExcelSAP(this.files[0])">
       </div>
+              <div id="paginacion" class="paginacion" style="text-align:center; margin-top: 15px;"></div>
     </div>
 
     <div class="search-bar">
@@ -123,6 +124,10 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI'
     const supabase = createClient(supabaseUrl, supabaseKey)
 
+    let data = [];
+    let desde = 0;
+    const limite = 1000;
+    
  document.addEventListener("DOMContentLoaded", () => {
     const rolUsuario = localStorage.getItem("rol");
     if (rolUsuario === "Administrador" || rolUsuario === "Soporte") {
@@ -136,82 +141,100 @@
     return Number.isInteger(numero) ? numero.toString() : numero.toFixed(2);
   }
 
-  window.cargarStockContrata = async function() {
-    document.getElementById("loader").style.display = "flex";
-    const empresaUsuario = localStorage.getItem("empresa");
-    const rolUsuario = localStorage.getItem("rol");
+    function renderizarControlesPaginacion() {
+  const contenedor = document.getElementById("paginacion");
+  contenedor.innerHTML = "";
 
-    let data = [];
-let desde = 0;
-const limite = 1000;
+  const btnAnterior = document.createElement("button");
+  btnAnterior.textContent = "← Anterior";
+  btnAnterior.disabled = paginaActual === 0;
+  btnAnterior.onclick = () => window.cargarStockContrata(paginaActual - 1);
+  contenedor.appendChild(btnAnterior);
 
-while (true) {
+  const texto = document.createElement("span");
+  texto.textContent = ` Página ${paginaActual + 1} de ${totalPaginas} `;
+  texto.style.margin = "0 10px";
+  contenedor.appendChild(texto);
+
+  const btnSiguiente = document.createElement("button");
+  btnSiguiente.textContent = "Siguiente →";
+  btnSiguiente.disabled = paginaActual + 1 >= totalPaginas;
+  btnSiguiente.onclick = () => window.cargarStockContrata(paginaActual + 1);
+  contenedor.appendChild(btnSiguiente);
+}
+
+ window.cargarStockContrata = async function(pagina = 0) {
+  document.getElementById("loader").style.display = "flex";
+  const empresaUsuario = localStorage.getItem("empresa");
+  const rolUsuario = localStorage.getItem("rol");
+
+  const desde = pagina * registrosPorPagina;
+  const hasta = desde + registrosPorPagina - 1;
+
   let query = supabase
     .from("stock_contrata")
-    .select("*")
-    .range(desde, desde + limite - 1);
+    .select("*", { count: "exact" })
+    .range(desde, hasta);
 
   if (rolUsuario === "Contratista") {
-    query = query.ilike("empresa", empresaUsuario.toUpperCase()).range(desde, desde + limite - 1);
+    query = query.ilike("empresa", empresaUsuario.toUpperCase()).range(desde, hasta);
   }
 
-  const { data: pagina, error } = await query;
+  const { data, count, error } = await query;
 
-if (pagina.length === 0 && data.length === 0) {
-  console.warn("No se encontraron datos de stock.");
+  totalPaginas = Math.ceil(count / registrosPorPagina);
+  paginaActual = pagina;
+
   document.getElementById("loader").style.display = "none";
-  return;
-}
+  const tbody = document.getElementById("stock-body");
+  tbody.innerHTML = "";
 
-  if (pagina.length === 0) break;
-
-  data = data.concat(pagina);
-  desde += limite;
-}
-
-    document.getElementById("loader").style.display = "none";
-
-    const tbody = document.getElementById("stock-body");
-    tbody.innerHTML = "";
-
-    data.forEach((item) => {
-      const disponible = item.stock_real != null && item.stock_reservado != null
-        ? item.stock_real - item.stock_reservado
-        : "No calculable";
-
-      const fechaSAP = item.fecha_carga_sap
-        ? new Date(item.fecha_carga_sap).toLocaleString("es-PE", {
-            day: "2-digit", month: "2-digit", year: "numeric",
-            hour: "2-digit", minute: "2-digit", hour12: false
-          }).replace(",", "")
-        : "—";
-
-      const fechaEditada = item.fecha_actualizacion
-        ? new Date(item.fecha_actualizacion).toLocaleString("es-PE", {
-            day: "2-digit", month: "2-digit", year: "numeric",
-            hour: "2-digit", minute: "2-digit", hour12: false
-          }).replace(",", "")
-        : "—";
-
-      const fila = `
-        <tr>
-          <td>${item.codigo}</td>
-          <td>${item.descripcion}</td>
-          <td>${item.centro}</td>
-          <td>${item.almacen}</td>
-          <td>${formatearNumero(item.cantidad_sap)}</td>
-          <td>${item.lote}</td>
-          <td>${fechaSAP}</td>
-          <td>${item.empresa}</td>
-          <td>${item.zona}</td>
-          <td>${formatearNumero(item.stock_real ?? "")}</td>
-          <td>${formatearNumero(item.stock_reservado ?? "")}</td>
-          <td>${formatearNumero(disponible)}</td>
-          <td>${fechaEditada}</td>
-        </tr>`;
-      tbody.insertAdjacentHTML("beforeend", fila);
-    });
+  if (!data || data.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="13" style="text-align:center">No hay registros disponibles</td></tr>`;
+    return;
   }
+
+  data.forEach((item) => {
+    const disponible = item.stock_real != null && item.stock_reservado != null
+      ? item.stock_real - item.stock_reservado
+      : "No calculable";
+
+    const fechaSAP = item.fecha_carga_sap
+      ? new Date(item.fecha_carga_sap).toLocaleString("es-PE", {
+          day: "2-digit", month: "2-digit", year: "numeric",
+          hour: "2-digit", minute: "2-digit", hour12: false
+        }).replace(",", "")
+      : "—";
+
+    const fechaEditada = item.fecha_actualizacion
+      ? new Date(item.fecha_actualizacion).toLocaleString("es-PE", {
+          day: "2-digit", month: "2-digit", year: "numeric",
+          hour: "2-digit", minute: "2-digit", hour12: false
+        }).replace(",", "")
+      : "—";
+
+    const fila = `
+      <tr>
+        <td>${item.codigo}</td>
+        <td>${item.descripcion}</td>
+        <td>${item.centro}</td>
+        <td>${item.almacen}</td>
+        <td>${formatearNumero(item.cantidad_sap)}</td>
+        <td>${item.lote}</td>
+        <td>${fechaSAP}</td>
+        <td>${item.empresa}</td>
+        <td>${item.zona}</td>
+        <td>${formatearNumero(item.stock_real ?? "")}</td>
+        <td>${formatearNumero(item.stock_reservado ?? "")}</td>
+        <td>${formatearNumero(disponible)}</td>
+        <td>${fechaEditada}</td>
+      </tr>`;
+    tbody.insertAdjacentHTML("beforeend", fila);
+  });
+
+  renderizarControlesPaginacion();
+};
+
 
   window.procesarExcelStock = async function(file) {
   document.getElementById("loader").style.display = "flex";
@@ -485,7 +508,7 @@ function confirmarCargaExcelSAP(file) {
   });
 }
 </script>
-
+  
   <script src="Js/Sesion.js"></script>
 
 </body>
