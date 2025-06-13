@@ -299,8 +299,36 @@ window.procesarExcelSAP = async function(file) {
         .eq("lote", lote)
         .maybeSingle();
 
-      const fecha_carga_sap = new Date().toISOString();
-
+              const mapaEmpresas = {
+                "P4B6": "DESYSWEB",
+                "P4A3": "CYBERTEL",
+                "P4B9": "MATSU GROUP",
+                "P4D5": "LOS LAURELES",
+                // agrega más si es necesario
+              };
+              
+              const empresa = mapaEmpresas[centro] || "SIN EMPRESA";
+        
+                const mapaZonas = {
+                 "I115": "Lima",
+                 "X115": "Lima",                
+                 "Y115": "Lima",             
+                 "I104": "Arequipa",
+                // Agrega todos los que necesites
+              };
+              
+              const zona = mapaZonas[almacen] || "SIN ZONA";
+        // Buscar descripción desde tabla productos
+        const { data: maestro } = await supabase
+          .from("productos")
+          .select("descripcion")
+          .eq("codigo", codigo)
+          .maybeSingle();
+        
+        const descripcion = maestro?.descripcion || "SIN DESCRIPCIÓN";
+        
+        // Generar fecha SAP en horario Lima
+        const fecha_carga_sap = new Date().toLocaleString("sv-SE", { timeZone: "America/Lima" }).replace(" ", "T");
       if (existe) {
         const { error: errorUpdate } = await supabase
           .from("stock_contrata")
@@ -312,16 +340,17 @@ window.procesarExcelSAP = async function(file) {
 
         errorUpdate ? errores++ : actualizados++;
       } else {
-        const empresa = localStorage.getItem("empresa") || "SIN EMPRESA";
         const { error: errorInsert } = await supabase
           .from("stock_contrata")
-          .insert([{
+         .insert([{
             codigo,
             centro,
             almacen,
             lote,
             cantidad_sap,
             empresa,
+            zona,
+            descripcion,
             fecha_carga_sap
           }]);
 
