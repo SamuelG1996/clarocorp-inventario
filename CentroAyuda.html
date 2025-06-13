@@ -124,6 +124,7 @@
   });
 
  async function enviarFormularioAyuda() {
+   mostrarLoader();
   const tipo = document.getElementById("tipo").value;
   const modulo = document.getElementById("modulo").value;
   const detalle = document.getElementById("detalle").value.trim();
@@ -219,7 +220,7 @@ if (!tipo || !modulo || !detalle) {
 • 🧩 Módulo: *${modulo}*`
     })
   });
-
+ocultarLoader(); 
   Swal.fire({
     icon: 'success',
     title: 'Formulario enviado',
@@ -273,5 +274,6 @@ function abrirEditorDetalle() {
 
   </script> 
 <script src="Js/Sesion.js"></script>
+ <script src="Js/Loader.js"></script>
 </body>
 </html>
