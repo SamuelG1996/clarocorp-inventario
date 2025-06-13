@@ -76,10 +76,11 @@
             <option value="Otros">Otros</option>
           </select>
         </div>
-        <div class="grupo-form">
-          <label for="detalle">Detalle del incidente o solicitud</label>
-          <textarea id="detalle" rows="4" required style="resize: vertical; padding: 8px; font-size: 13px; border-radius: 4px; border: 1px solid #ccc;"></textarea>
-        </div>
+         <div class="grupo-form">
+        <label>Detalle del incidente o solicitud</label>
+        <button type="button" onclick="abrirEditorDetalle()">Escribir detalle</button>
+        <textarea id="detalle" style="display:none;"></textarea>
+      </div>
         <div class="grupo-form">
           <label for="archivo">Adjuntar evidencia (5MB max)</label>
           <input type="file" id="archivo" accept=".jpg,.jpeg,.png,.pdf">
