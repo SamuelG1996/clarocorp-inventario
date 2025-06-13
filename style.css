@@ -184,6 +184,7 @@ body.menu-page {
 
 .content {
   width: 90%;
+  max-width: 1440px;  /* o 1280px
   box-sizing: border-box;
 }
 
