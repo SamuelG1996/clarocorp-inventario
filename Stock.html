@@ -116,6 +116,11 @@
 }
 
   </script>
+  <script>
+      let data = [];
+    let desde = 0;
+    const limite = 1000;
+   </script>  
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
@@ -124,10 +129,7 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI'
     const supabase = createClient(supabaseUrl, supabaseKey)
 
-    let data = [];
-    let desde = 0;
-    const limite = 1000;
-    
+
  document.addEventListener("DOMContentLoaded", () => {
     const rolUsuario = localStorage.getItem("rol");
     if (rolUsuario === "Administrador" || rolUsuario === "Soporte") {
