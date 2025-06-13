@@ -141,12 +141,33 @@
     const empresaUsuario = localStorage.getItem("empresa");
     const rolUsuario = localStorage.getItem("rol");
 
-    let query = supabase.from("stock_contrata").select("*");
-    if (rolUsuario === "Contratista") {
-      query = query.ilike("empresa", empresaUsuario.toUpperCase());
-    }
+    let data = [];
+let desde = 0;
+const limite = 1000;
 
-    const { data, error } = await query;
+while (true) {
+  let query = supabase
+    .from("stock_contrata")
+    .select("*")
+    .range(desde, desde + limite - 1);
+
+  if (rolUsuario === "Contratista") {
+    query = query.ilike("empresa", empresaUsuario.toUpperCase()).range(desde, desde + limite - 1);
+  }
+
+  const { data: pagina, error } = await query;
+
+  if (error) {
+    console.error("Error cargando stock:", error.message);
+    break;
+  }
+
+  if (pagina.length === 0) break;
+
+  data = data.concat(pagina);
+  desde += limite;
+}
+
     document.getElementById("loader").style.display = "none";
 
     if (error) {
