@@ -229,6 +229,7 @@ async function cargarStockContrata(filtro = "", pagina = 0) {
   renderizarControlesPaginacion();
   ocultarLoader();
 }
+    window.cargarStockContrata = cargarStockContrata;
 
   window.procesarExcelStock = async function(file) {
   document.getElementById("loader").style.display = "flex";
@@ -297,9 +298,6 @@ async function cargarStockContrata(filtro = "", pagina = 0) {
   reader.readAsBinaryString(file);
 }
 
-
-  // Ejecutar carga inicial
-  window.cargarStockContrata();
 
 window.procesarExcelSAP = async function(file) {
   document.getElementById("loader").style.display = "flex";
