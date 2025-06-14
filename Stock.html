@@ -80,24 +80,15 @@
   </div>
 
   <script>
+      let tiempoEspera = null;
+    
     function filtrarTabla() {
+      clearTimeout(tiempoEspera);
       const input = document.getElementById("searchInput").value.toLowerCase().trim();
-      const filtros = input.split(/\s+/);
-      const filas = document.querySelectorAll("#tablaStock tbody tr");
-
-      filas.forEach(fila => {
-        const textoFila = [
-          fila.cells[0].textContent,
-          fila.cells[1].textContent,
-          fila.cells[3].textContent,
-          fila.cells[6].textContent
-        ].join(" ").toLowerCase();
-
-        const coincide = filtros.every(f => textoFila.includes(f));
-        fila.style.display = coincide ? "" : "none";
-      });
+      tiempoEspera = setTimeout(() => {
+        cargarStockContrata(input, 0); // Reinicia desde la primera página
+      }, 300);
     }
-
     function descargarExcel() {
       const tabla = document.getElementById("tablaStock");
       const wb = XLSX.utils.book_new();
@@ -124,16 +115,20 @@
     const supabaseUrl = 'https://bsrtuievwjtzwejuxqee.supabase.co'
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI'
     const supabase = createClient(supabaseUrl, supabaseKey)
-    const registrosPorPagina = 500;
     let paginaActual = 0;
+    const registrosPorPagina = 600;
+    let filtroActual = "";
     let totalPaginas = 1;
 
  document.addEventListener("DOMContentLoaded", () => {
-    const rolUsuario = localStorage.getItem("rol");
-    if (rolUsuario === "Administrador" || rolUsuario === "Soporte") {
-      document.getElementById("btnActualizarSAP").style.display = "inline-block";
-    }
-  });
+  const rolUsuario = localStorage.getItem("rol");
+  if (rolUsuario === "Administrador" || rolUsuario === "Soporte") {
+    document.getElementById("btnActualizarSAP").style.display = "inline-block";
+  }
+
+  // ✅ Inicia carga de stock al abrir la página
+  cargarStockContrata();
+});
     
     function formatearNumero(valor) {
     const numero = parseFloat(valor);
@@ -142,41 +137,60 @@
   }
 
 
- window.cargarStockContrata = async function(pagina = 0) {
-  document.getElementById("loader").style.display = "flex";
-  const empresaUsuario = localStorage.getItem("empresa");
-  const rolUsuario = localStorage.getItem("rol");
+async function cargarStockContrata(filtro = "", pagina = 0) {
+  mostrarLoader();
+  const tbody = document.getElementById("stock-body");
+  tbody.innerHTML = "";
+
+  filtroActual = filtro;
+  paginaActual = pagina;
 
   const desde = pagina * registrosPorPagina;
   const hasta = desde + registrosPorPagina - 1;
+
+  const empresaUsuario = localStorage.getItem("empresa");
+  const rolUsuario = localStorage.getItem("rol");
 
   let query = supabase
     .from("stock_contrata")
     .select("*", { count: "exact" })
     .range(desde, hasta);
 
-  if (rolUsuario === "Contratista") {
-    query = query.ilike("empresa", empresaUsuario.toUpperCase()).range(desde, hasta);
+  // ✅ Filtrado global si hay búsqueda
+  if (filtro.trim() !== "") {
+    query = query.or(`
+      codigo.ilike.%${filtro}%,
+      descripcion.ilike.%${filtro}%,
+      almacen.ilike.%${filtro}%,
+      zona.ilike.%${filtro}%,
+      empresa.ilike.%${filtro}%
+    `);
   }
 
-  const { data, count, error } = await query;
+  // ✅ Filtrado por empresa si es Contratista
+  if (rolUsuario === "Contratista") {
+    query = query.ilike("empresa", empresaUsuario.toUpperCase());
+  }
 
-  totalPaginas = Math.ceil(count / registrosPorPagina);
-  paginaActual = pagina;
+  const { data, error, count } = await query;
 
-  document.getElementById("loader").style.display = "none";
-  const tbody = document.getElementById("stock-body");
-  tbody.innerHTML = "";
+  if (error) {
+    console.error("Error al cargar stock:", error);
+    ocultarLoader();
+    return;
+  }
 
   if (!data || data.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="13" style="text-align:center">No hay registros disponibles</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; color:gray;">No se encontraron resultados.</td></tr>`;
+    ocultarLoader();
+    renderizarControlesPaginacion(0, 0);
     return;
   }
 
   data.forEach((item) => {
     const disponible = item.stock_real != null && item.stock_reservado != null
       ? item.stock_real - item.stock_reservado
-      : "No calculable";
+      : "—";
 
     const fechaSAP = item.fecha_carga_sap
       ? new Date(item.fecha_carga_sap).toLocaleString("es-PE", {
@@ -211,9 +225,10 @@
     tbody.insertAdjacentHTML("beforeend", fila);
   });
 
+  totalPaginas = Math.ceil(count / registrosPorPagina);
   renderizarControlesPaginacion();
-};
-
+  ocultarLoader();
+}
 
   window.procesarExcelStock = async function(file) {
   document.getElementById("loader").style.display = "flex";
@@ -409,30 +424,29 @@ window.procesarExcelSAP = async function(file) {
 }
 
     
-    function renderizarControlesPaginacion() {
+  function renderizarControlesPaginacion() {
   const contenedor = document.getElementById("paginacion");
   contenedor.innerHTML = "";
 
   const btnAnterior = document.createElement("button");
-  btnAnterior.textContent = "← Anterior";
+  btnAnterior.textContent = "←";
   btnAnterior.disabled = paginaActual === 0;
-  btnAnterior.onclick = () => window.cargarStockContrata(paginaActual - 1);
+  btnAnterior.onclick = () => cargarStockContrata(filtroActual, paginaActual - 1);
   contenedor.appendChild(btnAnterior);
 
-  const texto = document.createElement("span");
-  texto.textContent = ` Página ${paginaActual + 1} de ${totalPaginas} `;
-  texto.style.margin = "0 10px";
-  contenedor.appendChild(texto);
+  const info = document.createElement("span");
+  info.textContent = `Página ${paginaActual + 1} de ${totalPaginas}`;
+  info.style.margin = "0 10px";
+  contenedor.appendChild(info);
 
   const btnSiguiente = document.createElement("button");
-  btnSiguiente.textContent = "Siguiente →";
+  btnSiguiente.textContent = "→";
   btnSiguiente.disabled = paginaActual + 1 >= totalPaginas;
-  btnSiguiente.onclick = () => window.cargarStockContrata(paginaActual + 1);
+  btnSiguiente.onclick = () => cargarStockContrata(filtroActual, paginaActual + 1);
   contenedor.appendChild(btnSiguiente);
 }
 
-
-    
+  
 </script>
 
   <script>
