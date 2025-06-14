@@ -156,22 +156,22 @@ async function cargarStockContrata(filtro = "", pagina = 0) {
     .select("*", { count: "exact" })
     .range(desde, hasta);
 
-  // ✅ Filtrado global si hay búsqueda
-  if (filtro.trim() !== "") {
-    query = query.or(`
-      codigo.ilike.%${filtro}%,
-      descripcion.ilike.%${filtro}%,
-      almacen.ilike.%${filtro}%,
-      zona.ilike.%${filtro}%,
-      empresa.ilike.%${filtro}%
-    `);
-  }
 
-  // ✅ Filtrado por empresa si es Contratista
-  if (rolUsuario === "Contratista") {
-    query = query.ilike("empresa", empresaUsuario.toUpperCase());
-  }
+if (rolUsuario === "Contratista") {
+  query = query.ilike("empresa", empresaUsuario.toUpperCase());
+}
 
+if (filtro.trim() !== "") {
+  query = query.or(`
+    codigo.ilike.%${filtro}%,
+    descripcion.ilike.%${filtro}%,
+    almacen.ilike.%${filtro}%,
+    zona.ilike.%${filtro}%,
+    empresa.ilike.%${filtro}%
+  `);
+}
+
+  
   const { data, error, count } = await query;
 
   if (error) {
