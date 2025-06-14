@@ -48,12 +48,12 @@
         <input type="file" id="excelInput" accept=".xlsx" style="display:none;" onchange="confirmarCargaExcelStock(this.files[0])">
         <input type="file" id="excelSAPInput" accept=".xlsx" style="display: none;" onchange="confirmarCargaExcelSAP(this.files[0])">
       </div>
-              <div id="paginacion" class="paginacion" style="text-align:center; margin-top: 15px;"></div>
     </div>
+<div class="search-bar-paginacion">
+  <input type="text" id="searchInput" placeholder="Buscar por código, descripción, almacén, zona..." onkeyup="filtrarTabla()">
+  <div id="paginacion" class="paginacion"></div>
+</div>
 
-    <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Buscar por código, descripción, almacén, zona..." onkeyup="filtrarTabla()">
-    </div>
 
     <div class="tabla-contenedor">
       <table id="tablaStock">
