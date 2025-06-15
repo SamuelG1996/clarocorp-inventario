@@ -486,6 +486,15 @@ function renderizarControlesPaginacionSeries(pagina, totalPaginas) {
 
 </script>
 
+<!-- Activador de búsqueda -->
+<script>
+  document.getElementById("searchInput").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      filtrarTabla();
+    }
+  });
+</script>
+  
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
 </body>
