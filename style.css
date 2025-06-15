@@ -842,7 +842,7 @@ body.detalle-solicitud.menu-page {
 }
 
 body.detalle-solicitud .content {
-  width: calc(100vw - 220px); /* 220px es el ancho de la sidebar */
+  width: calc(100vw - 150px); /* 220px es el ancho de la sidebar */
   max-width: calc(100vw - 220px);
   padding: 20px 15px;
   box-sizing: border-box;
