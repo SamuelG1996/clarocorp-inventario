@@ -34,7 +34,7 @@
       </button>
           </div>
       <div class="search-bar-paginacion">
-  <input type="text" id="searchInput" placeholder="Buscar por código, descripción o zona..." />
+  <input type="text" id="searchInput" placeholder="Buscar por código, descripción o zona..." oninput="filtrarTabla()"/>
   <div class="paginacion">
     <button id="prevPage" onclick="cambiarPagina(-1)">Anterior</button>
     <span id="pageIndicator">Página 1</span>
