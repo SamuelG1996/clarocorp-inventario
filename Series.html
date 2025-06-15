@@ -443,7 +443,10 @@ function confirmarCargaExcel(file) {
 
     
   <script>
-  document.addEventListener("DOMContentLoaded", () => cargarSeries(''));
+  document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("searchInput").value = ""; // 🔄 Limpia el campo
+  cargarSeries('');
+});
 </script>
 
   <script>
