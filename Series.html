@@ -464,6 +464,29 @@ function actualizarControlesPaginacion(pagina, totalPaginas) {
   document.querySelector('#paginacion button:nth-child(1)').disabled = pagina <= 0;
   document.querySelector('#paginacion button:nth-child(3)').disabled = pagina + 1 >= totalPaginas;
 }
+
+      function renderizarControlesPaginacion() {
+  const contenedor = document.getElementById("paginacion");
+  contenedor.innerHTML = "";
+
+  const btnAnterior = document.createElement("button");
+  btnAnterior.textContent = "←";
+  btnAnterior.disabled = paginaActual === 0;
+  btnAnterior.onclick = () => cargarStockContrata(filtroActual, paginaActual - 1);
+  contenedor.appendChild(btnAnterior);
+
+  const info = document.createElement("span");
+  info.textContent = `Página ${paginaActual + 1} de ${totalPaginas}`;
+  info.style.margin = "0 10px";
+  contenedor.appendChild(info);
+
+  const btnSiguiente = document.createElement("button");
+  btnSiguiente.textContent = "→";
+  btnSiguiente.disabled = paginaActual + 1 >= totalPaginas;
+  btnSiguiente.onclick = () => cargarStockContrata(filtroActual, paginaActual + 1);
+  contenedor.appendChild(btnSiguiente);
+}
+
 </script>
 
   <script src="Js/Loader.js"></script>
