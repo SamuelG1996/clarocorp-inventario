@@ -152,7 +152,9 @@
     return;
   }
 
-  const rows = registrosTotales.map(item => [
+  const rows = registrosTotales
+  .filter(item => item.cantidad_sap !== 0)
+  .map(item => [
     item.codigo,
     item.descripcion,
     item.centro,
@@ -273,6 +275,7 @@ if (filtro.trim() !== "") {
   }
 
   data.forEach((item) => {
+    if (item.cantidad_sap === 0) return;
     const disponible = item.stock_real != null && item.stock_reservado != null
       ? item.stock_real - item.stock_reservado
       : "—";
