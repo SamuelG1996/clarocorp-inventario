@@ -842,8 +842,8 @@ body.detalle-solicitud.menu-page {
 }
 
 body.detalle-solicitud .content {
-  width: calc(100vw - 150px); /* 220px es el ancho de la sidebar */
-  max-width: calc(100vw - 220px);
+  width: calc(100vw - 200px); /* 220px es el ancho de la sidebar */
+  max-width: calc(100vw - 150px);
   padding: 20px 15px;
   box-sizing: border-box;
   overflow-x: auto;           /* Solo la tabla hará scroll si necesita */
