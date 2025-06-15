@@ -362,47 +362,6 @@ if (filtro.trim() !== "") {
     // Contamos éxitos y fallos
     resultados.forEach(r => r ? exitos++ : fallos++);
 
-    // ⛔ Eliminar registros antiguos del mismo centro+almacén no presentes en la nueva carga
-const clavesActualizadas = new Set();
-const centrosAlmacenes = new Set();
-
-data.forEach(fila => {
-  const codigo = fila["Código"]?.toString().trim();
-  const centro = fila["Centro"]?.toString().trim();
-  const almacen = fila["Almacén"]?.toString().trim();
-  const lote = fila["Lote"]?.toString().trim();
-
-  if (codigo && centro && almacen && lote) {
-    const clave = `${codigo}||${centro}||${almacen}||${lote}`;
-    clavesActualizadas.add(clave);
-    centrosAlmacenes.add(`${centro}||${almacen}`);
-  }
-});
-
-for (const ca of centrosAlmacenes) {
-  const [centro, almacen] = ca.split("||");
-
-  const { data: existentes } = await supabase
-    .from("stock_contrata")
-    .select("codigo, centro, almacen, lote")
-    .eq("centro", centro)
-    .eq("almacen", almacen);
-
-  if (existentes && existentes.length > 0) {
-    for (const r of existentes) {
-      const clave = `${r.codigo}||${r.centro}||${r.almacen}||${r.lote}`;
-      if (!clavesActualizadas.has(clave)) {
-        await supabase
-          .from("stock_contrata")
-          .delete()
-          .eq("codigo", r.codigo)
-          .eq("centro", r.centro)
-          .eq("almacen", r.almacen)
-          .eq("lote", r.lote);
-      }
-    }
-  }
-}
 
     Swal.fire({
       icon: 'info',
@@ -523,13 +482,58 @@ window.procesarExcelSAP = async function(file) {
         errorInsert ? errores++ : insertados++;
       }
     }
+let eliminados = 0;
+            // ⛔ Eliminar registros antiguos del mismo centro+almacén no presentes en la nueva carga
+    const clavesActualizadas = new Set();
+    const centrosAlmacenes = new Set();
+    
+    data.forEach(fila => {
+      const codigo = fila["Código"]?.toString().trim();
+      const centro = fila["Centro"]?.toString().trim();
+      const almacen = fila["Almacén"]?.toString().trim();
+      const lote = fila["Lote"]?.toString().trim();
+    
+      if (codigo && centro && almacen && lote) {
+        const clave = `${codigo}||${centro}||${almacen}||${lote}`;
+        clavesActualizadas.add(clave);
+        centrosAlmacenes.add(`${centro}||${almacen}`);
+      }
+    });
+    
+    for (const ca of centrosAlmacenes) {
+      const [centro, almacen] = ca.split("||");
+    
+      const { data: existentes } = await supabase
+        .from("stock_contrata")
+        .select("codigo, centro, almacen, lote")
+        .eq("centro", centro)
+        .eq("almacen", almacen);
+    
+      if (existentes && existentes.length > 0) {
+        for (const r of existentes) {
+          const clave = `${r.codigo}||${r.centro}||${r.almacen}||${r.lote}`;
+          if (!clavesActualizadas.has(clave)) {
+            await supabase
+              .from("stock_contrata")
+              .delete()
+              .eq("codigo", r.codigo)
+              .eq("centro", r.centro)
+              .eq("almacen", r.almacen)
+              .eq("lote", r.lote);
+              eliminados++; 
+          }
+        }
+      }
+    }
 
+    
     Swal.fire({
       icon: 'info',
       title: 'Carga completada',
       html: `
         ✅ <b>${actualizados}</b> registros actualizados<br>
         ➕ <b>${insertados}</b> registros insertados<br>
+        ❌ <b>${eliminados}</b> registros eliminados<br>
         ⚠️ <b>${errores}</b> errores`,
       toast: true,
       position: 'bottom-end',
