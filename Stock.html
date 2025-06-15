@@ -96,30 +96,46 @@
   const empresaUsuario = localStorage.getItem("empresa");
   const rolUsuario = localStorage.getItem("rol");
 
-  let query = supabase
-    .from("stock_contrata")
-    .select("*");
+  const registrosTotales = [];
+  let desde = 0;
+  const paso = 1000;
+  let continuar = true;
 
-  if (rolUsuario === "Contratista") {
-    query = query.ilike("empresa", empresaUsuario.toUpperCase());
+  while (continuar) {
+    let query = supabase
+      .from("stock_contrata")
+      .select("*")
+      .range(desde, desde + paso - 1);
+
+    if (rolUsuario === "Contratista") {
+      query = query.ilike("empresa", empresaUsuario.toUpperCase());
+    }
+
+    if (filtro !== "") {
+      const like = `%${filtro}%`;
+      query = query.or(`
+        codigo.ilike.${like},
+        descripcion.ilike.${like},
+        almacen.ilike.${like},
+        zona.ilike.${like},
+        empresa.ilike.${like}
+      `);
+    }
+
+    const { data, error } = await query;
+
+    if (error || !data || data.length === 0) {
+      continuar = false;
+    } else {
+      registrosTotales.push(...data);
+      desde += paso;
+      if (data.length < paso) continuar = false;
+    }
   }
-
-  if (filtro !== "") {
-    const like = `%${filtro}%`;
-    query = query.or(`
-      codigo.ilike.${like},
-      descripcion.ilike.${like},
-      almacen.ilike.${like},
-      zona.ilike.${like},
-      empresa.ilike.${like}
-    `);
-  }
-
-  const { data, error } = await query;
 
   ocultarLoader();
 
-  if (error || !data || data.length === 0) {
+  if (registrosTotales.length === 0) {
     Swal.fire({
       icon: 'info',
       title: 'Sin datos para exportar',
@@ -136,7 +152,7 @@
     return;
   }
 
-  const rows = data.map(item => [
+  const rows = registrosTotales.map(item => [
     item.codigo,
     item.descripcion,
     item.centro,
@@ -164,7 +180,6 @@
   XLSX.utils.book_append_sheet(wb, ws, "Stock");
   XLSX.writeFile(wb, "Stock_ClaroCorp.xlsx");
 }
-    
 
     function logout() {
       localStorage.clear();
