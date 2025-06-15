@@ -32,13 +32,14 @@
       <button onclick="alternarOrden()">
       <i class="fas fa-sort-amount-down-alt"></i> Ordenar por Antiguamiento
       </button>
-
-  <div id="paginacion" style="display: inline-block; margin-left: 20px;">
-  <button onclick="paginaAnterior()">← Anterior</button>
-  <span id="paginaInfo" style="margin: 0 10px;">Página 1</span>
-  <button onclick="paginaSiguiente()">Siguiente →</button>
+      <div class="search-bar-paginacion">
+  <input type="text" id="searchInput" placeholder="Buscar por código, descripción o zona..." />
+  <div class="paginacion">
+    <button id="prevPage" onclick="cambiarPagina(-1)">Anterior</button>
+    <span id="pageIndicator">Página 1</span>
+    <button id="nextPage" onclick="cambiarPagina(1)">Siguiente</button>
+  </div>
 </div>
-      
     </div>
  <div class="search-bar">
       <input type="text" id="searchInput" placeholder="Buscar por serie, código, lote..." onkeyup="filtrarTabla()">
@@ -105,7 +106,7 @@ function formatearFechaSegura(fechaString) {
 
     // 🔽⬅️ INICIO DE SCRIPT
 let paginaActual = 0;
-const tamañoPagina = 1000;
+const tamañoPagina = 500;
 let filtroActual = '';
 let modoOrden = 'empresa'; // valores posibles: 'empresa' o 'antiguamiento'
   
