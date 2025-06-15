@@ -126,6 +126,9 @@
     document.getElementById("btnActualizarSAP").style.display = "inline-block";
   }
 
+     // 🧹 Limpia el buscador al cargar
+  document.getElementById("searchInput").value = "";
+
   // ✅ Inicia carga de stock al abrir la página
   cargarStockContrata();
 });
