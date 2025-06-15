@@ -116,7 +116,7 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI'
     const supabase = createClient(supabaseUrl, supabaseKey)
     let paginaActual = 0;
-    const registrosPorPagina = 600;
+    const registrosPorPagina = 500;
     let filtroActual = "";
     let totalPaginas = 1;
 
@@ -152,26 +152,22 @@ async function cargarStockContrata(filtro = "", pagina = 0) {
   const rolUsuario = localStorage.getItem("rol");
 
   let query = supabase
-    .from("stock_contrata")
-    .select("*", { count: "exact" })
-    .range(desde, hasta);
+  .from("stock_contrata")
+  .select("*", { count: "exact" })
+  .range(desde, hasta);
 
-
+// 🔒 Filtro por empresa si es contratista
 if (rolUsuario === "Contratista") {
   query = query.ilike("empresa", empresaUsuario.toUpperCase());
 }
 
+// 🔍 Filtro global
 if (filtro.trim() !== "") {
-  query = query.or(`
-    codigo.ilike.%${filtro}%,
-    descripcion.ilike.%${filtro}%,
-    almacen.ilike.%${filtro}%,
-    zona.ilike.%${filtro}%,
-    empresa.ilike.%${filtro}%
-  `);
+  const like = `%${filtro}%`;
+  query = query.or(
+    `codigo.ilike.${like},descripcion.ilike.${like},almacen.ilike.${like},zona.ilike.${like},empresa.ilike.${like}`
+  );
 }
-
-  
   const { data, error, count } = await query;
 
   if (error) {
