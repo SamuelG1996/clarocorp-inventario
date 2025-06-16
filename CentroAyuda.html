@@ -225,23 +225,37 @@ if (!tipo || !modulo || !detalle) {
   }
 
   // 👉 Enviar correo luego de insertar exitosamente
+   try {
 await fetch('/api/EnviarCorreoClaro', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     asunto: `[Soporte ${tipo}] ${empresa} (${codigo_usuario})`,
     destinatario: 'guardias@globalhitss.com', // aquí va tu correo fijo o variable
-    copia: datosFormulario.correo, // correo del solicitante
+    copia: correo, // esto viene del input del usuario
     contenido: `
-      <strong>Tipo:</strong> ${datosFormulario.tipo}<br>
-      <strong>Ubicación:</strong> ${datosFormulario.ubicacion}<br>
-      <strong>Comentario:</strong> ${datosFormulario.comentario}<br>
-      <strong>Solicitante:</strong> ${datosFormulario.nombres} (${datosFormulario.codigo_usuario})<br>
-      <strong>Teléfono:</strong> ${datosFormulario.telefono}
+      <strong>Tipo:</strong> ${tipo}<br>
+      <strong>Módulo:</strong> ${modulo}<br>
+      <strong>Detalle:</strong> ${detalle}<br>
+      <strong>Solicitante:</strong> ${nombres} (${codigo_usuario})<br>
+      <strong>Empresa:</strong> ${empresa}<br>
+      <strong>Teléfono:</strong> ${telefono}
+      ${archivo_url ? `<strong>Archivo:</strong> <a href="${archivo_url}" target="_blank">Ver adjunto</a><br>` : ""}
     `
   })
 });
-   
+   } catch (err) {
+  console.error("Error al enviar correo:", err);
+  Swal.fire({
+    icon: 'error',
+    title: 'Error al enviar correo',
+    text: 'Hubo un problema al notificar al soporte.',
+    background: '#1e2022',
+    color: '#ffffff'
+  });
+} finally {
+  ocultarLoaderSoporte();
+}
   // ✅ Envío de notificación a Teams
   await fetch("/api/soporte", {
     method: "POST",
@@ -254,7 +268,6 @@ await fetch('/api/EnviarCorreoClaro', {
 • 🧩 Módulo: *${modulo}*`
     })
   });
-  ocultarLoaderSoporte();
   Swal.fire({
     icon: 'success',
     title: 'Registro exitoso',
