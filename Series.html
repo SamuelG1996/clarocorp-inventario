@@ -99,6 +99,14 @@ function formatearFechaSegura(fechaString) {
   const dias = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
   return dias;
 }
+
+  function obtenerColorAntiguamientoCompra(fechaCompra) {
+  if (!fechaCompra) return '';
+  const dias = calcularAntiguamiento(fechaCompra);
+  if (dias > 365) return 'rojo-suave';
+  if (dias > 180) return 'naranja-suave';
+  return 'verde-suave';
+}
 </script>
   
 <script>
@@ -180,7 +188,9 @@ if (rolUsuario === "Contratista") {
   <td>${formatearFechaSegura(serie.fecha_ingreso)}</td>
   <td class="${claseColor}">${diasAntiguos !== null ? diasAntiguos + ' días' : ''}</td>
   <td>${formatearFechaSegura(serie.fecha_compra)}</td>
-  <td class="${claseColor}">${serie.fecha_compra ? calcularAntiguamiento(serie.fecha_compra) + ' días' : ''}</td>
+<td class="${obtenerColorAntiguamientoCompra(serie.fecha_compra)}">
+  ${serie.fecha_compra ? calcularAntiguamiento(serie.fecha_compra) + ' días' : ''}
+</td>
 <td>${(serie.estado_contrata || '').toUpperCase()}</td>
   <td>${serie.proyecto_sot || ''}</td>
   <td>${serie.cliente || ''}</td>
