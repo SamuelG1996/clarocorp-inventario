@@ -24,15 +24,20 @@
         <i class="fas fa-file-excel"></i> Descargar Excel
       </button>
       
-    <input type="file" id="excelInput" accept=".xlsx" style="display:none;" onchange="confirmarCargaExcel(this.files[0])">
-    <button onclick="mostrarMenuCarga()">
-      <i class="fas fa-upload"></i> Actualizar Datos
-    </button>
+      <input type="file" id="excelInput" accept=".xlsx" style="display:none;" onchange="confirmarCargaExcel(this.files[0])">
+      <button onclick="mostrarMenuCarga()">
+        <i class="fas fa-upload"></i> Actualizar Datos
+      </button>
       
       <button onclick="alternarOrden()">
       <i class="fas fa-sort-amount-down-alt"></i> Ordenar por Antiguamiento
       </button>
-          </div>
+      
+      <button onclick="actualizarSAPSeries()">
+      <i class="fas fa-sync-alt"></i> Actualizar SAP
+      </button>
+
+    </div>
       <div class="search-bar-paginacion">
   <input type="text" id="searchInput" placeholder="Buscar por código, descripción o zona..." oninput="filtrarTabla()"/>
   <div class="paginacion">
@@ -508,7 +513,130 @@ function renderizarControlesPaginacionSeries(pagina, totalPaginas) {
     }
   });
 </script>
-  
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const rol = localStorage.getItem("rol");
+
+    // Oculta el botón si NO eres Administrador o Soporte
+    if (rol !== "Administrador" && rol !== "Soporte") {
+      const botonSAP = document.querySelector("button[onclick='actualizarSAPSeries()']");
+      if (botonSAP) botonSAP.style.display = "none";
+    }
+
+    // Lógica normal de carga
+    document.getElementById("searchInput").value = "";
+    cargarSeries('');
+  });
+</script>
+  <script>
+async function actualizarSAPSeries() {
+  const { value: archivo } = await Swal.fire({
+    title: 'Selecciona el archivo de SAP',
+    input: 'file',
+    inputAttributes: {
+      accept: '.xlsx',
+      'aria-label': 'Sube tu archivo de SAP'
+    },
+    confirmButtonText: 'Cargar',
+    cancelButtonText: 'Cancelar',
+    showCancelButton: true,
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  });
+
+  if (!archivo) return;
+
+  mostrarLoader();
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const workbook = XLSX.read(e.target.result, { type: 'binary' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const datosExcel = XLSX.utils.sheet_to_json(sheet);
+
+    const clavesExcel = datosExcel.map(f =>
+      `${f.Código}||${f.Centro}||${f['Almacén']}||${f['N° Serie']}`.toUpperCase()
+    );
+
+    const { data: datosBD, error } = await supabase.from('series_contrata').select('codigo, centro, almacen, nro_serie');
+
+    if (error) {
+      console.error("Error al consultar BD:", error);
+      ocultarLoader();
+      return;
+    }
+
+    const clavesBD = datosBD.map(f =>
+      `${f.codigo}||${f.centro}||${f.almacen}||${f.nro_serie}`.toUpperCase()
+    );
+
+    const nuevos = datosExcel.filter(f =>
+      !clavesBD.includes(`${f.Código}||${f.Centro}||${f['Almacén']}||${f['N° Serie']}`.toUpperCase())
+    );
+
+    const aEliminar = datosBD.filter(f =>
+      !clavesExcel.includes(`${f.codigo}||${f.centro}||${f.almacen}||${f.nro_serie}`.toUpperCase())
+    );
+
+    let insertados = 0, eliminados = 0;
+
+    for (const fila of nuevos) {
+      const registro = {
+        codigo: fila.Código,
+        descripcion: fila.Descripción || '-',
+        centro: fila.Centro,
+        almacen: fila['Almacén'],
+        lote: fila.Lote || '-',
+        nro_serie: fila['N° Serie'],
+        empresa: fila.Empresa || '-',
+        fecha_ingreso: fila['Fecha Ingreso'] ? new Date(fila['Fecha Ingreso']).toISOString().split('T')[0] : null,
+        fecha_compra: fila['Fecha Compra'] ? new Date(fila['Fecha Compra']).toISOString().split('T')[0] : null,
+        estado_contrata: (fila['Estado Contrata'] || '').toUpperCase(),
+        proyecto_sot: fila.SOT || '-',
+        cliente: fila.Cliente || '-',
+        id_devolucion: fila['ID Devolución/Traspaso'] || '-',
+        comentario_contrata: fila['Comentario Contrata'] || '-',
+        estado_soporte: fila['Estado Soporte'] || '-',
+        comentario_soporte: fila['Comentario Soporte'] || '-'
+      };
+
+      const { error } = await supabase.from('series_contrata').insert([registro]);
+      if (!error) insertados++;
+    }
+
+    for (const fila of aEliminar) {
+      const { error } = await supabase.from('series_contrata')
+        .delete()
+        .eq('codigo', fila.codigo)
+        .eq('centro', fila.centro)
+        .eq('almacen', fila.almacen)
+        .eq('nro_serie', fila.nro_serie);
+      if (!error) eliminados++;
+    }
+
+    Swal.fire({
+      icon: 'info',
+      title: 'Actualización SAP completada',
+      html: `✅ Nuevos insertados: <b>${insertados}</b><br>🗑️ Eliminados: <b>${eliminados}</b>`,
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 4000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
+    });
+
+    cargarSeries(filtroActual, paginaActual);
+    ocultarLoader();
+  };
+
+  reader.readAsBinaryString(archivo);
+}
+</script>
+
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
 </body>
