@@ -1,23 +1,28 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY); // guarda tu key en variables de entorno
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-export default async (req, res) => {
-  if (req.method !== 'POST') return res.status(405).end();
+/** @type {import('next').NextApiHandler} */
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Método no permitido' });
+  }
 
-  const { para, cc, asunto, contenido } = req.body;
+  const { asunto, destinatario, copia, contenido } = req.body;
 
   try {
-    const respuesta = await resend.emails.send({
-      from: 'soporte@tudominio.com', // o cualquier correo verificado
-      to: para,
-      cc: cc,
+    const response = await resend.emails.send({
+      from: 'Inventario Claro <no-reply@portalgestioninventario.com>',
+      to: destinatario,
+      cc: copia,
       subject: asunto,
       html: contenido,
     });
 
-    res.status(200).json({ success: true, id: respuesta.id });
+    console.log('✅ Email enviado:', response);
+    return res.status(200).json({ success: true, message: 'Correo enviado correctamente' });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error('❌ Error al enviar correo:', error);
+    return res.status(500).json({ error: 'Error al enviar correo', detalle: error.message });
   }
-};
+}
