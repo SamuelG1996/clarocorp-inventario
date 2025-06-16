@@ -578,17 +578,37 @@ async function actualizarSAPSeries() {
       !clavesExcel.includes(`${f.codigo}||${f.centro}||${f.almacen}||${f.nro_serie}`.toUpperCase())
     );
 
+
+
     let insertados = 0, eliminados = 0;
 
     for (const fila of nuevos) {
+
+      // Validar que los campos clave no estén vacíos
+        if (!fila.Código || !fila.Centro || !fila['Almacén'] || !fila['N° Serie']) {
+          continue; // ❌ Saltar fila si falta alguno de estos campos clave
+        }
+      
+      const { data: producto } = await supabase
+      .from('productos')
+      .select('descripcion')
+      .eq('codigo', fila.Código)
+      .single();
+    
+      const { data: relacionCentro } = await supabase
+      .from('centros_empresa')
+      .select('empresa')
+      .eq('centro', fila.Centro)
+      .single();
+
       const registro = {
         codigo: fila.Código,
-        descripcion: fila.Descripción || '-',
+        descripcion: producto?.descripcion || '-',
         centro: fila.Centro,
         almacen: fila['Almacén'],
         lote: fila.Lote || '-',
         nro_serie: fila['N° Serie'],
-        empresa: fila.Empresa || '-',
+        empresa: relacionCentro?.empresa || '-',
         fecha_ingreso: fila['Fecha Ingreso'] ? new Date(fila['Fecha Ingreso']).toISOString().split('T')[0] : null,
         fecha_compra: fila['Fecha Compra'] ? new Date(fila['Fecha Compra']).toISOString().split('T')[0] : null,
         estado_contrata: (fila['Estado Contrata'] || '').toUpperCase(),
@@ -661,15 +681,23 @@ function abrirDialogoSAPSeries() {
 }
 
 function descargarPlantillaSAPSeries() {
-  const link = document.createElement('a');
-  link.href = '/plantillas/Plantilla_SAP_Series.xls'; // Asegúrate de subir esta plantilla a tu hosting
-  link.download = 'Plantilla_SAP_Series.xls';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
-</script>
+  const datos = [
+    {
+      "Código": "",
+      "Centro": "",
+      "Almacén": "",
+      "Lote": "",
+      "N° Serie": "",
+      "Fecha Ingreso": "",
+      "Fecha Compra": ""
+    }
+  ];
 
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(datos);
+  XLSX.utils.book_append_sheet(wb, ws, "Plantilla SAP Series");
+  XLSX.writeFile(wb, "Plantilla_SAP_Series.xlsx");
+}
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
 </body>
