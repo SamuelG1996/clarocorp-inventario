@@ -33,10 +33,9 @@
       <i class="fas fa-sort-amount-down-alt"></i> Ordenar por Antiguamiento
       </button>
       
-      <button onclick="actualizarSAPSeries()">
+      <button onclick="abrirDialogoSAPSeries()">
       <i class="fas fa-sync-alt"></i> Actualizar SAP
       </button>
-
     </div>
       <div class="search-bar-paginacion">
   <input type="text" id="searchInput" placeholder="Buscar por código, descripción o zona..." oninput="filtrarTabla()"/>
@@ -634,6 +633,40 @@ async function actualizarSAPSeries() {
   };
 
   reader.readAsBinaryString(archivo);
+}
+</script>
+
+  <script>
+function abrirDialogoSAPSeries() {
+  Swal.fire({
+    title: 'Carga SAP',
+    text: '¿Qué deseas hacer?',
+    icon: 'question',
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12',
+    showCancelButton: true,
+    showDenyButton: true,
+    confirmButtonText: 'Subir carga',
+    denyButtonText: 'Descargar plantilla',
+    cancelButtonText: 'Cancelar',
+    reverseButtons: true
+  }).then((result) => {
+    if (result.isConfirmed) {
+      actualizarSAPSeries();
+    } else if (result.isDenied) {
+      descargarPlantillaSAPSeries();
+    }
+  });
+}
+
+function descargarPlantillaSAPSeries() {
+  const link = document.createElement('a');
+  link.href = '/plantillas/Plantilla_SAP_Series.xls'; // Asegúrate de subir esta plantilla a tu hosting
+  link.download = 'Plantilla_SAP_Series.xls';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 </script>
 
