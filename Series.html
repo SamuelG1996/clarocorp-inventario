@@ -58,15 +58,15 @@
             <th>N° Serie</th>
             <th>Empresa</th>
             <th>Fecha Ingreso</th>
+            <th>Antiguamiento</th>
             <th>Fecha Compra</th>
+            <th>Antiguamiento Compra</th>
             <th>Estado Contrata</th>            
             <th>SOT</th>      
             <th>Cliente</th>       
             <th>ID Devolución/Traspaso</th> 
             <th>Fecha Estado Contrata</th>
             <th>Comentario Contrata</th>
-            <th>Antiguamiento</th>
-            <th>Antiguamiento Compra</th>
             <th>Estado Soporte</th>
             <th>Comentario Soporte</th>
             <th>Fecha Estado Soporte</th>
@@ -178,15 +178,15 @@ if (rolUsuario === "Contratista") {
   <td>${serie.nro_serie || ''}</td>
   <td>${serie.empresa || ''}</td>
   <td>${formatearFechaSegura(serie.fecha_ingreso)}</td>
+  <td class="${claseColor}">${diasAntiguos !== null ? diasAntiguos + ' días' : ''}</td>
   <td>${formatearFechaSegura(serie.fecha_compra)}</td>
+  <td class="${claseColor}">${serie.fecha_compra ? calcularAntiguamiento(serie.fecha_compra) + ' días' : ''}</td>
 <td>${(serie.estado_contrata || '').toUpperCase()}</td>
   <td>${serie.proyecto_sot || ''}</td>
   <td>${serie.cliente || ''}</td>
   <td>${serie.id_devolucion || ''}</td>
   <td>${formatearFechaSegura(serie.fecha_estado_contrata)}</td>
   <td>${serie.comentario_contrata || ''}</td>
-  <td class="${claseColor}">${diasAntiguos !== null ? diasAntiguos + ' días' : ''}</td>
-  <td class="${claseColor}">${serie.fecha_compra ? calcularAntiguamiento(serie.fecha_compra) + ' días' : ''}</td>
   <td>${serie.estado_soporte || ''}</td>
   <td>${serie.comentario_soporte || ''}</td>
   <td>${formatearFechaSegura(serie.fecha_estado_soporte)}</td>
@@ -303,6 +303,7 @@ async function descargarExcelSeries() {
       "N° Serie": serie.nro_serie,
       Empresa: serie.empresa,
       "Fecha Ingreso": formatearFechaSegura(serie.fecha_ingreso),
+      Antiguamiento: calcularAntiguamiento(serie.fecha_ingreso) + ' días',
       "Fecha Compra": formatearFechaSegura(serie.fecha_compra),
       "Estado Contrata": serie.estado_contrata,
       SOT: serie.proyecto_sot,
@@ -310,9 +311,8 @@ async function descargarExcelSeries() {
       "ID Devolución/Traspaso": serie.id_devolucion,
       "Fecha Estado Contrata": formatearFechaSegura(serie.fecha_estado_contrata),
       "Comentario Contrata": serie.comentario_contrata,
-      Antiguamiento: calcularAntiguamiento(serie.fecha_ingreso) + ' días',
-      "Estado Soporte": serie.estado_soporte,
       "Antiguamiento Compra": serie.fecha_compra ? calcularAntiguamiento(serie.fecha_compra) + ' días' : '',
+      "Estado Soporte": serie.estado_soporte,
       "Comentario Soporte": serie.comentario_soporte,
       "Fecha Estado Soporte": formatearFechaSegura(serie.fecha_estado_soporte)
     }));
@@ -512,21 +512,22 @@ function renderizarControlesPaginacionSeries(pagina, totalPaginas) {
     }
   });
 </script>
+  
   <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const rol = localStorage.getItem("rol");
+document.addEventListener("DOMContentLoaded", () => {
+  const rol = localStorage.getItem("rol");
 
-    // Oculta el botón si NO eres Administrador o Soporte
-    if (rol !== "Administrador" && rol !== "Soporte") {
-      const botonSAP = document.querySelector("button[onclick='actualizarSAPSeries()']");
-      if (botonSAP) botonSAP.style.display = "none";
-    }
+  // Oculta el botón si NO eres Administrador o Soporte
+  if (rol !== "Administrador" && rol !== "Soporte") {
+    const botonSAP = document.querySelector("button[onclick='abrirDialogoSAPSeries()']");
+    if (botonSAP) botonSAP.style.display = "none";
+  }
 
-    // Lógica normal de carga
-    document.getElementById("searchInput").value = "";
-    cargarSeries('');
-  });
+  document.getElementById("searchInput").value = "";
+  cargarSeries('');
+});
 </script>
+  
   <script>
 async function actualizarSAPSeries() {
   const { value: archivo } = await Swal.fire({
