@@ -224,6 +224,24 @@ if (!tipo || !modulo || !detalle) {
     });
   }
 
+  // 👉 Enviar correo luego de insertar exitosamente
+await fetch('/api/EnviarCorreoClaro', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    asunto: `[Soporte ${tipo}] ${empresa} (${codigo_usuario})`,
+    destinatario: 'guardias@globalhitss.com', // aquí va tu correo fijo o variable
+    copia: datosFormulario.correo, // correo del solicitante
+    contenido: `
+      <strong>Tipo:</strong> ${datosFormulario.tipo}<br>
+      <strong>Ubicación:</strong> ${datosFormulario.ubicacion}<br>
+      <strong>Comentario:</strong> ${datosFormulario.comentario}<br>
+      <strong>Solicitante:</strong> ${datosFormulario.nombres} (${datosFormulario.codigo_usuario})<br>
+      <strong>Teléfono:</strong> ${datosFormulario.telefono}
+    `
+  })
+});
+   
   // ✅ Envío de notificación a Teams
   await fetch("/api/soporte", {
     method: "POST",
