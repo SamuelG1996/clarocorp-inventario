@@ -19,6 +19,12 @@ body.login-page {
   color: #ecf0f1;
 }
 
+.link-recuperacion {
+  font-size: 0.78em;
+  color: #ccc;
+  text-decoration: underline;
+}
+
 h2 {
   text-align: center;
   margin-bottom: 30px;
@@ -98,6 +104,23 @@ h2 {
   font-family: 'Arial', sans-serif;
   opacity: 0.7;
 }
+
+/*ESTILOS POP UP RECUPERAR CONTRASEÑA*/
+
+.swal-popup-reducido {
+  font-size: 0.95em; /* texto general */
+}
+
+.swal-titulo-pequeno {
+  font-size: 1.4em; /* título */
+}
+
+.swal-footer-pequeno {
+  font-size: 1em; /* correo/teléfono */
+}
+
+/*FIN DE ESTILOS LOGIN*/
+
 
 /*MENU DISEÑO*/
 
