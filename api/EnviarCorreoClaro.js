@@ -1,11 +1,10 @@
-// EnviarCorreoClaro.js
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req, res) {
   console.log("📩 API /api/EnviarCorreoClaro llamada");
-  console.log("🔑 Clave RESEND:", process.env.RESEND_API_KEY); // solo para verificar si llega
+  console.log("🔑 Clave RESEND:", process.env.RESEND_API_KEY);
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
@@ -37,3 +36,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Error inesperado al enviar correo' });
   }
 }
+
