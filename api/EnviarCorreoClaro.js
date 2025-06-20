@@ -1,4 +1,6 @@
 // EnviarCorreoClaro.js
+console.log("📩 API /api/EnviarCorreoClaro llamada");
+console.log("🔑 Clave RESEND:", process.env.RESEND_API_KEY);
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
