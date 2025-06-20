@@ -1,8 +1,8 @@
+// EnviarCorreoClaro.js
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-/** @type {import('next').NextApiHandler} */
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
@@ -10,19 +10,27 @@ export default async function handler(req, res) {
 
   const { asunto, destinatario, copia, contenido } = req.body;
 
+  if (!asunto || !destinatario || !contenido) {
+    return res.status(400).json({ error: 'Faltan campos requeridos' });
+  }
+
   try {
-    const response = await resend.emails.send({
-      from: 'Inventario Claro <no-reply@portalgestioninventario.com>',
-      to: destinatario,
-      cc: copia,
+    const { data, error } = await resend.emails.send({
+      from: 'Soporte ClaroCorp+ <soporte@portalgestioninventario.com>',
+      to: [destinatario],
+      cc: copia ? [copia] : [],
       subject: asunto,
       html: contenido,
     });
 
-    console.log('✅ Email enviado:', response);
-    return res.status(200).json({ success: true, message: 'Correo enviado correctamente' });
-  } catch (error) {
-    console.error('❌ Error al enviar correo:', error);
-    return res.status(500).json({ error: 'Error al enviar correo', detalle: error.message });
+    if (error) {
+      console.error("Error Resend:", error);
+      return res.status(500).json({ error: error.message || 'Error al enviar correo' });
+    }
+
+    return res.status(200).json({ message: 'Correo enviado exitosamente', data });
+  } catch (err) {
+    console.error("Error general:", err);
+    return res.status(500).json({ error: 'Error inesperado al enviar correo' });
   }
 }
