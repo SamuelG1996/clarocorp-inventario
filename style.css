@@ -460,7 +460,7 @@ td:nth-child(2), th:nth-child(2) {
   box-sizing: border-box;
 }
 
-/* Título alineado arriba y con separación */
+/* Título alineado arriba separado */
 .titulo-principal {
   margin-top: 20px;
   margin-bottom: 20px;
