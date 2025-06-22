@@ -90,5 +90,5 @@ document.querySelectorAll(".menu a").forEach(enlace => {
   }
 
     // ✅ MUESTRA EL BODY SOLO DESPUÉS DE QUE TODO ESTÉ FILTRADO
-  document.body.style.display = '';
+  document.body.classList.add('mostrar');
 });
