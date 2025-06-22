@@ -89,8 +89,8 @@ document.querySelectorAll(".menu a").forEach(enlace => {
     }
   }
 
-  // ✅ Muestra el body y oculta el loader después de aplicar todo
-  document.body.classList.add('mostrar');
+  // === MOSTRAR BODY Y OCULTAR LOADER AL FINAL ===
+  document.body.classList.add("mostrar");
 
   const loader = document.getElementById("loader");
   if (loader) {
