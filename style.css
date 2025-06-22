@@ -124,8 +124,9 @@ h2 {
 
 /*MENU DISEÑO*/
 
-.oculto-por-rol {
-  display: none !important;
+/* Oculta todo el contenido del body al inicio */
+body {
+  display: none;
 }
 
 * {
