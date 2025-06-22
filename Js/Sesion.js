@@ -54,14 +54,13 @@ document.querySelectorAll(".menu a").forEach(enlace => {
   const texto = enlace.textContent.trim();
 
   if (ocultarRutas.includes(texto)) {
-    // No se muestra: ya está oculto por CSS
-    return;
+    // Agrega la clase para ocultar si el módulo está restringido
+    enlace.classList.add("oculto-rol");
+  } else {
+    // Asegura que los permitidos estén visibles
+    enlace.classList.remove("oculto-rol");
   }
-
-  // Si el módulo no está restringido, se asegura de mostrarlo
-  enlace.classList.remove("oculto-rol");
 });
-  
   // Restricción de acceso a páginas específicas (para Contratista)
   if (rol === "Contratista") {
     const paginasRestringidasContratista = [
