@@ -4,6 +4,7 @@ export default async function handler(req, res) {
   if (req.method !== "GET" && req.method !== "HEAD") {
     return res.status(405).json({ error: "Método no permitido" });
   }
+
   if (req.method === "HEAD") {
     return res.status(200).send('OK');
   }
@@ -14,7 +15,10 @@ export default async function handler(req, res) {
   const fechaLocal = new Date().toLocaleString("sv-SE", {
     timeZone: "America/Lima"
   }).replace(" ", "T");
-   try {
+
+  const start = Date.now(); // ⏱️ Inicia conteo
+
+  try {
     const response = await fetch(`${supabaseUrl}/rest/v1/${tableName}`, {
       method: 'POST',
       headers: {
@@ -33,7 +37,6 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "Supabase error", details: errorText });
     }
 
-      // ✅ NUEVO: Golpeamos tabla `usuarios`
     const pruebaUsuarios = await fetch(`${supabaseUrl}/rest/v1/usuarios?select=id&limit=1`, {
       headers: {
         apikey: supabaseKey,
@@ -46,9 +49,12 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "Supabase error (usuarios)", details: errorText });
     }
 
-    // ✅ Solo llegamos aquí si ambos fueron exitosos
-    return res.status(200).send('OK');
+    const duration = Date.now() - start;
+    console.log(`🔥 Tiempo total de ping: ${duration} ms`);
+
+    return res.status(200).send(`OK - ${duration} ms`);
   } catch (error) {
     return res.status(500).json({ error: 'Error interno', details: error.message });
   }
 }
+
