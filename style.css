@@ -124,6 +124,10 @@ h2 {
 
 /*MENU DISEÑO*/
 
+.oculto-por-rol {
+  display: none !important;
+}
+
 * {
   margin: 0;
   padding: 0;
