@@ -49,14 +49,18 @@ document.addEventListener("DOMContentLoaded", () => {
     ocultarRutas = ["Configuración", "Compras", "Reportes"];
   }
 
-  // Oculta elementos del sidebar
-  document.querySelectorAll(".menu a").forEach(enlace => {
-    const texto = enlace.textContent.trim();
-    if (ocultarRutas.includes(texto)) {
-      enlace.style.display = "none";
-    }
-  });
+// Control visual por rol desde el inicio
+document.querySelectorAll(".menu a").forEach(enlace => {
+  const texto = enlace.textContent.trim();
 
+  if (ocultarRutas.includes(texto)) {
+    // No se muestra: ya está oculto por CSS
+    return;
+  }
+
+  // Si el módulo no está restringido, se asegura de mostrarlo
+  enlace.classList.remove("oculto-rol");
+});
   // Restricción de acceso a páginas específicas (para Contratista)
   if (rol === "Contratista") {
     const paginasRestringidasContratista = [
