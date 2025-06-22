@@ -125,7 +125,7 @@ h2 {
 /*MENU DISEÑO*/
 
 /* Oculta todo el contenido del body al inicio */
-body {
+body:not(.mostrar-directo) {
   display: none;
 }
 
