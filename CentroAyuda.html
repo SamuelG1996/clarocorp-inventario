@@ -209,7 +209,7 @@ if (signedUrlError) {
 }
 
 archivo_url = signedUrlData.signedUrl;
-
+}
   const { error: errorInsert } = await supabase
     .from("centro_ayuda")
     .insert([{
