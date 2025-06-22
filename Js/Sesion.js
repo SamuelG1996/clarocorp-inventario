@@ -61,6 +61,7 @@ document.querySelectorAll(".menu a").forEach(enlace => {
   // Si el módulo no está restringido, se asegura de mostrarlo
   enlace.classList.remove("oculto-rol");
 });
+  
   // Restricción de acceso a páginas específicas (para Contratista)
   if (rol === "Contratista") {
     const paginasRestringidasContratista = [
@@ -88,4 +89,7 @@ document.querySelectorAll(".menu a").forEach(enlace => {
       }, 3100);
     }
   }
+
+    // ✅ MUESTRA EL BODY SOLO DESPUÉS DE QUE TODO ESTÉ FILTRADO
+  document.body.style.display = '';
 });
