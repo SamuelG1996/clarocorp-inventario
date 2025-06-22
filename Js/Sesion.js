@@ -89,6 +89,14 @@ document.querySelectorAll(".menu a").forEach(enlace => {
     }
   }
 
-    // ✅ MUESTRA EL BODY SOLO DESPUÉS DE QUE TODO ESTÉ FILTRADO
+  // ✅ Muestra el body y oculta el loader después de aplicar todo
   document.body.classList.add('mostrar');
+
+  const loader = document.getElementById("loader");
+  if (loader) {
+    loader.classList.add("loader-hidden");
+    loader.addEventListener("transitionend", () => {
+      loader.remove();
+    });
+  }
 });
