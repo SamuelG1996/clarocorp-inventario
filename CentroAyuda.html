@@ -236,10 +236,10 @@ await fetch('/api/EnviarCorreoClaro', {
     contenido: `
       <strong>Tipo:</strong> ${tipo}<br>
       <strong>Módulo:</strong> ${modulo}<br>
-      <strong>Detalle:</strong> ${detalle}<br>
       <strong>Solicitante:</strong> ${nombres} (${codigo_usuario})<br>
       <strong>Empresa:</strong> ${empresa}<br>
       <strong>Teléfono:</strong> ${telefono}
+      <strong>Detalle:</strong> ${detalle}<br>
       ${archivo_url ? `<strong>Archivo:</strong> <a href="${archivo_url}" target="_blank">Ver adjunto</a><br>` : ""}
     `
   })
