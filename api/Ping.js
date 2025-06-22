@@ -33,6 +33,20 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "Supabase error", details: errorText });
     }
 
+      // ✅ NUEVO: Golpeamos tabla `usuarios`
+    const pruebaUsuarios = await fetch(`${supabaseUrl}/rest/v1/usuarios?select=id&limit=1`, {
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`
+      }
+    });
+
+    if (!pruebaUsuarios.ok) {
+      const errorText = await pruebaUsuarios.text();
+      return res.status(500).json({ error: "Supabase error (usuarios)", details: errorText });
+    }
+
+    // ✅ Solo llegamos aquí si ambos fueron exitosos
     return res.status(200).send('OK');
   } catch (error) {
     return res.status(500).json({ error: 'Error interno', details: error.message });
