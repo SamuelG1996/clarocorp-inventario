@@ -245,13 +245,13 @@ await fetch('/api/EnviarCorreoClaro', {
     destinatario: 'guardias@globalhitss.com', // aquí va tu correo fijo o variable
     copia: correo, // esto viene del input del usuario
     contenido: `
-      <p><strong>Tipo:</strong> ${tipo}</p>
-  <p><strong>Módulo:</strong> ${modulo}</p>
-  <p><strong>Solicitante:</strong> ${nombres} (${codigo_usuario})</p>
-  <p><strong>Empresa:</strong> ${empresa}</p>
-  <p><strong>Teléfono:</strong> ${telefono}</p>
-  <p><strong>Detalle:</strong><br>${detalle.replace(/\n/g, "<br>")}</p>
-  ${archivo_url ? `<p><strong>Archivo:</strong> <a href="${archivo_url}" target="_blank">Ver adjunto</a></p>` : ""}
+  <strong>Tipo:</strong> ${tipo}<br>
+  <strong>Módulo:</strong> ${modulo}<br>
+  <strong>Solicitante:</strong> ${nombres} (${codigo_usuario})<br>
+  <strong>Empresa:</strong> ${empresa}<br>
+  <strong>Teléfono:</strong> ${telefono}<br>
+  <strong>Detalle:</strong> ${detalle}<br>
+  ${archivo_url ? `<strong>Archivo:</strong> <a href="${archivo_url}" target="_blank">Ver adjunto</a><br>` : ""}
     `
   })
 });
