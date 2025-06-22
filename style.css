@@ -129,6 +129,10 @@ body:not(.login-page) {
   display: none;
 }
 
+.oculto-rol {
+  display: none !important;
+}
+
 * {
   margin: 0;
   padding: 0;
