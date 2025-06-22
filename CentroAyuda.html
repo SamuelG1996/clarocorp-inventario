@@ -193,11 +193,22 @@ if (!tipo || !modulo || !detalle) {
       });
     }
 
-    const { data: archivoPublico } = supabase.storage
-      .from("ayuda")
-      .getPublicUrl(nombreArchivo);
-    archivo_url = archivoPublico.publicUrl;
-  }
+    const { data: signedUrlData, error: signedUrlError } = await supabase
+  .storage
+  .from("ayuda")
+  .createSignedUrl(nombreArchivo, 60 * 60 * 720); // 30 dias
+
+if (signedUrlError) {
+  ocultarLoaderSoporte();
+  return Swal.fire({
+    icon: 'error',
+    title: 'Error al generar enlace',
+    text: signedUrlError.message,
+    background: '#1e2022', color: '#ffffff'
+  });
+}
+
+archivo_url = signedUrlData.signedUrl;
 
   const { error: errorInsert } = await supabase
     .from("centro_ayuda")
