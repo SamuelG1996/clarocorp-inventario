@@ -494,6 +494,27 @@ if (error) {
 }
 const idSolicitud = data[0].id;
 
+// ✅ Enviar correo después del registro y dentro del mismo try
+        await fetch("/api/EnviarCorreoClaro", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            asunto: `[Solicitud Traspaso ID-${idSolicitud}]: ${empresa_solicitante}`,
+            destinatario: responsableCorreo,
+            copia: correo_solicitante,
+            contenido: `
+              <strong>Nuevo traspaso registrado</strong><br><br>
+              <strong>Solicitante:</strong> ${nombres_solicitante} (${codigo_solicitante})<br>
+              <strong>Empresa:</strong> ${empresa_solicitante}<br>
+              <strong>Responsable:</strong> ${responsableNombre} (${responsableCodigo})<br>
+              <strong>Fecha:</strong> ${new Date().toLocaleString()}<br>
+              <strong>Estado:</strong> Pendiente<br><br>
+              <em>Revisa el portal para más información.</em>
+            `,
+          }),
+        });
 let urlGuiaRemision = "";
 try {
   urlGuiaRemision = await subirArchivoGuia(idSolicitud, archivo);
@@ -571,35 +592,7 @@ console.log("Enviando a Teams...");
   })
 });
 
-try {
-  await fetch('/api/EnviarCorreoClaro', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      asunto: `[Solicitud Traspaso ID-${id}]: ${empresa_solicitante}`,
-      destinatario: responsable_correo, // correo del responsable
-      copia: correo_solicitante,        // correo del solicitante
-      contenido: `
-        <strong>Nuevo traspaso registrado</strong><br><br>
-        <strong>Solicitante:</strong> ${nombres_solicitante} (${codigo_solicitante})<br>
-        <strong>Empresa:</strong> ${empresa_solicitante}<br>
-        <strong>Responsable:</strong> ${responsable_nombre} (${responsable_codigo})<br>
-        <strong>Fecha:</strong> ${new Date().toLocaleString()}<br>
-        <strong>Estado:</strong> Pendiente<br><br>
-        <em>Revisa el portal para más información.</em>
-      `
-    })
-  });
-} catch (err) {
-  console.error("Error al enviar correo:", err);
-  Swal.fire({
-    icon: 'error',
-    title: 'Error al enviar correo',
-    text: 'No se pudo enviar el correo al responsable.',
-    background: '#1e2022',
-    color: '#ffffff'
-  });
-}
+
   
   Swal.fire({
     icon: 'success',
