@@ -496,7 +496,7 @@ const idSolicitud = data[0].id;
   const correoSolicitante = localStorage.getItem("correo") || "";
 const copia = [correoSolicitante, "claudia.henriquez@claro.com.pe"]
   .filter(c => c && c.includes("@"))
-  .join(",");
+
 
 // ✅ Enviar correo después del registro y dentro del mismo try
         await fetch("/api/EnviarCorreoClaro", {
