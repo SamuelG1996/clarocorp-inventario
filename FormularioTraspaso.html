@@ -445,9 +445,11 @@ if (archivo.size > 5 * 1024 * 1024) {
   if (tipoMaterial === "PINT") {
     responsableNombre = "Abel Chancahuaña";
     responsableCodigo = "C0000325";
+    responsableCorreo = "chancahuanaa@globalhitss.com"
   } else if (tipoMaterial === "PEXT") {
     responsableNombre = "Samuel Guardia";
     responsableCodigo = "C0000125";
+    responsableCorreo = "guardias@globalhitss.com"
   } else {
     responsableNombre = "No definido";
     responsableCodigo = "ND";
@@ -568,6 +570,36 @@ console.log("Enviando a Teams...");
     texto: `📝 Nueva solicitud registrada: ID-${idSolicitud}\n\n💼 Contrata: ${contrataSolicitante}\n\n🧭 Solicitante: ${usuarioSolicitante}\n\n🛠️ Usuario responsable: ${responsableNombre}\n\n📅 Fecha: ${fechaFormateada}`
   })
 });
+
+try {
+  await fetch('/api/EnviarCorreoClaro', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      asunto: `[Solicitud Traspaso] ${empresa_solicitante} (${codigo_solicitante})`,
+      destinatario: responsable_correo, // correo del responsable
+      copia: correo_solicitante,        // correo del solicitante
+      contenido: `
+        <strong>Nuevo traspaso registrado</strong><br><br>
+        <strong>Solicitante:</strong> ${nombres_solicitante} (${codigo_solicitante})<br>
+        <strong>Empresa:</strong> ${empresa_solicitante}<br>
+        <strong>Responsable:</strong> ${responsable_nombre} (${responsable_codigo})<br>
+        <strong>Fecha:</strong> ${new Date().toLocaleString()}<br>
+        <strong>Estado:</strong> Pendiente<br><br>
+        <em>Revisa el portal para más información.</em>
+      `
+    })
+  });
+} catch (err) {
+  console.error("Error al enviar correo:", err);
+  Swal.fire({
+    icon: 'error',
+    title: 'Error al enviar correo',
+    text: 'No se pudo enviar el correo al responsable.',
+    background: '#1e2022',
+    color: '#ffffff'
+  });
+}
   
   Swal.fire({
     icon: 'success',
