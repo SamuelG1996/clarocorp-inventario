@@ -171,9 +171,12 @@
       const tbody = document.querySelector("#tablaTraspasos tbody");
 
       try {
+        const empresaUsuario = localStorage.getItem("empresa");
+
         const { data: solicitudes, error } = await supabaseClient
           .from("traspasos")
           .select("*")
+          .eq("contrata", empresaUsuario) // ← usamos el nombre real del campo en tu base
           .order("fecha_registro", { ascending: false });
 
         if (error) throw error;
