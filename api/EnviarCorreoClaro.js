@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Soporte ClaroCorp+ <soporte@portalgestioninventario.com>',
+      from: 'Soporte Portal Inventario+ <soporte@portalgestioninventario.com>',
       to: [destinatario],
        cc: Array.isArray(copia) ? copia : [], // ✅ corregido
       subject: asunto,
