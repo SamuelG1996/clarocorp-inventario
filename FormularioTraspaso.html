@@ -495,7 +495,7 @@ if (error) {
 const idSolicitud = data[0].id;
   const correoSolicitante = localStorage.getItem("correo") || "";
 const copia = [correoSolicitante, "claudia.henriquez@claro.com.pe"]
-  .filter(c => c && c.includes("@"))
+  .filter(c => c && c.includes("@")); 
 
 
 // ✅ Enviar correo después del registro y dentro del mismo try
