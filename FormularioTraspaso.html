@@ -576,7 +576,7 @@ try {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      asunto: `[Solicitud Traspaso] ${empresa_solicitante} (${codigo_solicitante})`,
+      asunto: `[Solicitud Traspaso ID-${id}]: ${empresa_solicitante}`,
       destinatario: responsable_correo, // correo del responsable
       copia: correo_solicitante,        // correo del solicitante
       contenido: `
