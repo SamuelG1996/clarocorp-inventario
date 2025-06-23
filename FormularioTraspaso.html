@@ -493,6 +493,10 @@ if (error) {
   return;
 }
 const idSolicitud = data[0].id;
+  const correoSolicitante = localStorage.getItem("correo") || "";
+const copia = [correoSolicitante, "claudia.henriquez@claro.com.pe"]
+  .filter(c => c && c.includes("@"))
+  .join(",");
 
 // ✅ Enviar correo después del registro y dentro del mismo try
         await fetch("/api/EnviarCorreoClaro", {
@@ -503,7 +507,7 @@ const idSolicitud = data[0].id;
           body: JSON.stringify({
             asunto: `[Solicitud Traspaso ID-${idSolicitud}]: ${contrataSolicitante}`,
             destinatario: responsableCorreo,
-            copia: `${localStorage.getItem("correo")}, claudia.henriquez@claro.com.pe`,
+            copia: copia,
             contenido: `
               <strong>Nueva Solicitud de traspaso registrada</strong><br><br>
               <strong>Solicitante:</strong> ${usuarioSolicitante}<br>
