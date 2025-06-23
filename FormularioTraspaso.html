@@ -506,7 +506,7 @@ const idSolicitud = data[0].id;
             copia: localStorage.getItem("correo"),
             contenido: `
               <strong>Nuevo traspaso registrado</strong><br><br>
-              <strong>Solicitante:</strong> ${nombres_solicitante} (${codigo_solicitante})<br>
+              <strong>Solicitante:</strong> ${usuarioSolicitante} (${codigo_solicitante})<br>
               <strong>Empresa:</strong> ${empresa_solicitante}<br>
               <strong>Responsable:</strong> ${responsableNombre} (${responsableCodigo})<br>
               <strong>Fecha:</strong> ${new Date().toLocaleString()}<br>
