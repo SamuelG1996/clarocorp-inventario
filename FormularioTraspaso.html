@@ -501,9 +501,9 @@ const idSolicitud = data[0].id;
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            asunto: `[Solicitud Traspaso ID-${idSolicitud}]: ${empresa_solicitante}`,
+            asunto: `[Solicitud Traspaso ID-${idSolicitud}]: ${contrataSolicitante}`,
             destinatario: responsableCorreo,
-            copia: correo_solicitante,
+            copia: localStorage.getItem("correo"),
             contenido: `
               <strong>Nuevo traspaso registrado</strong><br><br>
               <strong>Solicitante:</strong> ${nombres_solicitante} (${codigo_solicitante})<br>
