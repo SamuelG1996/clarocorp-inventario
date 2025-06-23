@@ -473,7 +473,7 @@ const nuevaSolicitud = {
 const { data, error } = await supabaseClient
   .from("traspasos")
   .insert([nuevaSolicitud])
-  .select();
+  .select()
 
 if (error) {
   Swal.fire({
