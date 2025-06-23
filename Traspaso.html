@@ -173,11 +173,16 @@
       try {
         const empresaUsuario = localStorage.getItem("empresa");
 
-        const { data: solicitudes, error } = await supabaseClient
-          .from("traspasos")
-          .select("*")
-          .eq("contrata", empresaUsuario) // ← usamos el nombre real del campo en tu base
-          .order("fecha_registro", { ascending: false });
+      let solicitudesQuery = supabaseClient
+        .from("traspasos")
+        .select("*")
+        .order("fecha_registro", { ascending: false });
+      
+      if (rol === "Contratista") {
+        solicitudesQuery = solicitudesQuery.eq("contrata", empresaUsuario);
+      }
+      
+      const { data: solicitudes, error } = await solicitudesQuery;
 
         if (error) throw error;
 
