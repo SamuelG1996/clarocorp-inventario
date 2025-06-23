@@ -483,8 +483,6 @@ td:nth-child(2), th:nth-child(2) {
 .perfil-content {
   background-color: #1a2b3c;
   padding: 40px 0;
-  margin-left: 20px;   /* reemplaza el 5% */
-  margin-right: 20px;  /* reemplaza el 13% */
   min-height: 100vh;
   box-sizing: border-box;
   display: flex;
