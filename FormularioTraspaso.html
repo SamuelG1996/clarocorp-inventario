@@ -503,9 +503,9 @@ const idSolicitud = data[0].id;
           body: JSON.stringify({
             asunto: `[Solicitud Traspaso ID-${idSolicitud}]: ${contrataSolicitante}`,
             destinatario: responsableCorreo,
-            copia: localStorage.getItem("correo"),
+            copia: `${localStorage.getItem("correo")}, claudia.henriquez@claro.com.pe`,
             contenido: `
-              <strong>Nuevo traspaso registrado</strong><br><br>
+              <strong>Nueva Solicitud de traspaso registrada</strong><br><br>
               <strong>Solicitante:</strong> ${usuarioSolicitante}<br>
               <strong>Empresa:</strong> ${contrataSolicitante}<br>
               <strong>Responsable:</strong> ${responsableNombre}<br>
