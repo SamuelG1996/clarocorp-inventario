@@ -481,9 +481,9 @@ td:nth-child(2), th:nth-child(2) {
 
 /* --- ESTILOS GENERALES PARA MÓDULO PERFIL CENTRADO Y COMPACTO --- */
 .perfil-content {
-  width: 98%;
+  width: 20%;
   background-color: #1a2b3c;
-  padding: 40px 30px;
+  padding: 40px 5px;
   min-height: 100vh;
   margin-left: 5%;	
   box-sizing: border-box;
