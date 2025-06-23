@@ -601,21 +601,14 @@ td:nth-child(2), th:nth-child(2) {
 #tablaTraspasos thead th {
   font-size: 13px; /* o el tamaño que prefieras */
   padding: 6px 8px;
+    text-align: center;
 }
 
 #tablaTraspasos td {
   text-align: center;
 }
 
-/* Contrata Solicitante: columna 2 */
-#tablaTraspasos td:nth-child(2) {
-  text-align: left;
-}
 
-/* Usuario Solicitante: columna 3 */
-#tablaTraspasos td:nth-child(3) {
-  text-align: left;
-}
 /* --- ESTILOS  PARA EL SUBMODULO SERIES --- */
 
 /* Asegura que el body y html no permitan scroll horizontal innecesario */
