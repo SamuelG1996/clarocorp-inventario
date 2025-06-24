@@ -32,7 +32,11 @@
       </button>
       
       <button onclick="alternarOrden()">
-      <i class="fas fa-sort-amount-down-alt"></i> Ordenar por Antiguamiento
+      <i class="fas fa-sort-amount-down"></i> Ordenar por Antiguamiento
+      </button>
+      
+      <button class="btn btn-warning" onclick="alternarOrdenCompra()">
+      <i class="fas fa-sort-amount-down"></i> Ordenar por Antiguamiento Compra
       </button>
       
       <button onclick="abrirDialogoSAPSeries()">
@@ -141,11 +145,13 @@ if (rolUsuario === "Contratista") {
   queryBase = queryBase.eq("empresa", empresaUsuario);
 }
   
-  if (modoOrden === 'empresa') {
-    queryBase = queryBase.order('empresa', { ascending: true });
-  } else {
-    queryBase = queryBase.order('fecha_ingreso', { ascending: true }); // más antiguos primero
-  }
+if (modoOrden === 'empresa') {
+  queryBase = queryBase.order('empresa', { ascending: true });
+} else if (modoOrden === 'antiguamiento') {
+  queryBase = queryBase.order('fecha_ingreso', { ascending: true }); // más antiguos primero
+} else if (modoOrden === 'antiguamiento_compra') {
+  queryBase = queryBase.order('fecha_compra', { ascending: true }); // nueva opción
+}
   
   queryBase = queryBase.range(pagina * tamañoPagina, (pagina + 1) * tamañoPagina - 1);
 
@@ -265,6 +271,28 @@ function filtrarTabla() {
   }
 
   cargarSeries(filtroActual, 0);
+}
+  </script>
+  
+  <script>
+  function alternarOrdenCompra() {
+  modoOrden = "antiguamiento_compra";
+
+  Swal.fire({
+    icon: 'info',
+    title: 'Ordenando por antigüedad de compra',
+    text: 'Los equipos con más tiempo desde la compra aparecerán primero.',
+    toast: true,
+    position: 'bottom-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  });
+
+  cargarSeries(filtroActual, 0); // Recarga la tabla desde la página 0
 }
   </script>
 
@@ -718,3 +746,4 @@ function descargarPlantillaSAPSeries() {
   <script src="Js/Sesion.js"></script>
 </body>
 </html>
+
