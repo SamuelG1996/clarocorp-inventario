@@ -782,7 +782,7 @@ function descargarPlantillaEstadoSoporte() {
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.json_to_sheet(datos, { header: Object.keys(datos[0]) });
   XLSX.utils.book_append_sheet(wb, ws, "Plantilla_Series");
-  XLSX.writeFile(wb, "Plantilla_Carga_Series.xlsx");
+  XLSX.writeFile(wb, "Plantilla_Estado_Series.xlsx");
 }
   </script>
   <script src="Js/Loader.js"></script>
