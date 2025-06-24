@@ -399,7 +399,7 @@ async function procesarExcelSeries(file) {
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(sheet);
 
-    const ESTADOS_VALIDOS = ["INSTALADO", "DISPONIBLE", "RESERVADO", "FACTURAR", "TRASPASO", "DEVOLUCION", "SPARE"];
+    const ESTADOS_VALIDOS = ["INSTALADO", "DISPONIBLE", "RESERVADO", "FACTURAR", "TRASPASO", "DEVOLUCION", "SPARE", "BAJA", "STOCK MINIMO"];
     const registrosValidos = [];
     let fallos = 0;
 
