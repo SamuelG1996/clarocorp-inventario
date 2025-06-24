@@ -163,6 +163,7 @@
     item.almacen,
     item.cantidad_sap != null ? Number(item.cantidad_sap) : "",
     item.lote,
+    item.tipo_material || '-', // 👈 NUEVO CAMPO
     item.fecha_carga_sap ? new Date(item.fecha_carga_sap).toLocaleString("es-PE") : "—",
     item.empresa,
     item.zona,
@@ -175,7 +176,7 @@
   ]);
 
   const headers = [
-    "Código", "Descripción", "Centro", "Almacén", "Cantidad SAP", "Lote", "Fecha SAP", "Empresa",
+    "Código", "Descripción", "Centro", "Almacén", "Cantidad SAP", "Lote", "Tipo Material", "Fecha SAP", "Empresa",
     "Zona", "Stock físico", "Reservado", "Disponible", "Fecha Data"
   ];
 
