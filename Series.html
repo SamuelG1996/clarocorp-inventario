@@ -399,68 +399,65 @@ async function procesarExcelSeries(file) {
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(sheet);
 
-    let exitos = 0, fallos = 0;
+    const ESTADOS_VALIDOS = ["INSTALADO", "DISPONIBLE", "RESERVADO", "FACTURAR", "TRASPASO", "DEVOLUCION", "SPARE"];
+    const registrosValidos = [];
+    let fallos = 0;
 
     for (const fila of data) {
       const estado = (fila['Estado Contrata'] || '').toUpperCase();
-
-      const ESTADOS_VALIDOS = ["INSTALADO", "DISPONIBLE", "RESERVADO", "FACTURAR", "TRASPASO", "DEVOLUCION", "SPARE", "STOCK MINIMO"];
-
       if (!ESTADOS_VALIDOS.includes(estado)) {
         fallos++;
-        continue; // ❌ Ignorar el registro si no es un estado válido
+        continue;
       }
-      
-      const campos = {
+
+      // Validaciones
+      if (['INSTALADO', 'RESERVADO'].includes(estado)) {
+        if (!fila.SOT || !fila.Cliente || fila.Cliente.toString().trim() === '') {
+          fallos++;
+          continue;
+        }
+      }
+
+      if (['DEVOLUCION', 'TRASPASO'].includes(estado)) {
+        if (!fila['ID Devolución/Traspaso'] || fila['ID Devolución/Traspaso'].toString().trim() === '') {
+          fallos++;
+          continue;
+        }
+      }
+
+      registrosValidos.push({
+        codigo: fila.Código,
+        centro: fila.Centro,
+        almacen: fila['Almacén'],
+        lote: fila.Lote,
+        nro_serie: fila['N° Serie'],
         estado_contrata: estado,
         proyecto_sot: fila.SOT || '-',
         cliente: (fila.Cliente || '-').toString().trim(),
         id_devolucion: fila['ID Devolución/Traspaso'] || '-',
-        fecha_estado_contrata: new Date().toISOString().split('T')[0], // ✅ Fecha actual
-        comentario_contrata: fila['Comentario Contrata'] || '-',
-        estado_soporte: fila['Estado Soporte'] || '-',
-        comentario_soporte: fila['Comentario Soporte'] || '-'
+        fecha_estado_contrata: new Date().toISOString().split('T')[0],
+        comentario_contrata: fila['Comentario Contrata'] || '-'
+      });
+    }
 
-      };
-
-      // Validaciones
-       if (['INSTALADO', 'RESERVADO'].includes(estado)) {
-        if (!fila.SOT || !fila.Cliente || fila.Cliente.toString().trim() === '') { 
-          fallos++; 
-          continue; 
-        }
-      }
-      
-      if (['DEVOLUCION', 'TRASPASO'].includes(estado)) {
-        if (!fila['ID Devolución/Traspaso'] || fila['ID Devolución/Traspaso'].toString().trim() === '') { 
-          fallos++; 
-          continue; 
-        }
-      }
-
-      // Actualizar en Supabase
-      const { error } = await supabase
-        .from('series_contrata')
-        .update(campos)
-        .eq('codigo', fila.Código)
-        .eq('centro', fila.Centro)
-        .eq('almacen', fila['Almacén'])
-        .eq('lote', fila.Lote)
-        .eq('nro_serie', fila['N° Serie']);
+    let exitos = 0;
+    if (registrosValidos.length > 0) {
+      const { error } = await supabase.rpc('actualizar_series_masivo', {
+        registros: registrosValidos
+      });
 
       if (error) {
-        console.error("Error:", error);
-        fallos++;
+        console.error("Error RPC:", error);
+        fallos += registrosValidos.length;
       } else {
-        exitos++;
+        exitos = registrosValidos.length;
       }
     }
 
-    // Mostrar resultado
     Swal.fire({
       icon: 'info',
       title: 'Carga finalizada',
-      html: `✅ Registros actualizados: <b>${exitos}</b><br>❌ Registros omitidos por error o validación: <b>${fallos}</b>`,
+      html: `✅ Registros actualizados: <b>${exitos}</b><br>❌ Registros fallidos: <b>${fallos}</b>`,
       toast: true,
       position: 'bottom-end',
       showConfirmButton: false,
@@ -471,9 +468,9 @@ async function procesarExcelSeries(file) {
       iconColor: '#f39c12'
     });
 
-    // Refrescar la vista
     cargarSeries(filtroActual, paginaActual);
   };
+
   reader.readAsBinaryString(file);
 }
 </script>
@@ -707,7 +704,7 @@ async function actualizarSAPSeries() {
   <script>
 function abrirDialogoSAPSeries() {
   Swal.fire({
-    title: 'Carga SAP',
+    title: 'Actualizacion de Estados',
     text: '¿Qué deseas hacer?',
     icon: 'question',
     background: '#1e2022',
