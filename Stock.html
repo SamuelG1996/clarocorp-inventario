@@ -260,7 +260,7 @@ if (rolUsuario === "Contratista") {
 if (filtro.trim() !== "") {
   const like = `%${filtro}%`;
   query = query.or(
-    `codigo.ilike.${like},descripcion.ilike.${like},almacen.ilike.${like},zona.ilike.${like},empresa.ilike.${like}`
+    `codigo.ilike.${like},descripcion.ilike.${like},centro.ilike.${like},almacen.ilike.${like},zona.ilike.${like},empresa.ilike.${like}`
   );
 }
   const { data, error, count } = await query;
