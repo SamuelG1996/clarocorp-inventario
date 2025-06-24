@@ -277,6 +277,7 @@ td:nth-child(3),  /* Centro */
 td:nth-child(4),  /* Almacén */
 td:nth-child(5),  /* Cantidad */
 td:nth-child(8),  /* Empresa */
+td:nth-child(9),  /* Zona */
 td:nth-child(10), /* Stock físico */
 td:nth-child(11), /* Reservado */
 td:nth-child(12)  /* Disponible */ {
