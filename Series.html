@@ -404,7 +404,7 @@ async function procesarExcelSeries(file) {
     for (const fila of data) {
       const estado = (fila['Estado Contrata'] || '').toUpperCase();
 
-      const ESTADOS_VALIDOS = ["INSTALADO", "DISPONIBLE", "RESERVADO", "FACTURAR", "TRASPASO", "DEVOLUCION"];
+      const ESTADOS_VALIDOS = ["INSTALADO", "DISPONIBLE", "RESERVADO", "FACTURAR", "TRASPASO", "DEVOLUCION", "SPARE", "STOCK MINIMO"];
 
       if (!ESTADOS_VALIDOS.includes(estado)) {
         fallos++;
