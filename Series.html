@@ -728,9 +728,9 @@ function abrirDialogoSAPSeries() {
     background: '#1e2022',
     color: '#ffffff',
     iconColor: '#f39c12',
-    showCancelButton: true,
-    showDenyButton: true,
     confirmButtonText: 'Subir carga',
+    showDenyButton: true,
+    showCancelButton: true,
     denyButtonText: 'Descargar plantilla',
     cancelButtonText: 'Cancelar',
     reverseButtons: true
@@ -738,12 +738,12 @@ function abrirDialogoSAPSeries() {
     if (result.isConfirmed) {
       actualizarSAPSeries();
     } else if (result.isDenied) {
-      descargarPlantillaSAPSeries();
+      descargarPlantillaEstadoSoporte();
     }
   });
 }
 
-function descargarPlantillaSAPSeries() {
+function descargarPlantillaEstadoSoporte() {
   const datos = [
     {
       "Código": "",
@@ -751,17 +751,17 @@ function descargarPlantillaSAPSeries() {
       "Almacén": "",
       "Lote": "",
       "N° Serie": "",
-      "Fecha Ingreso": "",
-      "Fecha Compra": ""
+      "Estado Soporte": "",
+      "Comentario Soporte": ""
     }
   ];
 
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.json_to_sheet(datos, { header: [
-    "Código", "Centro", "Almacén", "Lote", "N° Serie", "Fecha Ingreso", "Fecha Compra"
+    "Código", "Centro", "Almacén", "Lote", "N° Serie", "Estado Soporte", "Comentario Soporte"
   ]});
-  XLSX.utils.book_append_sheet(wb, ws, "Plantilla SAP Series");
-  XLSX.writeFile(wb, "Plantilla_SAP_Series.xlsx");
+  XLSX.utils.book_append_sheet(wb, ws, "Plantilla Estado Soporte");
+  XLSX.writeFile(wb, "Plantilla_Estado_Soporte.xlsx");
 }
 </script>
 <script>
