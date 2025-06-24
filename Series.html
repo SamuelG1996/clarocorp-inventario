@@ -478,7 +478,25 @@ async function procesarExcelSeries(file) {
   
 <script>
 function mostrarMenuCarga() {
-  document.getElementById('excelInput').click();
+  Swal.fire({
+    title: 'Carga de series',
+    text: '¿Qué deseas hacer?',
+    icon: 'question',
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: 'Subir carga',
+    denyButtonText: 'Descargar plantilla',
+    cancelButtonText: 'Cancelar',
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      document.getElementById('excelInput').click();
+    } else if (result.isDenied) {
+      generarPlantillaSeries();
+    }
+  });
 }
 
 function confirmarCargaExcel(file) {
@@ -746,6 +764,27 @@ function descargarPlantillaSAPSeries() {
   XLSX.writeFile(wb, "Plantilla_SAP_Series.xlsx");
 }
 </script>
+<script>
+  function generarPlantillaSeries() {
+  const datos = [{
+    "Código": "",
+    "Centro": "",
+    "Almacén": "",
+    "Lote": "",
+    "N° Serie": "",
+    "Estado Contrata": "",
+    "SOT": "",
+    "Cliente": "",
+    "ID Devolución/Traspaso": "",
+    "Comentario Contrata": ""
+  }];
+  
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(datos, { header: Object.keys(datos[0]) });
+  XLSX.utils.book_append_sheet(wb, ws, "Plantilla_Series");
+  XLSX.writeFile(wb, "Plantilla_Carga_Series.xlsx");
+}
+  </script>
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
 </body>
