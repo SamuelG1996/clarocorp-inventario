@@ -38,6 +38,10 @@
       <button class="btn btn-warning" onclick="alternarOrdenCompra()">
       <i class="fas fa-sort-amount-down"></i> Ordenar por Antiguamiento Compra
       </button>
+
+      <button onclick="ordenarPorEmpresa()">
+      <i class="fas fa-building"></i> Borrar Filtro
+      </button>
       
       <button onclick="abrirDialogoSAPSeries()">
       <i class="fas fa-sync-alt"></i> Actualizar SAP
@@ -231,15 +235,13 @@ function filtrarTabla() {
 
 
     function alternarOrden() {
-  const boton = document.querySelector("button[onclick='alternarOrden()']");
-
-  if (modoOrden === 'empresa') {
     modoOrden = 'antiguamiento';
-    boton.innerHTML = '<i class="fas fa-sort-amount-down-alt"></i> Ordenar por Empresa';
-
+    const boton = document.querySelector("button[onclick='alternarOrden()']");
+    boton.innerHTML = '<i class="fas fa-sort-amount-down"></i> Ordenado por antigüedad';
+  
     Swal.fire({
       icon: 'info',
-      title: 'Ahora ordenando por antigüedad',
+      title: 'Ordenando por antigüedad',
       text: 'Los equipos más antiguos aparecerán primero.',
       toast: true,
       position: 'bottom-end',
@@ -250,28 +252,9 @@ function filtrarTabla() {
       color: '#ffffff',
       iconColor: '#f39c12'
     });
-
-  } else {
-    modoOrden = 'empresa';
-    boton.innerHTML = '<i class="fas fa-sort-amount-down-alt"></i> Ordenar por Antiguamiento';
-
-    Swal.fire({
-      icon: 'info',
-      title: 'Ahora ordenando por empresa',
-      text: 'Las series se mostrarán agrupadas por contratista.',
-      toast: true,
-      position: 'bottom-end',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      background: '#1e2022',
-      color: '#ffffff',
-      iconColor: '#f39c12'
-    });
+  
+    cargarSeries(filtroActual, 0);
   }
-
-  cargarSeries(filtroActual, 0);
-}
   </script>
   
   <script>
@@ -295,7 +278,28 @@ function filtrarTabla() {
   cargarSeries(filtroActual, 0); // Recarga la tabla desde la página 0
 }
   </script>
+  
+  <script>
+    function ordenarPorEmpresa() {
+    modoOrden = 'empresa';
+    Swal.fire({
+      icon: 'info',
+      title: 'Limpiando Filtros',
+      text: 'Las series se agruparán por contratista.',
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
+    });
+    cargarSeries(filtroActual, 0);
+  }
+  <script>
 
+  
   <script>
 async function descargarExcelSeries() {
   mostrarLoader(); // 👈 Mostrar
