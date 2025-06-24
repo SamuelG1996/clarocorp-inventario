@@ -67,6 +67,7 @@
             <th>Lote</th>
             <th>N° Serie</th>
             <th>Empresa</th>
+            <th>Tipo Material</th>
             <th>Fecha Ingreso</th>
             <th>Antiguamiento</th>
             <th>Fecha Compra</th>
@@ -197,6 +198,7 @@ if (modoOrden === 'empresa') {
   <td>${serie.lote || ''}</td>
   <td>${serie.nro_serie || ''}</td>
   <td>${serie.empresa || ''}</td>
+  <td>${serie.tipo_material || '-'}</td>
   <td>${formatearFechaSegura(serie.fecha_ingreso)}</td>
   <td class="${claseColor}">${diasAntiguos !== null ? diasAntiguos + ' días' : ''}</td>
   <td>${formatearFechaSegura(serie.fecha_compra)}</td>
@@ -346,6 +348,7 @@ async function descargarExcelSeries() {
       Lote: serie.lote,
       "N° Serie": serie.nro_serie,
       Empresa: serie.empresa,
+      "Tipo Material": serie.tipo_material || '',
       "Fecha Ingreso": formatearFechaSegura(serie.fecha_ingreso),
       Antiguamiento: calcularAntiguamiento(serie.fecha_ingreso) + ' días',
       "Fecha Compra": formatearFechaSegura(serie.fecha_compra),
