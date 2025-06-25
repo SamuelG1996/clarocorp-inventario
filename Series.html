@@ -827,7 +827,7 @@ async function procesarCargaSoporte(file) {
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(sheet);
 
-    const ESTADOS_SOPORTE_VALIDOS = ["PENDIENTE", "OBSERVADO", "VALIDADO", "RECHAZADO"];
+    const ESTADOS_SOPORTE_VALIDOS = ["PENDIENTE", "OBSERVADO", "VALIDADO", "RECHAZADO", "EN REVISION", "FALTANTE"];
     const registrosValidos = [];
     let fallos = 0;
 
