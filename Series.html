@@ -450,17 +450,18 @@ async function procesarExcelSeries(file) {
 
     let exitos = 0;
     if (registrosValidos.length > 0) {
-      const { error } = await supabase.rpc('actualizar_series_masivo', {
-        registros: registrosValidos
-      });
+ const { data, error } = await supabase.rpc('actualizar_series_masivo', {
+  registros: registrosValidos
+});
 
-      if (error) {
-        console.error("Error RPC:", error);
-        fallos += registrosValidos.length;
-      } else {
-        exitos = registrosValidos.length;
-      }
-    }
+if (error) {
+  console.error("Error RPC:", error);
+  fallos += registrosValidos.length;
+} else {
+  const actualizados = data.actualizados || 0;
+  exitos = actualizados;
+  fallos += registrosValidos.length - actualizados;
+}
 
     Swal.fire({
       icon: 'info',
