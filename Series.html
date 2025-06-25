@@ -118,6 +118,12 @@ function formatearFechaSegura(fechaString) {
   if (dias > 180) return 'naranja-suave';
   return 'verde-suave';
 }
+
+  function obtenerFechaLocalISO() {
+  const fecha = new Date();
+  fecha.setMinutes(fecha.getMinutes() - fecha.getTimezoneOffset()); // corrige UTC ↔ local
+  return fecha.toISOString().split('T')[0];
+}
 </script>
   
 <script>
@@ -361,7 +367,9 @@ async function descargarExcelSeries() {
       "Comentario Contrata": serie.comentario_contrata,
       "Estado Soporte": serie.estado_soporte,
       "Comentario Soporte": serie.comentario_soporte,
-      "Fecha Estado Soporte": formatearFechaSegura(serie.fecha_estado_soporte)
+      "Fecha Estado Soporte": formatearFechaSegura(serie.fecha_estado_soporte),
+      "Estado Conciliación": serie.estado_conciliacion || '-',
+      "Subestado Conciliación": serie.subestado_conciliacion || '-'
     }));
 
     const wb = XLSX.utils.book_new();
@@ -435,7 +443,7 @@ async function procesarExcelSeries(file) {
         proyecto_sot: fila.SOT || '-',
         cliente: (fila.Cliente || '-').toString().trim(),
         id_devolucion: fila['ID Devolución/Traspaso'] || '-',
-        fecha_estado_contrata: new Date().toISOString().split('T')[0],
+        fecha_estado_contrata: obtenerFechaLocalISO(),
         comentario_contrata: fila['Comentario Contrata'] || '-'
       });
     }
@@ -513,6 +521,24 @@ function confirmarCargaExcel(file) {
   }).then((result) => {
     if (result.isConfirmed) {
       procesarExcelSeries(file);
+    }
+  });
+}
+
+  function confirmarCargaSoporte(file) {
+  Swal.fire({
+    title: '¿Deseas actualizar los campos de soporte?',
+    text: 'Se modificarán los datos seleccionados.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, actualizar',
+    cancelButtonText: 'Cancelar',
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      procesarCargaSoporte(file);
     }
   });
 }
@@ -722,21 +748,25 @@ async function actualizarSAPSeries() {
   <script>
 function abrirDialogoSAPSeries() {
   Swal.fire({
-    title: 'Actualizacion de Estados',
+    title: 'Actualización Estado Soporte',
     text: '¿Qué deseas hacer?',
     icon: 'question',
     background: '#1e2022',
     color: '#ffffff',
     iconColor: '#f39c12',
-    confirmButtonText: 'Subir carga',
     showDenyButton: true,
     showCancelButton: true,
+    confirmButtonText: 'Subir carga',
     denyButtonText: 'Descargar plantilla',
     cancelButtonText: 'Cancelar',
-    reverseButtons: true
+    reverseButtons: false
   }).then((result) => {
     if (result.isConfirmed) {
-      actualizarSAPSeries();
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.xlsx';
+      input.onchange = () => confirmarCargaSoporte(input.files[0]);
+      input.click();
     } else if (result.isDenied) {
       descargarPlantillaEstadoSoporte();
     }
@@ -752,13 +782,15 @@ function descargarPlantillaEstadoSoporte() {
       "Lote": "",
       "N° Serie": "",
       "Estado Soporte": "",
-      "Comentario Soporte": ""
+      "Comentario Soporte": "",
+      "Estado Conciliación": "",
+      "Subestado Conciliación": ""
     }
   ];
 
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.json_to_sheet(datos, { header: [
-    "Código", "Centro", "Almacén", "Lote", "N° Serie", "Estado Soporte", "Comentario Soporte"
+    "Código", "Centro", "Almacén", "Lote", "N° Serie", "Estado Soporte", "Comentario Soporte", "Estado Conciliación", "Subestado Conciliación"
   ]});
   XLSX.utils.book_append_sheet(wb, ws, "Plantilla Estado Soporte");
   XLSX.writeFile(wb, "Plantilla_Estado_Soporte.xlsx");
@@ -785,8 +817,83 @@ function descargarPlantillaEstadoSoporte() {
   XLSX.writeFile(wb, "Plantilla_Estado_Series.xlsx");
 }
   </script>
+<script>
+async function procesarCargaSoporte(file) {
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const workbook = XLSX.read(e.target.result, { type: 'binary' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const data = XLSX.utils.sheet_to_json(sheet);
+
+    const ESTADOS_SOPORTE_VALIDOS = ["PENDIENTE", "OBSERVADO", "VALIDADO", "RECHAZADO"];
+    const registrosValidos = [];
+    let fallos = 0;
+
+    for (const fila of data) {
+      // Validación básica de clave
+      if (!fila['Código'] || !fila['Centro'] || !fila['Almacén'] || !fila['N° Serie']) {
+        fallos++;
+        continue;
+      }
+
+      let estadoSoporte = (fila['Estado Soporte'] || 'PENDIENTE').toUpperCase();
+
+      if (!ESTADOS_SOPORTE_VALIDOS.includes(estadoSoporte)) {
+        fallos++;
+        continue;
+      }
+
+      registrosValidos.push({
+        codigo: fila['Código'],
+        centro: fila['Centro'],
+        almacen: fila['Almacén'],
+        lote: fila['Lote'] || '-',
+        nro_serie: fila['N° Serie'],
+        estado_soporte: fila['Estado Soporte'] || '-',
+        comentario_soporte: fila['Comentario Soporte'] || '-',
+        fecha_estado_soporte: obtenerFechaLocalISO(),
+        estado_conciliacion: fila['Estado Conciliación'] || '-',
+        subestado_conciliacion: fila['Subestado Conciliación'] || '-'
+      });
+    }
+
+    let exitos = 0;
+
+    if (registrosValidos.length > 0) {
+      const { error } = await supabase.rpc('actualizar_estado_soporte', {
+        registros: registrosValidos
+      });
+
+      if (error) {
+        console.error("Error RPC:", error);
+        fallos += registrosValidos.length;
+      } else {
+        exitos = registrosValidos.length;
+      }
+    }
+
+    Swal.fire({
+      icon: 'info',
+      title: 'Carga finalizada',
+      html: `✅ Registros actualizados: <b>${exitos}</b><br>❌ Registros fallidos: <b>${fallos}</b>`,
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 5000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
+    });
+
+    cargarSeries(filtroActual, paginaActual);
+  };
+
+  reader.readAsBinaryString(file);
+}
+</script>
+  
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
 </body>
 </html>
-
