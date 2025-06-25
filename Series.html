@@ -399,90 +399,91 @@ async function descargarExcelSeries() {
 }
   </script>
   
-<script>
-async function procesarExcelSeries(file) {
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    const workbook = XLSX.read(e.target.result, { type: 'binary' });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(sheet);
-
-    const ESTADOS_VALIDOS = ["INSTALADO", "DISPONIBLE", "RESERVADO", "FACTURAR", "TRASPASO", "DEVOLUCION", "SPARE", "BAJA", "STOCK MINIMO"];
-    const registrosValidos = [];
-    let fallos = 0;
-
-    for (const fila of data) {
-      const estado = (fila['Estado Contrata'] || '').toUpperCase();
-      if (!ESTADOS_VALIDOS.includes(estado)) {
-        fallos++;
-        continue;
-      }
-
-      // Validaciones
-      if (['INSTALADO', 'RESERVADO'].includes(estado)) {
-        if (!fila.SOT || !fila.Cliente || fila.Cliente.toString().trim() === '') {
+  <script>
+  async function procesarExcelSeries(file) {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const workbook = XLSX.read(e.target.result, { type: 'binary' });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const data = XLSX.utils.sheet_to_json(sheet);
+  
+      const ESTADOS_VALIDOS = ["INSTALADO", "DISPONIBLE", "RESERVADO", "FACTURAR", "TRASPASO", "DEVOLUCION", "SPARE", "BAJA", "STOCK MINIMO"];
+      const registrosValidos = [];
+      let fallos = 0;
+  
+      for (const fila of data) {
+        const estado = (fila['Estado Contrata'] || '').toUpperCase();
+        if (!ESTADOS_VALIDOS.includes(estado)) {
           fallos++;
           continue;
         }
-      }
-
-      if (['DEVOLUCION', 'TRASPASO'].includes(estado)) {
-        if (!fila['ID Devolución/Traspaso'] || fila['ID Devolución/Traspaso'].toString().trim() === '') {
-          fallos++;
-          continue;
+  
+        // Validaciones
+        if (['INSTALADO', 'RESERVADO'].includes(estado)) {
+          if (!fila.SOT || !fila.Cliente || fila.Cliente.toString().trim() === '') {
+            fallos++;
+            continue;
+          }
         }
+  
+        if (['DEVOLUCION', 'TRASPASO'].includes(estado)) {
+          if (!fila['ID Devolución/Traspaso'] || fila['ID Devolución/Traspaso'].toString().trim() === '') {
+            fallos++;
+            continue;
+          }
+        }
+  
+        registrosValidos.push({
+          codigo: fila.Código,
+          centro: fila.Centro,
+          almacen: fila['Almacén'],
+          lote: fila.Lote,
+          nro_serie: fila['N° Serie'],
+          estado_contrata: estado,
+          proyecto_sot: fila.SOT || '-',
+          cliente: (fila.Cliente || '-').toString().trim(),
+          id_devolucion: fila['ID Devolución/Traspaso'] || '-',
+          fecha_estado_contrata: obtenerFechaLocalISO(),
+          comentario_contrata: fila['Comentario Contrata'] || '-'
+        });
       }
-
-      registrosValidos.push({
-        codigo: fila.Código,
-        centro: fila.Centro,
-        almacen: fila['Almacén'],
-        lote: fila.Lote,
-        nro_serie: fila['N° Serie'],
-        estado_contrata: estado,
-        proyecto_sot: fila.SOT || '-',
-        cliente: (fila.Cliente || '-').toString().trim(),
-        id_devolucion: fila['ID Devolución/Traspaso'] || '-',
-        fecha_estado_contrata: obtenerFechaLocalISO(),
-        comentario_contrata: fila['Comentario Contrata'] || '-'
-      });
+  
+      let exitos = 0;
+      if (registrosValidos.length > 0) {
+   const { data, error } = await supabase.rpc('actualizar_series_masivo', {
+    registros: registrosValidos
+  });
+  
+  if (error) {
+    console.error("Error RPC:", error);
+    fallos += registrosValidos.length;
+  } else {
+    const actualizados = data.actualizados || 0;
+    exitos = actualizados;
+    fallos += registrosValidos.length - actualizados;
     }
-
-    let exitos = 0;
-    if (registrosValidos.length > 0) {
- const { data, error } = await supabase.rpc('actualizar_series_masivo', {
-  registros: registrosValidos
-});
-
-if (error) {
-  console.error("Error RPC:", error);
-  fallos += registrosValidos.length;
-} else {
-  const actualizados = data.actualizados || 0;
-  exitos = actualizados;
-  fallos += registrosValidos.length - actualizados;
-}
-
-    Swal.fire({
-      icon: 'info',
-      title: 'Carga finalizada',
-      html: `✅ Registros actualizados: <b>${exitos}</b><br>❌ Registros fallidos: <b>${fallos}</b>`,
-      toast: true,
-      position: 'bottom-end',
-      showConfirmButton: false,
-      timer: 5000,
-      timerProgressBar: true,
-      background: '#1e2022',
-      color: '#ffffff',
-      iconColor: '#f39c12'
-    });
-
-    cargarSeries(filtroActual, paginaActual);
-  };
-
-  reader.readAsBinaryString(file);
-}
-</script>
+  }
+  
+      Swal.fire({
+        icon: 'info',
+        title: 'Carga finalizada',
+        html: `✅ Registros actualizados: <b>${exitos}</b><br>❌ Registros fallidos: <b>${fallos}</b>`,
+        toast: true,
+        position: 'bottom-end',
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true,
+        background: '#1e2022',
+        color: '#ffffff',
+        iconColor: '#f39c12'
+      });
+  
+      cargarSeries(filtroActual, paginaActual);
+    };
+  
+    reader.readAsBinaryString(file);
+  }
+  </script>
 
   
 <script>
