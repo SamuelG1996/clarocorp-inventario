@@ -860,16 +860,16 @@ async function procesarCargaSoporte(file) {
     let exitos = 0;
 
     if (registrosValidos.length > 0) {
-      const { error } = await supabase.rpc('actualizar_estado_soporte', {
-        registros: registrosValidos
-      });
-
-      if (error) {
-        console.error("Error RPC:", error);
-        fallos += registrosValidos.length;
-      } else {
-        exitos = registrosValidos.length;
-      }
+          const { data, error } = await supabase.rpc('actualizar_estado_soporte', { registros: registrosValidos });
+    
+    if (error) {
+      console.error("Error RPC:", error);
+      fallos += registrosValidos.length;
+    } else {
+      const actualizados = data.actualizados || 0;
+      exitos = actualizados;
+      fallos += registrosValidos.length - actualizados;
+    }
     }
 
     Swal.fire({
