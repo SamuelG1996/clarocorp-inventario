@@ -434,11 +434,11 @@ async function descargarExcelSeries() {
         }
   
         registrosValidos.push({
-          codigo: fila.Código,
-          centro: fila.Centro,
-          almacen: fila['Almacén'],
-          lote: fila.Lote,
-          nro_serie: fila['N° Serie'],
+           codigo: (fila.Código || '').toString().trim().toUpperCase(),
+          centro: (fila.Centro || '').toString().trim().toUpperCase(),
+          almacen: (fila['Almacén'] || '').toString().trim().toUpperCase(),
+          lote: (fila.Lote || '').toString().trim().toUpperCase(),
+          nro_serie: (fila['N° Serie'] || '').toString().trim().toUpperCase(),
           estado_contrata: estado,
           proyecto_sot: fila.SOT || '-',
           cliente: (fila.Cliente || '-').toString().trim(),
