@@ -46,6 +46,9 @@
       <button onclick="abrirDialogoSAPSeries()">
       <i class="fas fa-sync-alt"></i> Actualizar Estados Soporte
       </button>
+      
+      <button onclick="probarNotificador()">Notificacion</button>
+      
     </div>
       <div class="search-bar-paginacion">
   <input type="text" id="searchInput" placeholder="Buscar por código, descripción o serie..." oninput="filtrarTabla()"/>
@@ -894,6 +897,52 @@ async function procesarCargaSoporte(file) {
   reader.readAsBinaryString(file);
 }
 </script>
+
+<script>
+  async function probarNotificador() {
+    try {
+      const respuesta = await fetch("https://notificador-series.onrender.com/enviar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          centro: "P4B6" // Puedes cambiar esto por otro centro válido
+        })
+      });
+
+      const resultado = await respuesta.json();
+      console.log("✅ Resultado:", resultado);
+
+      Swal.fire({
+        icon: "success",
+        title: "Correo enviado correctamente",
+        text: resultado.mensaje,
+        background: "#1e2022",
+        color: "#fff",
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        position: "bottom-end"
+      });
+
+    } catch (error) {
+      console.error("❌ Error al enviar:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error al contactar al notificador",
+        text: error.message,
+        background: "#1e2022",
+        color: "#fff",
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        position: "bottom-end"
+      });
+    }
+  }
+</script>
+  
   
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
