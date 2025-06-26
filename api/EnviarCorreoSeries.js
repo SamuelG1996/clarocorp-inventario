@@ -3,7 +3,7 @@ const router = express.Router();
 const resend = require("resend");
 const { createTablaHTMLSeries } = require("./utilsSeries");
 
-const resendClient = new resend.Resend("TU_API_KEY_RENDIMIENTO");
+const resendClient = new resend.Resend("re_dHbT7BFx_LTwQP6eqY86nGCY29NPTGYJk");
 
 router.post("/api/notificarSeries", async (req, res) => {
   try {
