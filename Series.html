@@ -902,59 +902,72 @@ async function procesarCargaSoporte(file) {
 </script>
 
 <script>
- async function probarNotificador() {
-  mostrarLoader(); // 🔄 Muestra el loader
+  async function probarNotificador() {
+    // ✅ Pequeño delay para evitar bloqueo de render visual
+    setTimeout(() => mostrarLoader(), 10); 
 
-  try {
-    const respuesta = await fetch("https://notificador-series.onrender.com/api/utilsSeries", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        centro: "P4B6" // Puedes ajustar si quieres hacerlo dinámico
-      })
-    });
+    let loaderDesactivado = false;
 
-    if (!respuesta.ok) {
-      const errorText = await respuesta.text();
-      throw new Error(`HTTP ${respuesta.status}: ${errorText}`);
+    const ocultarSiNoSeCierra = setTimeout(() => {
+      if (!loaderDesactivado) {
+        ocultarLoader();
+        console.warn("⏱️ Timeout forzado del loader");
+      }
+    }, 10000); // Si en 10s no termina, forzamos cierre del loader
+
+    try {
+      const respuesta = await fetch("https://notificador-series.onrender.com/api/utilsSeries", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          centro: "P4B6"
+        })
+      });
+
+      if (!respuesta.ok) {
+        const errorText = await respuesta.text();
+        throw new Error(`HTTP ${respuesta.status}: ${errorText}`);
+      }
+
+      const resultado = await respuesta.json();
+      console.log("✅ Resultado:", resultado);
+
+      Swal.fire({
+        icon: "success",
+        title: "Correos enviados correctamente",
+        text: resultado.message,
+        background: "#1e2022",
+        color: "#fff",
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        position: "bottom-end",
+        iconColor: "#f39c12"
+      });
+
+    } catch (error) {
+      console.error("❌ Error al enviar:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error al contactar con el sistema",
+        text: error.message,
+        background: "#1e2022",
+        color: "#fff",
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        position: "bottom-end",
+        iconColor: "#f39c12"
+      });
+
+    } finally {
+      ocultarLoader();
+      loaderDesactivado = true;
+      clearTimeout(ocultarSiNoSeCierra);
     }
-
-    const resultado = await respuesta.json();
-    console.log("✅ Resultado:", resultado);
-
-    Swal.fire({
-      icon: "success",
-      title: "Correos enviados correctamente",
-      text: resultado.message,
-      background: "#1e2022",
-      color: "#fff",
-      timer: 3000,
-      timerProgressBar: true,
-      showConfirmButton: false,
-      position: "bottom-end",
-      iconColor: "#f39c12"
-    });
-
-  } catch (error) {
-    console.error("❌ Error al enviar:", error);
-    Swal.fire({
-      icon: "error",
-      title: "Error al contactar con el sistema",
-      text: error.message,
-      background: "#1e2022",
-      color: "#fff",
-      timer: 3000,
-      timerProgressBar: true,
-      showConfirmButton: false,
-      position: "bottom-end",
-      iconColor: "#f39c12"
-    });
-  } finally {
-    ocultarLoader(); // ✅ Oculta el loader pase lo que pase
   }
-}
 </script>
 
   <script src="Js/Loader.js"></script>
