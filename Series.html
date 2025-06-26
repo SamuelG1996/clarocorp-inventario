@@ -349,6 +349,23 @@ async function descargarExcelSeries() {
       return;
     }
 
+
+    const preciosMaterial = {};
+
+for (const serie of allData) {
+  if (!preciosMaterial[serie.codigo]) {
+    const { data: resultado } = await supabase
+      .from('material_precios')
+      .select('precio')
+      .eq('material', serie.codigo)
+      .order('fecha_data', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    preciosMaterial[serie.codigo] = resultado?.precio ?? 0; // ✅ Valor seguro
+  }
+}
+
     const datos = allData.map(serie => ({
       Código: serie.codigo,
       Descripción: serie.descripcion,
@@ -358,6 +375,7 @@ async function descargarExcelSeries() {
       "N° Serie": serie.nro_serie,
       Empresa: serie.empresa,
       "Tipo Material": serie.tipo_material || '',
+      "Valor": preciosMaterial[serie.codigo],
       "Fecha Ingreso": formatearFechaSegura(serie.fecha_ingreso),
       Antiguamiento: calcularAntiguamiento(serie.fecha_ingreso) + ' días',
       "Fecha Compra": formatearFechaSegura(serie.fecha_compra),
