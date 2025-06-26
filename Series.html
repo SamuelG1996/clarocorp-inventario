@@ -611,10 +611,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const rol = localStorage.getItem("rol");
 
   // Oculta el botón si NO eres Administrador o Soporte
-  if (rol !== "Administrador" && rol !== "Soporte") {
-    const botonSAP = document.querySelector("button[onclick='abrirDialogoSAPSeries()']");
-    if (botonSAP) botonSAP.style.display = "none";
-  }
+if (rol !== "Administrador" && rol !== "Soporte") {
+  const botonSAP = document.querySelector("button[onclick='abrirDialogoSAPSeries()']");
+  if (botonSAP) botonSAP.style.display = "none";
+
+  const botonNotificador = document.querySelector("button[onclick='probarNotificador()']");
+  if (botonNotificador) botonNotificador.style.display = "none";
+}
 
   document.getElementById("searchInput").value = "";
   cargarSeries('');
