@@ -901,7 +901,7 @@ async function procesarCargaSoporte(file) {
 <script>
   async function probarNotificador() {
     try {
-      const respuesta = await fetch("https://notificador-series.onrender.com/enviar", {
+      const respuesta = await fetch("https://notificador-series.onrender.com/api/utilsSeries", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
