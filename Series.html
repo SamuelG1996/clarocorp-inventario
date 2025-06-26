@@ -349,22 +349,31 @@ async function descargarExcelSeries() {
       return;
     }
 
-
-    const preciosMaterial = {};
-
-for (const serie of allData) {
-  if (!preciosMaterial[serie.codigo]) {
-    const { data: resultado } = await supabase
+    // Paso 1: Obtener todos los códigos únicos
+    const codigosUnicos = [...new Set(allData.map(s => s.codigo).filter(Boolean))];
+    
+    // Paso 2: Obtener todos los precios de esos códigos en una sola consulta
+    const { data: preciosCrudos, error: errorPrecios } = await supabase
       .from('material_precios')
-      .select('precio')
-      .eq('material', serie.codigo)
-      .order('fecha_data', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    preciosMaterial[serie.codigo] = resultado?.precio ?? 0; // ✅ Valor seguro
-  }
-}
+      .select('material, precio, fecha_data')
+      .in('material', codigosUnicos);
+    
+    if (errorPrecios) {
+      console.error("❌ Error al consultar precios:", errorPrecios);
+    }
+    
+    // Paso 3: Elegir el precio más reciente por código
+    const preciosMaterial = {};
+    
+    (preciosCrudos || []).forEach(p => {
+      const actual = preciosMaterial[p.material];
+      if (!actual || new Date(p.fecha_data) > new Date(actual.fecha_data)) {
+        preciosMaterial[p.material] = {
+          precio: Number(p.precio) || 0,
+          fecha_data: p.fecha_data
+        };
+      }
+    });
 
     const datos = allData.map(serie => ({
       Código: serie.codigo,
@@ -375,7 +384,7 @@ for (const serie of allData) {
       "N° Serie": serie.nro_serie,
       Empresa: serie.empresa,
       "Tipo Material": serie.tipo_material || '',
-      "Valor": preciosMaterial[serie.codigo],
+      "Valor": preciosMaterial[serie.codigo]?.precio || 0,
       "Fecha Ingreso": formatearFechaSegura(serie.fecha_ingreso),
       Antiguamiento: calcularAntiguamiento(serie.fecha_ingreso) + ' días',
       "Fecha Compra": formatearFechaSegura(serie.fecha_compra),
