@@ -911,13 +911,18 @@ async function procesarCargaSoporte(file) {
         })
       });
 
+      if (!respuesta.ok) {
+        const errorText = await respuesta.text();
+        throw new Error(`HTTP ${respuesta.status}: ${errorText}`);
+      }
+
       const resultado = await respuesta.json();
       console.log("✅ Resultado:", resultado);
 
       Swal.fire({
         icon: "success",
         title: "Correo enviado correctamente",
-        text: resultado.mensaje,
+        text: resultado.message,
         background: "#1e2022",
         color: "#fff",
         timer: 3000,
@@ -942,8 +947,7 @@ async function procesarCargaSoporte(file) {
     }
   }
 </script>
-  
-  
+
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
 </body>
