@@ -926,7 +926,7 @@ async function procesarCargaSoporte(file) {
 
     Swal.fire({
       icon: "success",
-      title: "Correo enviado correctamente",
+      title: "Correos enviados correctamente",
       text: resultado.message,
       background: "#1e2022",
       color: "#fff",
@@ -941,7 +941,7 @@ async function procesarCargaSoporte(file) {
     console.error("❌ Error al enviar:", error);
     Swal.fire({
       icon: "error",
-      title: "Error al contactar al notificador",
+      title: "Error al contactar con el sistema",
       text: error.message,
       background: "#1e2022",
       color: "#fff",
