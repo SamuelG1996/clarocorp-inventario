@@ -9,7 +9,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   const tabla = document.getElementById("tablaComprasBody"); //Antes el ID era stock-body
-    console.log("tabla:", tabla);
+  console.log("tabla encontrada:", tabla);
+
+  if (!tabla) {
+    console.error("❌ El elemento con id 'tablaComprasBody' no se encontró en el DOM.");
+  }
   const inputBuscar = document.getElementById("inputBuscar"); //Antes el ID era searchInput
 
   function filtrarTabla() {
