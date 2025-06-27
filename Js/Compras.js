@@ -62,7 +62,6 @@ async function cargarCompras() {
 
   // 3. Agrupar stock por código y zona (como string)
   const stockPorCodigo = {};
-  console.log("🧠 stockPorCodigo final:", stockPorCodigo);
   if (stockClaro) {
     for (const fila of stockClaro) {
       const codigo = String(fila.codigo).trim();
@@ -78,7 +77,7 @@ async function cargarCompras() {
       }
     }
   }
-
+console.log("🧠 stockPorCodigo generado:", stockPorCodigo);
   // 4. Renderizar la tabla
   tabla.innerHTML = "";
   compras.forEach((item) => {
