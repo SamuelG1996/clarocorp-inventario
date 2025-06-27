@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   const tabla = document.getElementById("tablaComprasBody");
-  const inputBuscar = document.getElementById("searchInput");
+  const inputBuscar = document.getElementById("inputBuscar");
 
   function filtrarTabla() {
     const filtro = inputBuscar.value.toLowerCase();
