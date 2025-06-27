@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Portal Inventario || Compras</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="icon" type="image/x-icon" href="Imagenes/favicon.ico">
+</head>
+  
+<body class="menu-page">
+
+  <div class="sidebar">
+    <div>
+      <div class="logo">
+  	<a href="/Menu" style="text-decoration: none; color: inherit;">Portal Inventario </a>
+      </div>
+      <div class="menu">
+        <a href="/Stock"><i class="fas fa-box"></i> Stock Contrata</a>
+        <a href="#"><i class="fas fa-warehouse"></i> Stock Claro</a>
+        <a href="/Traspaso"><i class="fas fa-sync-alt"></i> Traspasos</a>
+        <a href="/Compras"><i class="fas fa-truck"></i> Compras</a>
+        <a href="#"><i class="fas fa-chart-bar"></i> Reportes</a>
+        <a href="/Perfil"><i class="fas fa-user-tie"></i> Mi Perfil</a>
+      	<a href="/CentroAyuda"><i class="fas fa-question-circle"></i> Soporte</a>
+        <a href="#"><i class="fas fa-gear"></i> Configuración</a>
+      </div>
+    </div>
+    <div class="logout">
+      <a href="/index" onclick="logout()"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </div>
+
+  <div id="loader" class="loader-overlay">
+    <div class="spinner"></div>
+  </div>
+  
+  <div class="content">
+    <div class="encabezado-stock">
+      <h2><i class="fas fa-box-open"></i> Maqueta de Compras Recurrentes</h2>
+      <div class="acciones-tabla">
+        <button onclick="descargarExcel()">Descargar Excel</button>
+      </div>
+    </div>
+<div class="search-bar-paginacion">
+  <input type="text" id="searchInput" placeholder="Buscar por código, descripción, grupo, estado..." oninput="filtrarTabla()">
+</div>
+
+    <div class="tabla-contenedor">
+      <table id="tablaStock">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descripción</th>
+		    <th>Grupo</th>
+            <th>Tipo Compra</th>
+            <th>Proveedor Última Compra</th>
+            <th>Valor Última Compra</th>
+            <th>Consumo Mensual</th>
+            <th>Stock Lima</th>
+            <th>Stock Provincia</th>
+            <th>Cobertura Actual (meses)</th>
+			<th>Compras en curso</th>
+            <th>Cobertura Total (con compras)</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="stock-body"></tbody>
+      </table>
+    </div>
+  </div>
+  <!-- <script src="Compras.js"></script>-->
+  <script src="Js/Loader.js"></script>
+  <script src="Js/Sesion.js"></script>
+</body>
+</html>
