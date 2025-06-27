@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function cargarCompras() {
   mostrarLoader();
 
-  // 1. Obtener tabla de compras
+  // 1. Obtener compras
   const { data: compras, error } = await supabaseClient
     .from("datos_compras_recurrentes")
     .select("*");
@@ -60,13 +60,13 @@ async function cargarCompras() {
     console.error("❌ Error al cargar stock_claro:", errorStock);
   }
 
-  // 3. Agrupar stock por código y zona
+  // 3. Agrupar stock por código y zona (como string)
   const stockPorCodigo = {};
 
   if (stockClaro) {
     for (const fila of stockClaro) {
-      const codigo = fila.codigo;
-      const zona = fila.zona?.toUpperCase() || "";
+      const codigo = String(fila.codigo).trim();
+      const zona = fila.zona?.toUpperCase().trim() || "";
       const cantidad = fila.cantidad_sap || 0;
 
       if (!stockPorCodigo[codigo]) {
@@ -79,19 +79,19 @@ async function cargarCompras() {
     }
   }
 
-  // 4. Renderizar filas en orden exacto de tu tabla
+  // 4. Renderizar la tabla
   tabla.innerHTML = "";
   compras.forEach((item) => {
-    const codigo = item.codigo || "-";
+    const codigo = String(item.codigo).trim();
     const descripcion = item.descripcion || "-";
-    const grupo = item.grupo || "-"; // Tipo Producto
+    const grupo = item.grupo || "-";
     const tipoCompra = item.tipo_compra || "-";
     const proveedor = item.proveedor_ultima_compra || "-";
     const valorCompra = item.valor_ultima_compra || "-";
     const consumo = item.consumo_mensual || "-";
 
-    const stockLima = stockPorCodigo[codigo]?.LIMA || "-";
-    const stockProvincia = stockPorCodigo[codigo]?.PROVINCIA || "-";
+    const stockLima = stockPorCodigo[codigo]?.LIMA ?? "-";
+    const stockProvincia = stockPorCodigo[codigo]?.PROVINCIA ?? "-";
 
     const fila = document.createElement("tr");
     fila.innerHTML = `
@@ -104,10 +104,10 @@ async function cargarCompras() {
       <td>${consumo}</td>
       <td>${stockLima}</td>
       <td>${stockProvincia}</td>
-      <td>-</td> <!-- Cobertura actual -->
-      <td>-</td> <!-- Compras en curso -->
-      <td>-</td> <!-- Cobertura total -->
-      <td>-</td> <!-- Estado -->
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
     `;
     tabla.appendChild(fila);
   });
