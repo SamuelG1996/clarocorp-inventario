@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
 
-  const tabla = document.getElementById("tablaComprasBody");
+  const tabla = document.getElementById("stock-body");
   const inputBuscar = document.getElementById("inputBuscar");
 
   function filtrarTabla() {
