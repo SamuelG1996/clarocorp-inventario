@@ -2,7 +2,9 @@
 
 const excludedPages = [
   "Perfil.html", "Stock.html", "Series.html",
-  "FormularioTraspaso.html", "index.html", "DetalleSolicitud.html", "CentroAyuda.html", "/Perfil", "/Stock", "/Series", "/FormularioTraspaso", "/DetalleSolicitud", "/CentroAyuda"
+  "FormularioTraspaso.html", "index.html", 
+  "DetalleSolicitud.html", "CentroAyuda.html", "/Compras.html", "/Perfil", "/Stock", "/Series", "/FormularioTraspaso", "/DetalleSolicitud", "/CentroAyuda",
+  "/Compras"
 ];
 
 const ENABLE_AUTO_RELOAD_ON_RETURN = !excludedPages.some(page =>
