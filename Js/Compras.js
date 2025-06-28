@@ -60,6 +60,17 @@ async function cargarCompras() {
     console.error("❌ Error al cargar stock_claro:", errorStock);
   }
 
+const { data: productos, error: errorProductos } = await supabaseClient
+  .from("productos")
+  .select("codigo, descripcion");
+
+const descripciones = {};
+if (productos) {
+  for (const prod of productos) {
+    descripciones[String(prod.codigo).trim()] = prod.descripcion;
+  }
+}
+  
   // 3. Agrupar stock por código y zona (como string)
   const stockPorCodigo = {};
   if (stockClaro) {
@@ -87,7 +98,7 @@ console.log("🧠 stockPorCodigo generado:", stockPorCodigo);
   const stockProvincia = stockPorCodigo[codigo]?.PROVINCIA ?? "-";
 
   // Campos reales según tu tabla
-  const descripcion = "-"; // No existe
+  const descripcion = descripciones[codigo] || "-";
   const grupo = item.grupo_material || "-";
   const tipoCompra = item.tipo_compra || "-";
   const proveedor = item.proveedor || "-";
