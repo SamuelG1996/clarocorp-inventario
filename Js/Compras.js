@@ -81,39 +81,37 @@ console.log("🧠 stockPorCodigo generado:", stockPorCodigo);
   // 4. Renderizar la tabla
   tabla.innerHTML = "";
   compras.forEach((item) => {
-    const codigo = String(item.codigo).trim();
-    console.log("🔍 Evaluando código:", codigo);
-    console.log("↪️ Match en stockPorCodigo:", stockPorCodigo[codigo]);
-    console.log("   LIMA:", stockPorCodigo[codigo]?.LIMA, "PROVINCIA:", stockPorCodigo[codigo]?.PROVINCIA);
-    const descripcion = item.descripcion || "-";
-    const grupo = item.grupo || "-";
-    const tipoCompra = item.tipo_compra || "-";
-    const proveedor = item.proveedor_ultima_compra || "-";
-    const valorCompra = item.valor_ultima_compra || "-";
-    const consumo = item.consumo_mensual || "-";
+  const codigo = String(item.codigo).trim();
+  console.log("🔍 Evaluando código:", codigo);
+  const stockLima = stockPorCodigo[codigo]?.LIMA ?? "-";
+  const stockProvincia = stockPorCodigo[codigo]?.PROVINCIA ?? "-";
 
-    const stockLima = stockPorCodigo[codigo]?.LIMA ?? "-";
-    const stockProvincia = stockPorCodigo[codigo]?.PROVINCIA ?? "-";
+  // Campos reales según tu tabla
+  const descripcion = "-"; // No existe
+  const grupo = item.grupo_material || "-";
+  const tipoCompra = item.tipo_compra || "-";
+  const proveedor = item.proveedor || "-";
+  const valorCompra = item.precio_compra && item.moneda ? `${item.precio_compra} ${item.moneda}` : "-";
+  const consumo = item.consumo_promedio_mensual ?? "-";
 
-    const fila = document.createElement("tr");
-    fila.innerHTML = `
-      <td>${codigo}</td>
-      <td>${descripcion}</td>
-      <td>${grupo}</td>
-      <td>${tipoCompra}</td>
-      <td>${proveedor}</td>
-      <td>${valorCompra}</td>
-      <td>${consumo}</td>
-      <td>${stockLima}</td>
-      <td>${stockProvincia}</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-    `;
-    tabla.appendChild(fila);
-  });
-
+  const fila = document.createElement("tr");
+  fila.innerHTML = `
+    <td>${codigo}</td>
+    <td>${descripcion}</td>
+    <td>${grupo}</td>
+    <td>${tipoCompra}</td>
+    <td>${proveedor}</td>
+    <td>${valorCompra}</td>
+    <td>${consumo}</td>
+    <td>${stockLima}</td>
+    <td>${stockProvincia}</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+  `;
+  tabla.appendChild(fila);
+});
   ocultarLoader();
 }
   cargarCompras();
