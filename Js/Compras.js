@@ -72,14 +72,7 @@ if (productos) {
   }
 }
 
-  // 2.5 CALCULAR COBERTURA MENSUAL
-  const totalStock = Number(stockLima) + Number(stockProvincia);
-const consumoMensual = Number(consumo);
-
-let coberturaActual = "-";
-if (!isNaN(totalStock) && !isNaN(consumoMensual) && consumoMensual > 0) {
-  coberturaActual = (totalStock / consumoMensual).toFixed(2);
-}
+  
   
   // 3. Agrupar stock por código y zona (como string)
   const stockPorCodigo = {};
@@ -106,7 +99,16 @@ console.log("🧠 stockPorCodigo generado:", stockPorCodigo);
   console.log("🔍 Evaluando código:", codigo);
   const stockLima = stockPorCodigo[codigo]?.LIMA ?? "-";
   const stockProvincia = stockPorCodigo[codigo]?.PROVINCIA ?? "-";
-
+  const totalStock = Number(stockLima) + Number(stockProvincia);
+  const consumoMensual = Number(consumo);
+  let coberturaActual = "-";
+if (!isNaN(totalStock) && !isNaN(consumoMensual) && consumoMensual > 0) {
+  coberturaActual = (totalStock / consumoMensual).toFixed(2);
+}
+let coberturaActual = "-";
+if (!isNaN(totalStock) && !isNaN(consumoMensual) && consumoMensual > 0) {
+  coberturaActual = (totalStock / consumoMensual).toFixed(2);
+}
   // Campos reales según tu tabla
   const descripcion = descripciones[codigo] || "-";
   const grupo = item.grupo_material || "-";
@@ -126,7 +128,7 @@ console.log("🧠 stockPorCodigo generado:", stockPorCodigo);
     <td>${consumo}</td>
     <td>${stockLima}</td>
     <td>${stockProvincia}</td>
-    <td>-</td>
+    <td>${coberturaActual}</td>
     <td>-</td>
     <td>-</td>
     <td>-</td>
