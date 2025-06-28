@@ -60,6 +60,7 @@ async function cargarCompras() {
     console.error("❌ Error al cargar stock_claro:", errorStock);
   }
 
+    // 2.4 OBTENER DESCRIPCION
 const { data: productos, error: errorProductos } = await supabaseClient
   .from("productos")
   .select("codigo, descripcion");
@@ -69,6 +70,15 @@ if (productos) {
   for (const prod of productos) {
     descripciones[String(prod.codigo).trim()] = prod.descripcion;
   }
+}
+
+  // 2.5 CALCULAR COBERTURA MENSUAL
+  const totalStock = Number(stockLima) + Number(stockProvincia);
+const consumoMensual = Number(consumo);
+
+let coberturaActual = "-";
+if (!isNaN(totalStock) && !isNaN(consumoMensual) && consumoMensual > 0) {
+  coberturaActual = (totalStock / consumoMensual).toFixed(2);
 }
   
   // 3. Agrupar stock por código y zona (como string)
