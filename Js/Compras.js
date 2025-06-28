@@ -111,9 +111,26 @@ const consumoMensual = Number(consumo);
 
 let coberturaActual = "-";
 if (!isNaN(totalStock) && !isNaN(consumoMensual) && consumoMensual > 0) {
-  coberturaActual = (totalStock / consumoMensual).toFixed(2);
+  coberturaActual = (totalStock / consumoMensual).toFixed(1);
 }
 
+  const coberturaTd = document.createElement("td");
+  coberturaTd.textContent = coberturaActual;
+
+  // Aplicar color de fondo según el valor de coberturaActual
+  const coberturaValor = Number(coberturaActual);
+  if (!isNaN(coberturaValor)) {
+    if (coberturaValor < 3) {
+      coberturaTd.style.backgroundColor = "#e57373"; // rojo suave
+    } else if (coberturaValor >= 3 && coberturaValor <= 5) {
+      coberturaTd.style.backgroundColor = "#aed581"; // verde suave
+    } else if (coberturaValor > 5) {
+      coberturaTd.style.backgroundColor = "#ffb74d"; // naranja suave
+    }
+  }
+
+
+    
   const fila = document.createElement("tr");
   fila.innerHTML = `
     <td>${codigo}</td>
