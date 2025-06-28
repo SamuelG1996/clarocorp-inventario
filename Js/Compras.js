@@ -96,22 +96,23 @@ console.log("🧠 stockPorCodigo generado:", stockPorCodigo);
   tabla.innerHTML = "";
   compras.forEach((item) => {
   const codigo = String(item.codigo).trim();
-  console.log("🔍 Evaluando código:", codigo);
-  const stockLima = stockPorCodigo[codigo]?.LIMA ?? "-";
-  const stockProvincia = stockPorCodigo[codigo]?.PROVINCIA ?? "-";
-  const totalStock = Number(stockLima) + Number(stockProvincia);
-  const consumoMensual = Number(consumo);
-  let coberturaActual = "-";
+const descripcion = descripciones[codigo] || "-";
+const grupo = item.grupo_material || "-";
+const tipoCompra = item.tipo_compra || "-";
+const proveedor = item.proveedor || "-";
+const valorCompra = item.precio_compra && item.moneda ? `${item.precio_compra} ${item.moneda}` : "-";
+const consumo = item.consumo_promedio_mensual ?? "-";
+
+const stockLima = stockPorCodigo[codigo]?.LIMA ?? 0;
+const stockProvincia = stockPorCodigo[codigo]?.PROVINCIA ?? 0;
+
+const totalStock = Number(stockLima) + Number(stockProvincia);
+const consumoMensual = Number(consumo);
+
+let coberturaActual = "-";
 if (!isNaN(totalStock) && !isNaN(consumoMensual) && consumoMensual > 0) {
   coberturaActual = (totalStock / consumoMensual).toFixed(2);
 }
-  // Campos reales según tu tabla
-  const descripcion = descripciones[codigo] || "-";
-  const grupo = item.grupo_material || "-";
-  const tipoCompra = item.tipo_compra || "-";
-  const proveedor = item.proveedor || "-";
-  const valorCompra = item.precio_compra && item.moneda ? `${item.precio_compra} ${item.moneda}` : "-";
-  const consumo = item.consumo_promedio_mensual ?? "-";
 
   const fila = document.createElement("tr");
   fila.innerHTML = `
