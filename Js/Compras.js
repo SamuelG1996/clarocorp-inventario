@@ -121,11 +121,11 @@ if (!isNaN(totalStock) && !isNaN(consumoMensual) && consumoMensual > 0) {
   const coberturaValor = Number(coberturaActual);
   if (!isNaN(coberturaValor)) {
     if (coberturaValor < 3) {
-      coberturaTd.style.backgroundColor = "#e57373"; // rojo suave
+      coberturaTd.style.backgroundColor = "#ffcccc"; // rojo suave
     } else if (coberturaValor >= 3 && coberturaValor <= 5) {
-      coberturaTd.style.backgroundColor = "#aed581"; // verde suave
+      coberturaTd.style.backgroundColor = "#d2f8d2"; // verde suave
     } else if (coberturaValor > 5) {
-      coberturaTd.style.backgroundColor = "#ffb74d"; // naranja suave
+      coberturaTd.style.backgroundColor = "#ffe0b3"; // naranja suave
     }
   }
 
