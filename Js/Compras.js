@@ -131,23 +131,31 @@ if (!isNaN(totalStock) && !isNaN(consumoMensual) && consumoMensual > 0) {
 
 
     
-  const fila = document.createElement("tr");
-  fila.innerHTML = `
-    <td>${codigo}</td>
-    <td>${descripcion}</td>
-    <td>${grupo}</td>
-    <td>${tipoCompra}</td>
-    <td>${proveedor}</td>
-    <td>${valorCompra}</td>
-    <td>${consumo}</td>
-    <td>${stockLima}</td>
-    <td>${stockProvincia}</td>
-    <td>${coberturaActual}</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-  `;
-  tabla.appendChild(fila);
+const fila = document.createElement("tr");
+
+fila.innerHTML = `
+  <td>${codigo}</td>
+  <td>${descripcion}</td>
+  <td>${grupo}</td>
+  <td>${tipoCompra}</td>
+  <td>${proveedor}</td>
+  <td>${valorCompra}</td>
+  <td>${consumo}</td>
+  <td>${stockLima}</td>
+  <td>${stockProvincia}</td>
+`;
+
+// Reemplaza esta celda por el td dinámico
+fila.appendChild(coberturaTd);
+
+// Agrega el resto de celdas vacías
+for (let i = 0; i < 3; i++) {
+  const td = document.createElement("td");
+  td.textContent = "-";
+  fila.appendChild(td);
+}
+
+tabla.appendChild(fila);
 });
   ocultarLoader();
 }
