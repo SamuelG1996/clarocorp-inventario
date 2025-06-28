@@ -105,10 +105,6 @@ console.log("🧠 stockPorCodigo generado:", stockPorCodigo);
 if (!isNaN(totalStock) && !isNaN(consumoMensual) && consumoMensual > 0) {
   coberturaActual = (totalStock / consumoMensual).toFixed(2);
 }
-let coberturaActual = "-";
-if (!isNaN(totalStock) && !isNaN(consumoMensual) && consumoMensual > 0) {
-  coberturaActual = (totalStock / consumoMensual).toFixed(2);
-}
   // Campos reales según tu tabla
   const descripcion = descripciones[codigo] || "-";
   const grupo = item.grupo_material || "-";
