@@ -936,3 +936,8 @@ body.detalle-solicitud .content {
   line-height: 1.2;
   vertical-align: middle;
 }
+
+td.columna-descripcion {
+  table-layout: fixed;
+  width: 250px;
+}
