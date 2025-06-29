@@ -928,16 +928,27 @@ body.detalle-solicitud .content {
 /* --- ESTILOS PARA EL MODULO DE COMPRAS --- */
 
 .columna-descripcion {
-  max-width: 250px;         /* Limita el ancho horizontal */
-  white-space: nowrap;      /* Impide salto de línea */
-  overflow: hidden;         /* Oculta el desborde */
-  text-overflow: ellipsis;  /* Muestra los puntos suspensivos */
-  cursor: help;
-  line-height: 1.2;
-  vertical-align: middle;
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
 }
 
-td.columna-descripcion {
-  table-layout: fixed;
-  width: 250px;
+.columna-descripcion:hover::after {
+  content: attr(data-texto);
+  position: absolute;
+  background-color: #333;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  white-space: normal;
+  max-width: 300px;
+  z-index: 10;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.4;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.3);
 }
