@@ -140,9 +140,9 @@ fila.innerHTML = `
   <td>${tipoCompra}</td>
   <td>${proveedor}</td>
   <td>${valorCompra}</td>
-  <td>${consumo}</td>
-  <td>${stockLima}</td>
-  <td>${stockProvincia}</td>
+  <td>${consumo?.toLocaleString("es-PE") || "-"}</td>
+  <td>${stockLima?.toLocaleString("es-PE") || "-"}</td>
+  <td>${stockProvincia?.toLocaleString("es-PE") || "-"}</td>
 `;
 
 // Reemplaza esta celda por el td dinámico
