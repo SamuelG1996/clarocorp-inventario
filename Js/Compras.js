@@ -37,6 +37,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   inputBuscar.addEventListener("input", filtrarTabla);
 
+  function formatearNumero(valor) {
+  if (valor == null || isNaN(valor)) return "-";
+  return valor
+    .toFixed(1)                 // 1 decimal fijo
+    .replace(".", ",")          // decimal: punto → coma
+    .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // separador de miles: punto
+}
+
 async function cargarCompras() {
   mostrarLoader();
 
@@ -140,9 +148,9 @@ fila.innerHTML = `
   <td>${tipoCompra}</td>
   <td>${proveedor}</td>
   <td>${valorCompra}</td>
-  <td>${consumo?.toLocaleString("es-PE") || "-"}</td>
-  <td>${stockLima?.toLocaleString("es-PE") || "-"}</td>
-  <td>${stockProvincia?.toLocaleString("es-PE") || "-"}</td>
+  <td>${formatearNumero(consumo)}</td>
+  <td>${formatearNumero(stockLima)}</td>
+  <td>${formatearNumero(stockProvincia)}</td>
 `;
 
 // Reemplaza esta celda por el td dinámico
