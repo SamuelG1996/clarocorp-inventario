@@ -959,7 +959,7 @@ body.detalle-solicitud .content {
   width: 100%;
 }
 
-#tablaStock td:nth-child(7){
+#tablaStock td.columna-consumo {
   text-align: center;
 }
 
