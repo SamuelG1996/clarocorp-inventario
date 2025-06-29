@@ -153,7 +153,7 @@ fila.innerHTML = `
   <td>${tipoCompra}</td>
   <td>${proveedor}</td>
   <td>${valorCompra}</td>
-  <td>${formatearNumero(consumo)}</td>
+  <td class="columna-consumo">${formatearNumero(consumo)}</td>
   <td>${formatearNumero(stockLima)}</td>
   <td>${formatearNumero(stockProvincia)}</td>
 `;
