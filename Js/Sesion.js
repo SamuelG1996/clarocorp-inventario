@@ -32,7 +32,7 @@ setInterval(() => {
   const minutesInactive = (now - lastActiveTime) / 60000;
   if (minutesInactive > INACTIVITY_TIMEOUT_MINUTES) {
     localStorage.clear();
-    window.location.href = "index.html";
+    window.location.href = "index";
   }
 }, 30000);
 
