@@ -924,3 +924,14 @@ body.detalle-solicitud .content {
 .formulario-ayuda .grupo-form {
   margin-bottom: 15px;
 }
+
+/* --- ESTILOS PARA EL MODULO DE COMPRAS --- */
+
+.columna-descripcion {
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: help;
+}
+
