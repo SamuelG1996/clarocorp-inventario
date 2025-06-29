@@ -148,7 +148,7 @@ const fila = document.createElement("tr");
 
 fila.innerHTML = `
   <td>${codigo}</td>
-  <td class="columna-descripcion" data-texto="${descripcion}">${descripcion}</td>
+  <td class="descripcion-tooltip" title="${descripcion}">${descripcion}</td>
   <td>${grupo}</td>
   <td>${tipoCompra}</td>
   <td>${proveedor}</td>
