@@ -960,6 +960,6 @@ body.detalle-solicitud .content {
 }
 
 #tablaStock td.columna-consumo {
-  text-align: center;
+    text-align: center !important;
 }
 
