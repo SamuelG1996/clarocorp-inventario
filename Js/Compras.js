@@ -37,12 +37,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   inputBuscar.addEventListener("input", filtrarTabla);
 
-  function formatearNumero(valor) {
+function formatearNumero(valor) {
   if (valor == null || isNaN(valor)) return "-";
-  return valor
-    .toFixed(1)                 // 1 decimal fijo
-    .replace(".", ",")          // decimal: punto → coma
-    .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // separador de miles: punto
+
+  const partes = valor.toString().split(".");
+  let enteroFormateado = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+  if (partes[1] && parseInt(partes[1]) !== 0) {
+    return `${enteroFormateado},${partes[1]}`;
+  } else {
+    return enteroFormateado;
+  }
 }
 
 async function cargarCompras() {
