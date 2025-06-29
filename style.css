@@ -928,10 +928,11 @@ body.detalle-solicitud .content {
 /* --- ESTILOS PARA EL MODULO DE COMPRAS --- */
 
 .columna-descripcion {
-  max-width: 300px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  max-width: 250px;         /* Limita el ancho horizontal */
+  white-space: nowrap;      /* Impide salto de línea */
+  overflow: hidden;         /* Oculta el desborde */
+  text-overflow: ellipsis;  /* Muestra los puntos suspensivos */
   cursor: help;
+  line-height: 1.2;
+  vertical-align: middle;
 }
-
