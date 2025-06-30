@@ -107,6 +107,27 @@ if (productos) {
     }
   }
 console.log("🧠 stockPorCodigo generado:", stockPorCodigo);
+
+// 2.5 OBTENER COMPRAS EN CURSO
+const { data: ordenesCompra, error: errorOrdenes } = await supabaseClient
+  .from("ordenes_compra")
+  .select("codigo, cantidad_pendiente");
+
+const comprasPendientes = {};
+if (ordenesCompra) {
+  for (const orden of ordenesCompra) {
+    const codigoOC = String(orden.codigo).trim();
+    const cantidad = Number(orden.cantidad_pendiente) || 0;
+
+    if (!comprasPendientes[codigoOC]) {
+      comprasPendientes[codigoOC] = 0;
+    }
+    comprasPendientes[codigoOC] += cantidad;
+  }
+}
+
+
+  
   // 4. Renderizar la tabla
   tabla.innerHTML = "";
   compras.forEach((item) => {
@@ -149,7 +170,12 @@ if (!isNaN(totalStock) && !isNaN(consumoMensual) && consumoMensual > 0) {
       coberturaTd.style.backgroundColor = "#ffe0b3"; // naranja suave
     }
   }
+const comprasEnCurso = comprasPendientes[codigo] ?? 0;
 
+let coberturaTotal = "No se puede calcular";
+if (!isNaN(totalStock) && !isNaN(comprasEnCurso) && !isNaN(consumoMensual) && consumoMensual > 0) {
+  coberturaTotal = ((totalStock + comprasEnCurso) / consumoMensual).toFixed(1);
+}
 
     
 const fila = document.createElement("tr");
