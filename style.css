@@ -299,11 +299,6 @@ td:nth-child(10) {
 
 /* Reducción de tamaño de texto en toda la tabla */
 
-#tablaStock th,
-#tablaStock td {
-  white-space: nowrap;
-}
-
 #tablaStock th {
   font-size: 13px;
   color: black;
