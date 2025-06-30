@@ -108,7 +108,13 @@ console.log("🧠 stockPorCodigo generado:", stockPorCodigo);
   // 4. Renderizar la tabla
   tabla.innerHTML = "";
   compras.forEach((item) => {
-  const codigo = String(item.codigo).trim();
+    
+    // 🔒 Validación de vigencia
+  if (item.vigente && item.vigente.trim().toUpperCase() !== "SI") {
+    return; // Saltar si no está vigente
+  }
+    
+const codigo = String(item.codigo).trim();
 const descripcion = descripciones[codigo] || "-";
 const grupo = item.grupo_material || "-";
 const tipoCompra = item.tipo_compra || "-";
