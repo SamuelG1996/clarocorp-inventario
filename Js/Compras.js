@@ -50,6 +50,14 @@ function formatearNumero(valor) {
   }
 }
 
+  const descripciones = {};
+if (productos) {
+  for (const prod of productos) {
+    const codigoProd = String(prod.codigo).trim();
+    descripciones[codigoProd] = prod.descripcion;
+  }
+}
+  
 async function cargarCompras() {
   mostrarLoader();
 
