@@ -302,7 +302,6 @@ td:nth-child(10) {
 #tablaStock th,
 #tablaStock td {
   white-space: nowrap;
-  vertical-align: middle;
 }
 
 #tablaStock th {
