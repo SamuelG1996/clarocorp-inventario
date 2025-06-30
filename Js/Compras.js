@@ -50,13 +50,7 @@ function formatearNumero(valor) {
   }
 }
 
-  const descripciones = {};
-if (productos) {
-  for (const prod of productos) {
-    const codigoProd = String(prod.codigo).trim();
-    descripciones[codigoProd] = prod.descripcion;
-  }
-}
+
   
 async function cargarCompras() {
   mostrarLoader();
@@ -86,13 +80,13 @@ const { data: productos, error: errorProductos } = await supabaseClient
   .from("productos")
   .select("codigo, descripcion");
 
-const descripciones = {};
+  const descripciones = {};
 if (productos) {
   for (const prod of productos) {
-    descripciones[String(prod.codigo).trim()] = prod.descripcion;
+    const codigoProd = String(prod.codigo).trim();
+    descripciones[codigoProd] = prod.descripcion;
   }
 }
-
   
   
   // 3. Agrupar stock por código y zona (como string)
