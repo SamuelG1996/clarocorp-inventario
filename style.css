@@ -299,6 +299,11 @@ td:nth-child(10) {
 
 /* Reducción de tamaño de texto en toda la tabla */
 
+#tablaStock th,
+#tablaStock td {
+  white-space: nowrap;
+  vertical-align: middle;
+}
 
 #tablaStock th {
   font-size: 13px;
