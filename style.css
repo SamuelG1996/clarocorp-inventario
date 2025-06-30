@@ -928,3 +928,30 @@ body.detalle-solicitud .content {
 
 /* --- ESTILOS PARA EL MODULO DE COMPRAS --- */
 
+.columna-descripcion {
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+  display: inline-block; /* Asegura que el tooltip se posicione bien */
+}
+
+.columna-descripcion:hover::after {
+  content: attr(data-texto);
+  position: absolute;
+  background-color: #333;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  white-space: normal;
+  max-width: 300px;
+  z-index: 9999;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.4;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.3);
+}
+
