@@ -298,14 +298,7 @@ td:nth-child(10) {
 }
 
 /* Reducción de tamaño de texto en toda la tabla */
-#tablaStock th,
-#tablaStock td {
-  max-width: 180px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  vertical-align: middle;
-}
+
 
 #tablaStock th {
   font-size: 13px;
