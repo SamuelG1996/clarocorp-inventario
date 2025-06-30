@@ -128,7 +128,7 @@ const stockProvincia = stockPorCodigo[codigo]?.PROVINCIA ?? 0;
 const totalStock = Number(stockLima) + Number(stockProvincia);
 const consumoMensual = Number(consumo);
 
-let coberturaActual = "-";
+let coberturaActual = "No se puede calcular";
 if (!isNaN(totalStock) && !isNaN(consumoMensual) && consumoMensual > 0) {
   coberturaActual = (totalStock / consumoMensual).toFixed(1);
 }
