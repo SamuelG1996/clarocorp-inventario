@@ -196,11 +196,32 @@ fila.innerHTML = `
 fila.appendChild(coberturaTd);
 
 // Agrega el resto de celdas vacías
-for (let i = 0; i < 3; i++) {
-  const td = document.createElement("td");
-  td.textContent = "-";
-  fila.appendChild(td);
+// Compras en Curso
+const comprasCursoTd = document.createElement("td");
+comprasCursoTd.textContent = formatearNumero(comprasEnCurso);
+fila.appendChild(comprasCursoTd);
+
+// Cobertura Total (con compras)
+const coberturaTotalTd = document.createElement("td");
+coberturaTotalTd.textContent = coberturaTotal;
+
+// Color para cobertura total
+const coberturaTotalValor = Number(coberturaTotal);
+if (!isNaN(coberturaTotalValor)) {
+  if (coberturaTotalValor < 3) {
+    coberturaTotalTd.style.backgroundColor = "#ffcccc";
+  } else if (coberturaTotalValor >= 3 && coberturaTotalValor <= 5) {
+    coberturaTotalTd.style.backgroundColor = "#d2f8d2";
+  } else if (coberturaTotalValor > 5) {
+    coberturaTotalTd.style.backgroundColor = "#ffe0b3";
+  }
 }
+fila.appendChild(coberturaTotalTd);
+
+// Celda final vacía
+const tdFinal = document.createElement("td");
+tdFinal.textContent = "-";
+fila.appendChild(tdFinal);
 
 tabla.appendChild(fila);
 });
