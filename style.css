@@ -935,10 +935,10 @@ body.detalle-solicitud .content {
 }
 
 .td-mini {
-  font-size: 13px;
+  font-size: 14px;
   padding: 5px;
   border: 1px solid #ccc;
-  text-align: left;
+  text-align: left !important;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
