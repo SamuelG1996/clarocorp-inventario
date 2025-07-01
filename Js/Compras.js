@@ -81,7 +81,7 @@ async function mostrarDetalleCompras(codigo, supabaseClient) {
     <table style="width:100%; text-align:left; border-collapse: collapse;">
     <thead>
       <tr>
-        <th class="th-popup">Nro OC</th>
+        <th class="th-popup" title="Se muestra la Orden de Compra si existe, o la SOLPED si está pendiente.">Nro OC / SOLPED</th>
         <th class="th-popup">Cantidad</th>
         <th class="th-popup">Estado</th>
       </tr>
