@@ -50,8 +50,67 @@ function formatearNumero(valor) {
   }
 }
 
+async function mostrarDetalleCompras(codigo, supabaseClient) {
+  const { data: detalle, error } = await supabaseClient
+    .from("ordenes_compra")
+    .select("nro_oc, cantidad_por_entregar, estado_solped")
+    .eq("codigo", codigo)
+    .gt("cantidad_por_entregar", 0);
 
-  
+  if (error) {
+    console.error("❌ Error al obtener detalle de compras:", error);
+    return;
+  }
+
+  if (!detalle || detalle.length === 0) {
+    Swal.fire({
+      icon: 'info',
+      title: `Sin compras pendientes para el código ${codigo}`,
+      toast: true,
+      position: 'bottom-end',
+      timer: 3000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+      background: '#1e2022',
+      color: '#ffffff'
+    });
+    return;
+  }
+
+  let tablaHtml = `
+    <table style="width:100%; text-align:left; border-collapse: collapse;">
+      <thead>
+        <tr style="background:#f2f2f2;">
+          <th style="padding:5px; border:1px solid #ccc;">Nro OC</th>
+          <th style="padding:5px; border:1px solid #ccc;">Cantidad</th>
+          <th style="padding:5px; border:1px solid #ccc;">Estado</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+  for (const fila of detalle) {
+    tablaHtml += `
+      <tr>
+        <td style="padding:5px; border:1px solid #ccc;">${fila.nro_oc}</td>
+        <td style="padding:5px; border:1px solid #ccc;">${formatearNumero(fila.cantidad_por_entregar)}</td>
+        <td style="padding:5px; border:1px solid #ccc;">${fila.estado_solped}</td>
+      </tr>`;
+  }
+
+  tablaHtml += "</tbody></table>";
+
+  Swal.fire({
+    title: `Compras en curso – Código ${codigo}`,
+    html: tablaHtml,
+    width: 600,
+    background: '#1e2022',
+    color: '#ffffff',
+    confirmButtonText: 'Cerrar',
+    confirmButtonColor: '#f39c12'
+  });
+}
+
+
 async function cargarCompras() {
   mostrarLoader();
 
@@ -198,7 +257,11 @@ fila.appendChild(coberturaTd);
 // Agrega el resto de celdas vacías
 // Compras en Curso
 const comprasCursoTd = document.createElement("td");
-comprasCursoTd.textContent = formatearNumero(comprasEnCurso);
+comprasCursoTd.innerHTML = `<a href="#" style="text-decoration:none; color:#007bff;">${formatearNumero(comprasEnCurso)}</a>`;
+comprasCursoTd.style.cursor = "pointer";
+comprasCursoTd.addEventListener("click", () => {
+  mostrarDetalleCompras(codigo, supabaseClient);
+});
 fila.appendChild(comprasCursoTd);
 
 // Cobertura Total (con compras)
