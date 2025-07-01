@@ -53,7 +53,7 @@ function formatearNumero(valor) {
 async function mostrarDetalleCompras(codigo, supabaseClient) {
   const { data: detalle, error } = await supabaseClient
     .from("ordenes_compra")
-    .select("nro_oc, cantidad_por_entregar, estado_solped")
+    .select("nro_oc, cantidad_por_entregar, estado_solped, solped")
     .eq("codigo", codigo)
     .gt("cantidad_por_entregar", 0);
 
@@ -91,7 +91,7 @@ async function mostrarDetalleCompras(codigo, supabaseClient) {
   for (const fila of detalle) {
     tablaHtml += `
       <tr>
-      <td class="td-mini">${fila.nro_oc}</td>
+      <td class="td-mini">${fila.nro_oc.toUpperCase() === "PENDIENTE" ? fila.solped : fila.nro_oc}</td>
       <td class="td-mini">${formatearNumero(fila.cantidad_por_entregar)}</td>
       <td class="td-mini">${fila.estado_solped}</td>
       </tr>`;
