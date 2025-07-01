@@ -929,5 +929,8 @@ body.detalle-solicitud .content {
 
 /* --- ESTILOS PARA EL MODULO DE COMPRAS --- */
 
-
+.swal-titulo-pequeno {
+  font-size: 18px !important;
+  font-weight: normal !important;
+}
 
