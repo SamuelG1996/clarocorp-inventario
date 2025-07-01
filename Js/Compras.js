@@ -91,9 +91,9 @@ async function mostrarDetalleCompras(codigo, supabaseClient) {
   for (const fila of detalle) {
     tablaHtml += `
       <tr>
-        <td style="padding:5px; border:1px solid #ccc;">${fila.nro_oc}</td>
-        <td style="padding:5px; border:1px solid #ccc;">${formatearNumero(fila.cantidad_por_entregar)}</td>
-        <td style="padding:5px; border:1px solid #ccc; text-align:left;">${fila.estado_solped}</td>
+      <td class="td-mini">${fila.nro_oc}</td>
+      <td class="td-mini">${formatearNumero(fila.cantidad_por_entregar)}</td>
+      <td class="td-mini">${fila.estado_solped}</td>
       </tr>`;
   }
 
