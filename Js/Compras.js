@@ -111,13 +111,13 @@ console.log("🧠 stockPorCodigo generado:", stockPorCodigo);
 // 2.5 OBTENER COMPRAS EN CURSO
 const { data: ordenesCompra, error: errorOrdenes } = await supabaseClient
   .from("ordenes_compra")
-  .select("codigo, cantidad_pendiente");
+  .select("codigo, cantidad_por_entregar");
 
 const comprasPendientes = {};
 if (ordenesCompra) {
   for (const orden of ordenesCompra) {
     const codigoOC = String(orden.codigo).trim();
-    const cantidad = Number(orden.cantidad_pendiente) || 0;
+    const cantidad = Number(orden.cantidad_por_entregar) || 0;
 
     if (!comprasPendientes[codigoOC]) {
       comprasPendientes[codigoOC] = 0;
