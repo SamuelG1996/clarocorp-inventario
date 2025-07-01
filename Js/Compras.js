@@ -93,20 +93,24 @@ async function mostrarDetalleCompras(codigo, supabaseClient) {
       <tr>
         <td style="padding:5px; border:1px solid #ccc;">${fila.nro_oc}</td>
         <td style="padding:5px; border:1px solid #ccc;">${formatearNumero(fila.cantidad_por_entregar)}</td>
-        <td style="padding:5px; border:1px solid #ccc;">${fila.estado_solped}</td>
+        <td style="padding:5px; border:1px solid #ccc; text-align:left;">${fila.estado_solped}</td>
       </tr>`;
   }
 
   tablaHtml += "</tbody></table>";
 
   Swal.fire({
+      title: 'swal-titulo-pequeno'
     title: `Resumen de Compras en Curso – Código ${codigo}`,
     html: tablaHtml,
     width: 600,
     background: '#1e2022',
     color: '#ffffff',
     confirmButtonText: 'Cerrar',
-    confirmButtonColor: '#f39c12'
+    confirmButtonColor: '#f39c12',
+    customClass: {
+    title: 'swal-titulo-pequeno'
+  }
   });
 }
 
