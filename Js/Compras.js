@@ -119,8 +119,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const coberturaTd = document.createElement("td");
       coberturaTd.textContent = item.cobertura_actual?.toFixed(1) ?? "-";
-      const coberturaValor = Number(item.cobertura_actual);
-      if (!isNaN(coberturaValor)) {
+        const coberturaValor = item.cobertura_actual;
+      if (coberturaValor !== null && coberturaValor !== undefined) {
         if (coberturaValor < 3) coberturaTd.style.backgroundColor = "#ffcccc";
         else if (coberturaValor <= 5) coberturaTd.style.backgroundColor = "#d2f8d2";
         else coberturaTd.style.backgroundColor = "#ffe0b3";
