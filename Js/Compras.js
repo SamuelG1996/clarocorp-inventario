@@ -100,7 +100,6 @@ async function mostrarDetalleCompras(codigo, supabaseClient) {
   tablaHtml += "</tbody></table>";
 
   Swal.fire({
-      title: 'swal-titulo-pequeno'
     title: `Resumen de Compras en Curso – Código ${codigo}`,
     html: tablaHtml,
     width: 600,
