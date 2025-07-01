@@ -163,29 +163,32 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     tabla.appendChild(fragment);
      ocultarLoader();
+  }
 
-    // Activar búsqueda después de cargar datos
-    inputBuscar.addEventListener("input", () => {
-      const filtro = inputBuscar.value.toLowerCase();
-      const filas = tabla.getElementsByTagName("tr");
+  // ✅ Búsqueda con normalización sin tildes
+  inputBuscar.addEventListener("input", () => {
+    const filtro = inputBuscar.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const filas = tabla.getElementsByTagName("tr");
 
-      for (let i = 0; i < filas.length; i++) {
-        const celdas = filas[i].getElementsByTagName("td");
-        let coincide = false;
+    for (let i = 0; i < filas.length; i++) {
+      const celdas = filas[i].getElementsByTagName("td");
+      let coincide = false;
 
-        for (let j = 0; j < celdas.length; j++) {
-          const texto = celdas[j].textContent || celdas[j].innerText;
-          if (texto.toLowerCase().includes(filtro)) {
-            coincide = true;
-            break;
-          }
+      for (let j = 0; j < celdas.length; j++) {
+        const texto = (celdas[j].textContent || celdas[j].innerText)
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+
+        if (texto.includes(filtro)) {
+          coincide = true;
+          break;
         }
-        filas[i].style.display = coincide ? "" : "none";
       }
-    });
-  } // <-- fin de la función cargarCompras
+      filas[i].style.display = coincide ? "" : "none";
+    }
+  });
 
-
+  // Llamada inicial
   cargarCompras();
 });
-
