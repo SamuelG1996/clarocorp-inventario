@@ -934,3 +934,12 @@ body.detalle-solicitud .content {
   font-weight: normal !important;
 }
 
+.td-mini {
+  font-size: 13px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
