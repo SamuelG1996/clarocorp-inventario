@@ -144,9 +144,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
       fila.appendChild(coberturaTotalTd);
 
-      const tdFinal = document.createElement("td");
-      tdFinal.textContent = "-";
-      fila.appendChild(tdFinal);
+      // Columna ESTADO (posición final)
+      const estadoTd = document.createElement("td");
+      if (!isNaN(coberturaValor)) {
+        if (coberturaValor < 3) {
+          estadoTd.textContent = "Crítico";
+        } else if (coberturaValor > 9) {
+          estadoTd.textContent = "No requiere compra";
+        } else {
+          estadoTd.textContent = "-";
+        }
+      } else {
+        estadoTd.textContent = "-";
+      }
+      fila.appendChild(estadoTd);
 
       fragment.appendChild(fila);
     });
