@@ -79,13 +79,13 @@ async function mostrarDetalleCompras(codigo, supabaseClient) {
 
   let tablaHtml = `
     <table style="width:100%; text-align:left; border-collapse: collapse;">
-      <thead>
-        <tr style="background:#f2f2f2;">
-          <th style="padding:5px; border:1px solid #ccc;">Nro OC</th>
-          <th style="padding:5px; border:1px solid #ccc;">Cantidad</th>
-          <th style="padding:5px; border:1px solid #ccc;">Estado</th>
-        </tr>
-      </thead>
+    <thead>
+      <tr>
+        <th class="th-popup">Nro OC</th>
+        <th class="th-popup">Cantidad</th>
+        <th class="th-popup">Estado</th>
+      </tr>
+    </thead>  
       <tbody>`;
 
   for (const fila of detalle) {
