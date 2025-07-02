@@ -230,7 +230,7 @@ if (codigoUsuario) {
   const { data: usuario, error: errorUsuario } = await supabase
     .from("usuarios")
     .select("email")
-    .eq("codigo", codigoUsuario)
+    .eq("codigo_usuario", codigoUsuario)
     .single();
 
   if (!errorUsuario && usuario?.email) {
