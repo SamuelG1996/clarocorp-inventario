@@ -39,61 +39,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       : enteroFormateado;
   }
 
- async function mostrarDetalleCompras(codigo) {
-  const { data: detalle, error } = await supabaseClient
-    .from("ordenes_compra")
-    .select(`
-      nro_oc,
-      solped,
-      estado_solped,
-      fecha_entrega_1, cantidad_entrega_1,
-      fecha_entrega_2, cantidad_entrega_2,
-      fecha_entrega_3, cantidad_entrega_3,
-      fecha_entrega_4, cantidad_entrega_4
-    `)
-    .eq("codigo", codigo);
+async function mostrarDetalleCompras(codigo) {
+  const { data: entregas, error } = await supabaseClient
+    .rpc("obtener_entregas_por_codigo", { cod: codigo });
 
-  if (error || !detalle || detalle.length === 0) {
-    Swal.fire({
-      icon: 'info',
-      title: `Sin compras pendientes para el código ${codigo}`,
-      toast: true,
-      position: 'bottom-end',
-      timer: 3000,
-      timerProgressBar: true,
-      showConfirmButton: false,
-      background: '#1e2022',
-      color: '#ffffff'
-    });
-    return;
-  }
-
-  let entregas = [];
-
-  // Procesa cada OC
-  for (const fila of detalle) {
-    const oc = fila.nro_oc?.toUpperCase() === "PENDIENTE" ? fila.solped : fila.nro_oc;
-    const estado = fila.estado_solped;
-
-    for (let i = 1; i <= 4; i++) {
-      const fecha = fila[`fecha_entrega_${i}`];
-      const cantidad = fila[`cantidad_entrega_${i}`];
-
-      if (fecha && cantidad > 0) {
-        entregas.push({
-          oc,
-          cantidad,
-          fecha,
-          estado
-        });
-      }
-    }
-  }
-
-  // Ordenar entregas por fecha
-  entregas.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
-
-  if (entregas.length === 0) {
+  if (error || !entregas || entregas.length === 0) {
     Swal.fire({
       icon: 'info',
       title: `Sin entregas programadas para el código ${codigo}`,
@@ -108,7 +58,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  // Construir tabla HTML
   let tablaHtml = `<table style="width:100%; text-align:left; border-collapse: collapse;">
     <thead>
       <tr>
@@ -121,18 +70,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     <tbody>`;
 
   for (const e of entregas) {
-    const fechaFormateada = new Date(e.fecha).toLocaleDateString("es-PE");
+    const fechaFormateada = new Date(e.fecha_entrega).toLocaleDateString("es-PE");
     tablaHtml += `<tr>
-      <td class="td-mini">${e.oc}</td>
+      <td class="td-mini">${e.nro_oc}</td>
       <td class="td-mini">${formatearNumero(e.cantidad)}</td>
       <td class="td-mini">${fechaFormateada}</td>
-      <td class="td-mini">${e.estado}</td>
+      <td class="td-mini">${e.estado_solped}</td>
     </tr>`;
   }
 
   tablaHtml += `</tbody></table>`;
 
-  // Mostrar con SweetAlert
   Swal.fire({
     title: `Resumen de Compras – Código ${codigo}`,
     html: tablaHtml,
