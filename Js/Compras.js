@@ -70,7 +70,9 @@ async function mostrarDetalleCompras(codigo) {
     <tbody>`;
 
   for (const e of entregas) {
-    const fechaFormateada = new Date(e.fecha_entrega).toLocaleDateString("es-PE");
+    const fechaFormateada = !e.fecha_entrega
+      ? "Pendiente"
+      : new Date(e.fecha_entrega).toLocaleDateString("es-PE");
     tablaHtml += `<tr>
       <td class="td-mini">${e.nro_oc}</td>
       <td class="td-mini">${formatearNumero(e.cantidad)}</td>
