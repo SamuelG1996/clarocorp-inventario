@@ -207,8 +207,8 @@ async function actualizarEstadoSolicitud(nuevoEstado, campoExtra) {
     errorDetalle = error;
   }
 
-  // 3. Enviar correo al solicitante si el estado es Atendido u Observado
-  const { data: solicitud, error: errorSolicitud } = await supabase
+ // 3. Enviar correo al solicitante si el estado es Atendido u Observado
+const { data: solicitud, error: errorSolicitud } = await supabase
   .from("traspasos")
   .select("codigo_solicitante, solicitante")
   .eq("id", id)
@@ -219,25 +219,27 @@ let codigoUsuario = solicitud?.codigo_solicitante;
 if (!codigoUsuario) {
   const { data: userByName } = await supabase
     .from("usuarios")
-    .select("codigo")
+    .select("codigo_usuario") // CAMBIO aquí
     .ilike("nombre", `%${solicitud.solicitante}%`)
     .maybeSingle();
 
-  codigoUsuario = userByName?.codigo;
+  codigoUsuario = userByName?.codigo_usuario;
 }
-console.log("→ Código del usuario para buscar correo:", codigoUsuario);
+
 if (codigoUsuario) {
   const { data: usuario, error: errorUsuario } = await supabase
     .from("usuarios")
     .select("email")
-    .eq("codigo_usuario", codigoUsuario)
+    .eq("codigo_usuario", codigoUsuario) // CAMBIO aquí
     .single();
 
   if (!errorUsuario && usuario?.email) {
     const contenidoCorreo = nuevoEstado === "Pendiente"
       ? `La solicitud ID-${id} fue editada y actualmente se encuentra pendiente de atención.`
       : `La solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}.`;
-console.log("Enviando correo a:", usuario.email);
+
+    console.log("Enviando correo a:", usuario.email);
+
     try {
       await fetch("/api/EnviarCorreoClaro", {
         method: "POST",
@@ -245,7 +247,7 @@ console.log("Enviando correo a:", usuario.email);
         body: JSON.stringify({
           asunto: `Solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}`,
           destinatario: usuario.email,
-        // copia: ["claudia.henriquez@claro.com.pe"],
+          // copia: ["claudia.henriquez@claro.com.pe"], // puedes dejarlo comentado
           contenido: contenidoCorreo,
         }),
       });
@@ -274,7 +276,7 @@ console.log("Enviando correo a:", usuario.email);
   } else {
     Swal.fire({
       icon: 'info',
-      title: `Solicitud ${nuevoEstado}`,
+      title: `El estado de la solicitud cambio a ${nuevoEstado}`,
       text: 'Se actualizó correctamente en la base de datos.',
       toast: true,
       position: 'bottom-end',
