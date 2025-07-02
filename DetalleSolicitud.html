@@ -234,13 +234,24 @@ if (codigoUsuario) {
     .single();
 
   if (!errorUsuario && usuario?.email) {
-    await enviarCorreo({
-      to: usuario.email,
-      subject: `Solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}`,
-      body: nuevoEstado === "Pendiente"
-        ? `La solicitud ID-${id} fue editada y actualmente se encuentra pendiente de atención.`
-        : `La solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}.`
-    });
+    const contenidoCorreo = nuevoEstado === "Pendiente"
+      ? `La solicitud ID-${id} fue editada y actualmente se encuentra pendiente de atención.`
+      : `La solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}.`;
+
+    try {
+      await fetch("/api/EnviarCorreoClaro", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          asunto: `Solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}`,
+          destinatario: usuario.email,
+        // copia: ["claudia.henriquez@claro.com.pe"],
+          contenido: contenidoCorreo,
+        }),
+      });
+    } catch (errorEnvio) {
+      console.error("Error al enviar correo al solicitante:", errorEnvio);
+    }
   }
 }
 
