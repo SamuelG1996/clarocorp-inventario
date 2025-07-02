@@ -237,7 +237,7 @@ if (codigoUsuario) {
     const contenidoCorreo = nuevoEstado === "Pendiente"
       ? `La solicitud ID-${id} fue editada y actualmente se encuentra pendiente de atención.`
       : `La solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}.`;
-
+console.log("Enviando correo a:", usuario.email);
     try {
       await fetch("/api/EnviarCorreoClaro", {
         method: "POST",
@@ -286,9 +286,9 @@ if (codigoUsuario) {
       iconColor: '#f39c12'
     });
 
-    setTimeout(() => {
-      window.location.href = "Traspaso.html";
-    }, 1500);
+   // setTimeout(() => {
+   //   window.location.href = "Traspaso.html";
+   // }, 1500);
   }
 }
 </script>
