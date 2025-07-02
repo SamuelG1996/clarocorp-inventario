@@ -225,7 +225,7 @@ if (!codigoUsuario) {
 
   codigoUsuario = userByName?.codigo;
 }
-
+console.log("→ Código del usuario para buscar correo:", codigoUsuario);
 if (codigoUsuario) {
   const { data: usuario, error: errorUsuario } = await supabase
     .from("usuarios")
