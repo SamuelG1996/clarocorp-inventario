@@ -234,9 +234,37 @@ if (codigoUsuario) {
     .single();
 
   if (!errorUsuario && usuario?.email) {
-    const contenidoCorreo = nuevoEstado === "Pendiente"
-      ? `La solicitud ID-${id} fue editada y actualmente se encuentra pendiente de atención.`
-      : `La solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}.`;
+// Obtener la fecha en zona horaria de Perú (UTC-5)
+const fechaUTC = new Date();
+const fechaPeru = new Date(fechaUTC.getTime() - 5 * 60 * 60 * 1000);
+
+const fechaActual = fechaPeru.toLocaleDateString("es-PE", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+});
+
+// Contenido del correo
+const contenidoCorreo = `
+Estimado/a ${solicitud.solicitante},
+
+Le informamos que su solicitud con ID **${id}** ha cambiado de estado el día ${fechaActual}.
+
+**Nuevo estado:** ${nuevoEstado.toUpperCase()}
+
+${
+  nuevoEstado === "Pendiente"
+    ? "La solicitud ha sido editada y se encuentra nuevamente pendiente de atención por parte del equipo responsable."
+    : nuevoEstado === "Atendido"
+    ? "La solicitud ha sido atendida. Le agradecemos su paciencia y quedamos atentos a cualquier comentario adicional."
+    : nuevoEstado === "Observado"
+    ? "La solicitud ha sido observada. Por favor revise los comentarios del área responsable y actualice la información para su reenvío."
+    : ""
+}
+
+Atentamente,  
+Equipo Portal Inventario
+`.trim();
 
     console.log("Enviando correo a:", usuario.email);
 
