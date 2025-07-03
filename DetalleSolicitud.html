@@ -246,13 +246,13 @@ const fechaActual = fechaPeru.toLocaleDateString("es-PE", {
 
 // Contenido del correo
 const contenidoCorreo = `
-Estimado/a ${solicitud.solicitante},
+<p>Buen día, ${solicitud.solicitante}:</p>
 
-Le informamos que su solicitud con ID **${id}** ha cambiado de estado el día ${fechaActual}.
+<p>Le informamos que su solicitud con ID <strong>ID-${id}</strong> ha cambiado de estado el día ${fechaActual}.</p>
 
-**Nuevo estado:** ${nuevoEstado.toUpperCase()}
+<p><strong>Nuevo estado:</strong> ${nuevoEstado.toUpperCase()}</p>
 
-${
+<p>${
   nuevoEstado === "Pendiente"
     ? "La solicitud ha sido editada y se encuentra nuevamente pendiente de atención por parte del equipo responsable."
     : nuevoEstado === "Atendido"
@@ -260,10 +260,9 @@ ${
     : nuevoEstado === "Observado"
     ? "La solicitud ha sido observada. Por favor revise los comentarios del área responsable y actualice la información para su reenvío."
     : ""
-}
+}</p>
 
-Atentamente,  
-Equipo Portal Inventario
+<p>Atentamente,<br>Equipo Portal Inventario</p>
 `.trim();
 
     console.log("Enviando correo a:", usuario.email);
@@ -316,9 +315,9 @@ Equipo Portal Inventario
       iconColor: '#f39c12'
     });
 
-   // setTimeout(() => {
-   //   window.location.href = "Traspaso.html";
-   // }, 1500);
+   setTimeout(() => {
+   window.location.href = "Traspaso.html";
+   }, 1500);
   }
 }
 </script>
