@@ -140,7 +140,7 @@ async function eliminarSeleccionados() {
   const confirmar = await Swal.fire({
     icon: 'question',
     title: '¿Confirmar anulación?',
-    text: `Se anularán ${idsAAnular.length} solicitudes.`,
+    text: `Se anulará${idsAAnular.length > 1 ? 'n' : ''} ${idsAAnular.length} solicitud${idsAAnular.length > 1 ? 'es' : ''}.`,
     showCancelButton: true,
     confirmButtonText: 'Sí, anular',
     cancelButtonText: 'Cancelar',
