@@ -966,7 +966,7 @@ body.detalle-solicitud .content {
 }
 
 .boton-edicion {
-  background-color: #f39c12 !important; /* naranja suave */
+  background-color: #d59a3b !important;
   border-color: #f39c12 !important;
   color: white !important;
   padding: 8px 16px;
@@ -977,7 +977,7 @@ body.detalle-solicitud .content {
 }
 
 .boton-edicion:hover {
-  background-color: #d78c0b;
+  background-color: #f39c12 !important;
 }
 
 #tablaDetalle input[type="text"],
