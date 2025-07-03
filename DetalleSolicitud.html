@@ -670,19 +670,19 @@ document.getElementById("inputExcelCarga").addEventListener("change", async (eve
       }
 
       datosValidados.push({
-        codigo: fila["Código"]?.trim(),
-        descripcion: fila["Descripción"]?.trim(),
+        codigo: String(fila["Código"] ?? "").trim(),
+        descripcion: String(fila["Descripción"] ?? "").trim(),
         cantidad: fila["Cantidad"],
-        serie: fila["Serie"]?.trim(),
-        lote: fila["Lote"]?.trim(),
+        serie: String(fila["Serie"] ?? "").trim(),
+        lote: String(fila["Lote"] ?? "").trim(),
         umb,
         almacen_origen: almOrigen,
         centro_origen: centroOrigen,
-        contrata_entrega: fila["Contrata Entrega"]?.trim(),
+        contrata_entrega: String(fila["Contrata Entrega"] ?? "").trim(),
         almacen_destino: almDestino,
         centro_destino: centroDestino,
-        contrata_recibe: fila["Contrata Recibe"]?.trim(),
-        guia_remision_texto: fila["Guía"]?.trim()
+        contrata_recibe: String(fila["Contrata Recibe"] ?? "").trim(),
+        guia_remision_texto: String(fila["Guía"] ?? "").trim()
       });
     });
 
