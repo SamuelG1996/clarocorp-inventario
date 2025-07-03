@@ -613,7 +613,7 @@ document.getElementById("inputExcelCarga").addEventListener("change", async (eve
 
     const confirm = await Swal.fire({
       title: "¿Confirmar actualización masiva?",
-      text: `Se actualizarán ${datosValidados.length} registros. Esta acción reemplazará los datos actuales.`,
+      text: `Se actualizará${datosValidados.length > 1 ? 'n' : ''} ${datosValidados.length} registro${datosValidados.length > 1 ? 's' : ''}. Esta acción reemplazará los datos actuales.`,
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Sí, actualizar",
