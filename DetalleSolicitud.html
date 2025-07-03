@@ -628,12 +628,15 @@ document.getElementById("inputExcelCarga").addEventListener("change", async (eve
 
     mostrarLoader();
 
-    for (let item of datosValidados) {
-      await supabase
-        .from("traspaso_detalle")
-        .update(item)
-        .eq("id_detalle", item.id_detalle)
-    }
+  for (let item of datosValidados) {
+  const { id_detalle, ...camposActualizables } = item;
+  if (!id_detalle) continue;
+
+  await supabase
+    .from("traspaso_detalle")
+    .update(camposActualizables)
+    .eq("id_detalle", id_detalle);
+}
 
     await supabase
       .from("traspasos")
