@@ -261,9 +261,6 @@ const contenidoCorreo = `
     ? "La solicitud ha sido observada. Por favor revise los comentarios del área responsable y actualice la información para su reenvío."
     : ""
 }</p>
-<br>
-<p>Atentamente,<br>Equipo Portal Inventario</p>
-
 <p style="font-size: 14px; color: #888;">
 ⚠️ <strong>Este mensaje fue generado por un sistema automático</strong>. Le pedimos <strong>no responder directamente a este correo</strong>.
 </p>
@@ -276,7 +273,7 @@ const contenidoCorreo = `
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          asunto: `Solicitud ID-${id} fue ${nuevoEstado.toLowerCase()}`,
+          asunto: `📢 Notificación automática – Estado de solicitud ID-${id}: ${nuevoEstado}`,
           destinatario: usuario.email,
           // copia: ["claudia.henriquez@claro.com.pe"], // puedes dejarlo comentado
           contenido: contenidoCorreo,
