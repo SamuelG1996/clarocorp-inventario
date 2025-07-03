@@ -45,6 +45,10 @@
       <button id="btnEditar" onclick="editarDetalle()">
       <i class="fas fa-pen"></i> Editar Detalle
       </button>
+      <button id="btnCargarExcel" style="display:none;">
+      <i class="fas fa-upload"></i> Subir Carga
+      </button>
+      <input type="file" id="inputExcelCarga" accept=".xlsx, .xls" style="display:none;">
     </div>
     </div>
   </div>
@@ -375,6 +379,7 @@ async function editarDetalle() {
       });
       modoEdicionActivo = true;
       document.getElementById("btnEditar").innerHTML = `<i class="fas fa-save"></i> Guardar Cambios`;
+      document.getElementById("btnCargarExcel").style.display = "inline-block";
     } else {
       Swal.fire({
         title: '¿Guardar cambios?',
@@ -441,7 +446,7 @@ async function editarDetalle() {
             color: '#ffffff',
             iconColor: '#2ecc71'
           });
-
+          document.getElementById("btnCargarExcel").style.display = "none";
           setTimeout(() => location.reload(), 1500);
         }
       });
@@ -580,7 +585,158 @@ async function confirmarCambioEstado(estado) {
   });
 }
 </script>
-  
+  <script>
+document.getElementById("btnCargarExcel").addEventListener("click", () => {
+  document.getElementById("inputExcelCarga").click();
+});
+
+document.getElementById("inputExcelCarga").addEventListener("change", async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: "array" });
+    const sheetName = workbook.SheetNames[0];
+    const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    if (!rows.length) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Archivo vacío',
+        text: 'No se detectaron filas en el Excel.',
+        background: '#1e2022',
+        color: '#ffffff',
+        toast: true,
+        position: 'bottom-end',
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false
+      });
+      return;
+    }
+
+    // Validaciones
+    const errores = [];
+    const datosValidados = [];
+
+    rows.forEach((fila, index) => {
+      const filaNum = index + 2;
+
+      const umb = (fila["UMB"] || "").toUpperCase();
+      if (umb !== "PZA" && umb !== "MTRS") {
+        errores.push(Fila ${filaNum}: UMB inválido (${umb}));
+      }
+
+      const centroOrigen = (fila["Centro Origen"] || "").toUpperCase();
+      const centroDestino = (fila["Centro Destino"] || "").toUpperCase();
+      if (!centroOrigen.startsWith("P")) {
+        errores.push(Fila ${filaNum}: Centro Origen debe comenzar con 'P' (${centroOrigen}));
+      }
+      if (!centroDestino.startsWith("P")) {
+        errores.push(Fila ${filaNum}: Centro Destino debe comenzar con 'P' (${centroDestino}));
+      }
+
+      const almOrigen = (fila["Alm. Origen"] || "").toUpperCase();
+      const almDestino = (fila["Alm. Destino"] || "").toUpperCase();
+      const validPrefijos = ["I", "Y", "X"];
+      if (!validPrefijos.some(p => almOrigen.startsWith(p))) {
+        errores.push(Fila ${filaNum}: Almacén Origen debe comenzar con I, Y o X (${almOrigen}));
+      }
+      if (!validPrefijos.some(p => almDestino.startsWith(p))) {
+        errores.push(Fila ${filaNum}: Almacén Destino debe comenzar con I, Y o X (${almDestino}));
+      }
+
+      datosValidados.push({
+        codigo: fila["Código"]?.trim(),
+        descripcion: fila["Descripción"]?.trim(),
+        cantidad: fila["Cantidad"],
+        serie: fila["Serie"]?.trim(),
+        lote: fila["Lote"]?.trim(),
+        umb,
+        almacen_origen: almOrigen,
+        centro_origen: centroOrigen,
+        contrata_entrega: fila["Contrata Entrega"]?.trim(),
+        almacen_destino: almDestino,
+        centro_destino: centroDestino,
+        contrata_recibe: fila["Contrata Recibe"]?.trim(),
+        guia_remision_texto: fila["Guía"]?.trim()
+      });
+    });
+
+    if (errores.length > 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Errores en el archivo',
+        html: <pre style="text-align:left;">${errores.join("\n")}</pre>,
+        background: '#1e2022',
+        color: '#ffffff'
+      });
+      return;
+    }
+
+    const confirm = await Swal.fire({
+      title: "¿Confirmar actualización masiva?",
+      text: Se actualizarán ${datosValidados.length} registros. Esta acción reemplazará los datos actuales.,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Sí, actualizar",
+      cancelButtonText: "Cancelar",
+      background: '#1e2022',
+      color: '#ffffff'
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    mostrarLoader();
+
+    for (let item of datosValidados) {
+      await supabase
+        .from("traspaso_detalle")
+        .update(item)
+        .eq("id_traspaso", id)
+        .eq("codigo", item.codigo);
+    }
+
+    await supabase
+      .from("traspasos")
+      .update({ estado: "Pendiente", fecha_estado: new Date().toISOString() })
+      .eq("id", id);
+
+    const { data: solicitud } = await supabase
+      .from("traspasos")
+      .select("responsable_codigo")
+      .eq("id", id)
+      .single();
+
+    await enviarCorreo({
+      to: solicitud.responsable_codigo,
+      subject: ⚠️ Solicitud ID-${id} editada por Excel,
+      body: La solicitud ID-${id} ha sido editada mediante carga por plantilla y ha pasado a estado Pendiente.
+    });
+
+    ocultarLoader();
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Actualizado',
+      text: 'Los datos fueron modificados con éxito.',
+      toast: true,
+      position: 'bottom-end',
+      timer: 3000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+      background: '#1e2022',
+      color: '#ffffff'
+    });
+
+    setTimeout(() => location.reload(), 1500);
+  };
+
+  reader.readAsArrayBuffer(file);
+});
+</script>
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
 </body>
