@@ -655,7 +655,7 @@ document.getElementById("inputExcelCarga").addEventListener("change", async (eve
       .update({ estado: "Pendiente", fecha_estado: new Date().toISOString() })
       .eq("id", id);
 
-   onst { data: solicitudCorreo, error: errorSol } = await supabase
+   const { data: solicitudCorreo, error: errorSol } = await supabase
   .from("traspasos")
   .select("responsable_codigo")
   .eq("id", id)
