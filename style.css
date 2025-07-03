@@ -885,6 +885,8 @@ body.formulario-traspaso .acciones-tabla button {
   text-overflow: ellipsis;
 }
 
+
+
 .td-descripcion {
   max-width: 200px;
   overflow: hidden;
@@ -976,6 +978,19 @@ body.detalle-solicitud .content {
 
 .boton-edicion:hover {
   background-color: #d78c0b;
+}
+
+#tablaDetalle input[type="text"],
+#tablaDetalle input[type="number"] {
+  width: 100%;
+  padding: 2px 4px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#tablaDetalle td input {
+  max-width: 120px;
 }
 /* --- FIN ESTILOS PARA EL SUBMODULO DE DETALLE SOLICITUD --- */
 
