@@ -246,7 +246,7 @@ const fechaActual = fechaPeru.toLocaleDateString("es-PE", {
 
 // Contenido del correo
 const contenidoCorreo = `
-<p>Buen día, ${solicitud.solicitante}:</p>
+<p>Buen día, </p>
 
 <p>Le informamos que su solicitud con ID <strong>ID-${id}</strong> ha cambiado de estado el día ${fechaActual}.</p>
 
@@ -263,7 +263,8 @@ const contenidoCorreo = `
 }</p>
 
 <p>Atentamente,<br>Equipo Portal Inventario</p>
-<p style="font-size: 12px; color: #888;">
+<p></p>
+<p style="font-size: 13px; color: #888;">
 ⚠️ <strong>Este mensaje fue generado por un sistema automático.</strong> Le pedimos <strong>no responder directamente a este correo.</strong>
 </p>
 `.trim();
