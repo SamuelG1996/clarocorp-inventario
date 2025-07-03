@@ -869,12 +869,13 @@ body.formulario-traspaso .acciones-tabla button {
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 5px;
+  font-size: 12px;
 }
 
 /* Aplica solo a la columna Descripción de la tabla de DetalleSolicitud */
 #tablaDetalle td:nth-child(2),
 #tablaDetalle th:nth-child(2) {
-  max-width: 350px; /* Ajusta este valor si deseas más o menos ancho */
+  max-width: 300px; /* Ajusta este valor si deseas más o menos ancho */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
