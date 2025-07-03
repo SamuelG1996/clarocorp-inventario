@@ -934,7 +934,7 @@ body.detalle-solicitud .content {
   min-width: 280px;            /* ⬅️ Ancho mínimo razonable */
   max-width: 340px;            /* ⬅️ Evita que se vea gigante */
   display: block;
-  margin: 0 auto;              /* ⬅️ Centra horizontalmente */
+  margin: 12px auto 0 auto;  /* ⬅️ Espaciado superior agregado */
 }
 /* Ya tienes esto, solo ajusta si deseas alinear más con el input */
 .swal2-textarea {
