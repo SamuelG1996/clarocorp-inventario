@@ -374,7 +374,7 @@ async function editarDetalle() {
         const camposEditables = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
         camposEditables.forEach(i => {
           const texto = celdas[i].innerText;
-          celdas[i].innerHTML = `<input value="${texto}" class="swal2-input" style="width:100%; font-size: 12px;" />`;
+          celdas[i].innerHTML = `<input value="${texto}" class="input-edicion" />`;
         });
       });
       modoEdicionActivo = true;
