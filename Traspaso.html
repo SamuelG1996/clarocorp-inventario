@@ -91,35 +91,64 @@
       alert("Aquí se abrirá el formulario para nueva solicitud.");
     }
       </script>
-  <script>
-  async function eliminarSeleccionados() {
+<script>
+async function eliminarSeleccionados() {
   const filas = document.querySelectorAll("#tablaTraspasos tbody tr");
   const idsAAnular = [];
 
-  filas.forEach(fila => {
+  for (const fila of filas) {
     const checkbox = fila.querySelector('input[type="checkbox"]');
+    const estado = fila.cells[7].textContent.trim();
+    const id = fila.cells[1].textContent.trim();
+
     if (checkbox && checkbox.checked) {
-      const id = fila.cells[1].textContent;
+      if (estado === "Atendido" || estado === "Anulado") {
+        Swal.fire({
+          icon: 'warning',
+          title: 'No permitido',
+          text: `La solicitud ID ${id} no puede ser anulada (estado: ${estado}).`,
+          toast: true,
+          position: 'bottom-end',
+          showConfirmButton: false,
+          timer: 4000,
+          background: '#1e2022',
+          color: '#ffffff',
+          iconColor: '#f39c12'
+        });
+        return;
+      }
       idsAAnular.push(id);
     }
-  });
+  }
 
   if (idsAAnular.length === 0) {
     Swal.fire({
       icon: 'info',
       title: 'No hay cambios',
-      text: 'No se seleccionaron solicitudes para anular.',
+      text: 'No se seleccionaron solicitudes válidas para anular.',
       toast: true,
       position: 'bottom-end',
       showConfirmButton: false,
       timer: 3000,
-      timerProgressBar: true,
       background: '#1e2022',
       color: '#ffffff',
       iconColor: '#f39c12'
     });
     return;
   }
+
+  const confirmar = await Swal.fire({
+    icon: 'question',
+    title: '¿Confirmar anulación?',
+    text: `Se anularán ${idsAAnular.length} solicitudes.`,
+    showCancelButton: true,
+    confirmButtonText: 'Sí, anular',
+    cancelButtonText: 'Cancelar',
+    background: '#1e2022',
+    color: '#ffffff'
+  });
+
+  if (!confirmar.isConfirmed) return;
 
   const { error } = await supabaseClient
     .from("traspasos")
@@ -129,36 +158,33 @@
   if (error) {
     Swal.fire({
       icon: 'error',
-      title: 'Error al anular solicitudes',
+      title: 'Error al anular',
       text: error.message,
       toast: true,
       position: 'bottom-end',
       showConfirmButton: false,
       timer: 3000,
-      timerProgressBar: true,
       background: '#1e2022',
       color: '#ffffff',
       iconColor: '#e74c3c'
     });
   } else {
     Swal.fire({
-      icon: 'info',
-      title: 'Solicitudes anuladas',
-      text: 'Se actualizaron correctamente en la base de datos.',
+      icon: 'success',
+      title: 'Anulación exitosa',
+      text: 'Solicitudes actualizadas correctamente.',
       toast: true,
       position: 'bottom-end',
       showConfirmButton: false,
       timer: 3000,
-      timerProgressBar: true,
       background: '#1e2022',
       color: '#ffffff',
-      iconColor: '#f39c12'
+      iconColor: '#2ecc71'
     });
     setTimeout(() => location.reload(), 1000);
   }
 }
-  </script>
-
+</script>
 
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
