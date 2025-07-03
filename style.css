@@ -922,17 +922,20 @@ body.detalle-solicitud .content {
 
 .swal2-input {
   font-size: 13px;
-  padding: 8px;
-  height: 40px;
+  padding: 8px 10px;
+  height: 38px;
   border-radius: 6px;
   background-color: #2b2d30;
   color: #ffffff;
   border: 1px solid #555;
   box-sizing: border-box;
-  width: 80% !important;
-  max-width: 400px;
-}
 
+  width: auto !important;      /* ⬅️ Menos estirado */
+  min-width: 280px;            /* ⬅️ Ancho mínimo razonable */
+  max-width: 340px;            /* ⬅️ Evita que se vea gigante */
+  display: block;
+  margin: 0 auto;              /* ⬅️ Centra horizontalmente */
+}
 /* Ya tienes esto, solo ajusta si deseas alinear más con el input */
 .swal2-textarea {
   font-size: 13px;
