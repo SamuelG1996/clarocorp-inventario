@@ -617,7 +617,10 @@ document.getElementById("inputExcelCarga").addEventListener("change", async (eve
       confirmButtonText: "Sí, actualizar",
       cancelButtonText: "Cancelar",
       background: '#1e2022',
-      color: '#ffffff'
+      color: '#ffffff',
+        customClass: {
+    popup: 'swal2-modal-custom'
+    }
     });
 
     if (!confirm.isConfirmed) return;
