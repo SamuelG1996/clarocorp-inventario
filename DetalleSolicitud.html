@@ -24,7 +24,7 @@
         <table id="tablaDetalle">
           <thead>
             <tr>
-              <th>Código</th><th>Descripción</th><th>Cantidad</th><th>Serie</th><th>Lote</th><th>UMB</th>
+               <th>ID</th><th>Código</th><th>Descripción</th><th>Cantidad</th><th>Serie</th><th>Lote</th><th>UMB</th>
               <th>Alm. Origen</th><th>Centro Origen</th><th>Contrata Entrega</th>
               <th>Alm. Destino</th><th>Centro Destino</th><th>Contrata Recibe</th><th>Guía</th><th>Observación</th><th>Contabilizado</th>
             </tr>
@@ -116,7 +116,8 @@ if (!["Administrador", "Supervisor", "Soporte"].includes(rol)) {
       detalles.forEach(det => {
         const fila = document.createElement("tr");
         fila.innerHTML = `
-          <td>${det.codigo}</td>
+         <td>${det.id_detalle}</td>
+        <td>${det.codigo}</td>
          <td class="td-descripcion">${det.descripcion}</td>
           <td class="td-center">${det.cantidad}</td>
           <td class="td-left">${det.serie}</td>
