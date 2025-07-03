@@ -253,9 +253,7 @@ const contenidoCorreo = `
 <p><strong>Nuevo estado:</strong> ${nuevoEstado.toUpperCase()}</p>
 
 <p>${
-  nuevoEstado === "Pendiente"
-    ? "La solicitud ha sido editada y se encuentra nuevamente pendiente de atención por parte del equipo responsable."
-    : nuevoEstado === "Atendido"
+  nuevoEstado === "Atendido"
     ? "La solicitud ha sido atendida. Le agradecemos su paciencia y quedamos atentos a cualquier comentario adicional."
     : nuevoEstado === "Observado"
     ? "La solicitud ha sido observada. Por favor revise los comentarios del área responsable y actualice la información para su reenvío."
