@@ -869,7 +869,7 @@ body.formulario-traspaso .acciones-tabla button {
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 5px;
-  font-size: 12px;
+  font-size: 12px !important;
 }
 
 /* Aplica solo a la columna Descripción de la tabla de DetalleSolicitud */
