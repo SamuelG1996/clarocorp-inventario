@@ -869,6 +869,10 @@ body.formulario-traspaso .acciones-tabla button {
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+#tablaDetalle td,
+#tablaDetalle th {
   font-size: 12px !important;
 }
 
