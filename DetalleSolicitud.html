@@ -655,27 +655,32 @@ document.getElementById("inputExcelCarga").addEventListener("change", async (eve
       .update({ estado: "Pendiente", fecha_estado: new Date().toISOString() })
       .eq("id", id);
 
-    const { data: solicitud } = await supabase
-      .from("traspasos")
-      .select("responsable_codigo")
-      .eq("id", id)
-      .single();
+   onst { data: solicitudCorreo, error: errorSol } = await supabase
+  .from("traspasos")
+  .select("responsable_codigo")
+  .eq("id", id)
+  .single();
 
-    const { data: responsable } = await supabase
-      .from("usuarios")
-      .select("email")
-      .eq("codigo_usuario", solicitud.responsable_codigo)
-      .single();
-    
-    if (responsable?.email) {
-      await enviarCorreo({
-        to: responsable.email,
-        subject: `⚠️ Solicitud ID-${id} ha sido editada`,
-        body: `La solicitud ID-${id} ha sido editada y ha pasado a estado Pendiente para su revisión.`
-      });
-    } else {
-      console.warn("⚠️ No se encontró el email del responsable.");
-    }
+if (!solicitudCorreo || !solicitudCorreo.responsable_codigo) {
+  console.warn("⚠️ No se pudo obtener responsable_codigo para la solicitud.");
+} else {
+  const { data: responsable, error: errorResp } = await supabase
+    .from("usuarios")
+    .select("email")
+    .eq("codigo_usuario", solicitudCorreo.responsable_codigo)
+    .single();
+
+  if (responsable?.email) {
+    await enviarCorreo({
+      to: responsable.email,
+      subject: `⚠️ Solicitud ID-${id} ha sido editada`,
+      body: `La solicitud ID-${id} ha sido editada y ha pasado a estado Pendiente para su revisión.`
+    });
+    console.log("✉️ Correo enviado al responsable:", responsable.email);
+  } else {
+    console.warn("⚠️ No se encontró email del responsable.");
+  }
+}
     ocultarLoader();
 
     Swal.fire({
