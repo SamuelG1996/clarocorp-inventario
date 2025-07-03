@@ -583,6 +583,7 @@ document.getElementById("inputExcelCarga").addEventListener("change", async (eve
       }
 
       datosValidados.push({
+        id_detalle: fila["ID"],
         codigo: String(fila["Código"] ?? "").trim(),
         descripcion: String(fila["Descripción"] ?? "").trim(),
         cantidad: fila["Cantidad"],
