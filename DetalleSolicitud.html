@@ -379,8 +379,11 @@ async function editarDetalle() {
         });
       });
       modoEdicionActivo = true;
-      document.getElementById("btnEditar").innerHTML = `<i class="fas fa-save"></i> Guardar Cambios`;
-      document.getElementById("btnCargarExcel").style.display = "inline-block";
+  document.getElementById('btnGuardarCambios').style.display = 'inline-block';
+  document.getElementById('btnCargarExcel').style.display = 'inline-block';
+
+  document.getElementById('btnGuardarCambios').classList.add('boton-edicion');
+  document.getElementById('btnCargarExcel').classList.add('boton-edicion');
     } else {
       Swal.fire({
         title: '¿Guardar cambios?',
