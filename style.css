@@ -920,12 +920,32 @@ body.detalle-solicitud .content {
   border-radius: 10px;
 }
 
-/* Restringe que el textarea se expanda visualmente */
+.swal2-input {
+  font-size: 13px;
+  padding: 8px;
+  height: 40px;
+  border-radius: 6px;
+  background-color: #2b2d30;
+  color: #ffffff;
+  border: 1px solid #555;
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: 400px;
+}
+
+/* Ya tienes esto, solo ajusta si deseas alinear más con el input */
 .swal2-textarea {
   font-size: 13px;
   padding: 8px;
-  resize: none !important; /* ⛔️ Previene que el usuario agrande el cuadro */
-  height: 80px;             /* ✅ Altura fija */
+  resize: none !important;
+  height: 80px;
+  border-radius: 6px;
+  background-color: #2b2d30;
+  color: #ffffff;
+  border: 1px solid #555;
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: 400px;
 }
 /* --- FIN ESTILOS PARA EL SUBMODULO DE DETALLE SOLICITUD --- */
 
