@@ -161,20 +161,18 @@ if (!["Administrador", "Supervisor", "Soporte"].includes(rol)) {
 <script>
 async function enviarCorreo({ to, subject, body }) {
   try {
-    const { error } = await supabase
-      .from("correo_saliente")
-      .insert({
-        para: to,
+    await fetch("/api/EnviarCorreoClaro", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        destinatario: to,
         asunto: subject,
-        contenido: body,
-        fecha_envio: new Date().toISOString()
-      });
-
-    if (error) {
-      console.error("Error al guardar correo en la base de datos:", error.message);
-    }
+        contenido: body
+      })
+    });
+    console.log("✅ Correo enviado a:", to);
   } catch (err) {
-    console.error("Error al ejecutar enviarCorreo:", err);
+    console.error("❌ Error al enviar correo:", err);
   }
 }
 </script>
