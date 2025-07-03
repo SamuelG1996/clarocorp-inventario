@@ -626,26 +626,26 @@ document.getElementById("inputExcelCarga").addEventListener("change", async (eve
 
       const umb = (fila["UMB"] || "").toUpperCase();
       if (umb !== "PZA" && umb !== "MTRS") {
-        errores.push(Fila ${filaNum}: UMB inválido (${umb}));
+        errores.push(`Fila ${filaNum}: UMB inválido (${umb})`);
       }
 
       const centroOrigen = (fila["Centro Origen"] || "").toUpperCase();
       const centroDestino = (fila["Centro Destino"] || "").toUpperCase();
       if (!centroOrigen.startsWith("P")) {
-        errores.push(Fila ${filaNum}: Centro Origen debe comenzar con 'P' (${centroOrigen}));
+        errores.push(`Fila ${filaNum}: Centro Origen debe comenzar con 'P' (${centroOrigen})`);
       }
       if (!centroDestino.startsWith("P")) {
-        errores.push(Fila ${filaNum}: Centro Destino debe comenzar con 'P' (${centroDestino}));
+        errores.push(`Fila ${filaNum}: Centro Destino debe comenzar con 'P' (${centroDestino})`);
       }
 
       const almOrigen = (fila["Alm. Origen"] || "").toUpperCase();
       const almDestino = (fila["Alm. Destino"] || "").toUpperCase();
       const validPrefijos = ["I", "Y", "X"];
       if (!validPrefijos.some(p => almOrigen.startsWith(p))) {
-        errores.push(Fila ${filaNum}: Almacén Origen debe comenzar con I, Y o X (${almOrigen}));
+        errores.push(`Fila ${filaNum}: Almacén Origen debe comenzar con I, Y o X (${almOrigen})`);
       }
       if (!validPrefijos.some(p => almDestino.startsWith(p))) {
-        errores.push(Fila ${filaNum}: Almacén Destino debe comenzar con I, Y o X (${almDestino}));
+        errores.push(`Fila ${filaNum}: Almacén Destino debe comenzar con I, Y o X (${almDestino})`);
       }
 
       datosValidados.push({
@@ -669,7 +669,7 @@ document.getElementById("inputExcelCarga").addEventListener("change", async (eve
       Swal.fire({
         icon: 'error',
         title: 'Errores en el archivo',
-        html: <pre style="text-align:left;">${errores.join("\n")}</pre>,
+        html: `<pre style="text-align:left;">${errores.join("\n")}</pre>`,
         background: '#1e2022',
         color: '#ffffff'
       });
@@ -678,7 +678,7 @@ document.getElementById("inputExcelCarga").addEventListener("change", async (eve
 
     const confirm = await Swal.fire({
       title: "¿Confirmar actualización masiva?",
-      text: Se actualizarán ${datosValidados.length} registros. Esta acción reemplazará los datos actuales.,
+      text: `Se actualizarán ${datosValidados.length} registros. Esta acción reemplazará los datos actuales.`,
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Sí, actualizar",
@@ -712,8 +712,8 @@ document.getElementById("inputExcelCarga").addEventListener("change", async (eve
 
     await enviarCorreo({
       to: solicitud.responsable_codigo,
-      subject: ⚠️ Solicitud ID-${id} editada por Excel,
-      body: La solicitud ID-${id} ha sido editada mediante carga por plantilla y ha pasado a estado Pendiente.
+      subject: `⚠️ Solicitud ID-${id} ha sido editada`,
+      body: `La solicitud ID-${id} ha sido editada y ha pasado a estado Pendiente para su revisión.`
     });
 
     ocultarLoader();
