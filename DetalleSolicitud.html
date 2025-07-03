@@ -549,8 +549,12 @@ async function confirmarCambioEstado(estado) {
     background: '#1e2022',
     color: '#ffffff',
     iconColor: '#f39c12',
-    confirmButtonColor: '#28a745',
+    confirmButtonColor: '#11a24e',
     cancelButtonColor: '#dc3545',
+
+  customClass: {
+    popup: 'swal2-modal-custom'
+  },
    preConfirm: () => {
   if (estado === 'Atendido') {
     const val = document.getElementById("inputContabilizado").value.trim();
