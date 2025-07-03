@@ -950,6 +950,17 @@ body.detalle-solicitud .content {
   width: 100% !important;
   max-width: 400px;
 }
+
+.input-edicion {
+  width: 95%;
+  max-width: 300px;
+  font-size: 12px;
+  padding: 4px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  color: #000000;
+}
 /* --- FIN ESTILOS PARA EL SUBMODULO DE DETALLE SOLICITUD --- */
 
 /* Solo para el formulario de Centro de Ayuda */
