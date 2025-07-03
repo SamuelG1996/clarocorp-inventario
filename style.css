@@ -875,6 +875,13 @@ body.formulario-traspaso .acciones-tabla button {
   font-size: 13px;
 }
 
+.td-descripcion {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 body.detalle-solicitud.menu-page {
   overflow-x: hidden;         /* Evita scroll lateral */
   width: 100vw;               /* Limita al ancho de la ventana */
