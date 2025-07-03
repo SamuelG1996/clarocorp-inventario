@@ -875,7 +875,7 @@ body.formulario-traspaso .acciones-tabla button {
 /* Tamaño de letra más pequeño solo para DetalleSolicitud */
 #tablaDetalleSolicitud td,
 #tablaDetalleSolicitud th {
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .td-descripcion {
