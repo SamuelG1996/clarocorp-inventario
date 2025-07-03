@@ -191,7 +191,7 @@ async function eliminarSeleccionados() {
       mostrarLoader(); // Mostrar loader antes de cargar datos
     const rol = localStorage.getItem("rol");
 
-    if (["Administrador", "Supervisor", "Soporte"].includes(rol)) {
+    if (["Administrador", "Supervisor", "Soporte", "Contratista"].includes(rol)) {
       document.getElementById("btnEliminarSeleccionados").style.display = "inline-block";
     }
       const tbody = document.querySelector("#tablaTraspasos tbody");
