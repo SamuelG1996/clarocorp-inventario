@@ -367,8 +367,12 @@ async function editarDetalle() {
   if (estado === "Observado" && (esCreador || esResponsable || tieneRolPermitido)) {
     // 👉 Solo permitir carga por Excel, sin edición celda a celda
     const btnEditar = document.getElementById('btnEditar');
-    btnEditar.innerHTML = '📤 Subir Carga';
-    btnEditar.classList.add('boton-edicion');
+btnEditar.innerHTML = '<i class="fas fa-times"></i> Cancelar edición';
+btnEditar.classList.add('boton-edicion');
+// Reasignar evento para cancelar
+btnEditar.onclick = () => {
+  location.reload(); // recarga la página para restaurar todo
+};
 
     const btnCargarExcel = document.getElementById('btnCargarExcel');
     btnCargarExcel.style.display = 'inline-block';
