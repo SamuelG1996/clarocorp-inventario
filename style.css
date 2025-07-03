@@ -872,7 +872,7 @@ body.formulario-traspaso .acciones-tabla button {
 }
 
 .detalle-solicitud #tablaDetalle {
-  font-size: 12px;
+  font-size: 12px !important;
 }
 
 .td-descripcion {
