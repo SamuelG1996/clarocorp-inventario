@@ -105,7 +105,7 @@ async function eliminarSeleccionados() {
       if (estado === "Atendido" || estado === "Anulado") {
         Swal.fire({
           icon: 'warning',
-          title: 'No permitido',
+          title: 'Error',
           text: `La solicitud ID ${id} no puede ser anulada (Estado: ${estado}).`,
           toast: true,
           position: 'bottom-end',
