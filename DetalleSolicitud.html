@@ -630,10 +630,10 @@ document.getElementById("inputExcelCarga").addEventListener("change", async (eve
     for (let item of datosValidados) {
       await supabase
         .from("traspaso_detalle")
- .update(item)
-  .eq("id_traspaso", id)
-  .eq("codigo", item.codigo)
-  .eq("serie", item.serie);
+        .update(item)
+        .eq("id_traspaso", id)
+        .eq("codigo", item.codigo)
+        .eq("serie", item.serie || 'N/A');
     }
 
     await supabase
