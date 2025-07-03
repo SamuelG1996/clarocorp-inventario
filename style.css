@@ -912,6 +912,19 @@ body.detalle-solicitud .content {
 .td-left {
   text-align: left !important; 
 }
+
+.swal2-modal-custom {
+  width: 400px !important;
+  padding: 20px !important;
+  font-size: 14px !important;
+  border-radius: 10px;
+}
+
+.swal2-input,
+.swal2-textarea {
+  font-size: 13px;
+  padding: 8px;
+}
 /* --- FIN ESTILOS PARA EL SUBMODULO DE DETALLE SOLICITUD --- */
 
 /* Solo para el formulario de Centro de Ayuda */
