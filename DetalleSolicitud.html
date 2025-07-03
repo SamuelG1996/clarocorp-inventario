@@ -327,8 +327,6 @@ const contenidoCorreo = `
 
 
 <script>
-let modoEdicionActivo = false;
-
 async function editarDetalle() {
   const usuarioActual = localStorage.getItem("usuario") || "";
   const rol = localStorage.getItem("rol") || "";
@@ -367,110 +365,18 @@ async function editarDetalle() {
   }
 
   if (estado === "Observado" && (esCreador || esResponsable || tieneRolPermitido)) {
-    const filas = document.querySelectorAll("#tablaDetalle tbody tr");
+    // 👉 Solo permitir carga por Excel, sin edición celda a celda
+    const btnEditar = document.getElementById('btnEditar');
+    btnEditar.innerHTML = '📤 Subir Carga';
+    btnEditar.classList.add('boton-edicion');
 
-    if (!modoEdicionActivo) {
-      filas.forEach(fila => {
-        const celdas = fila.querySelectorAll("td");
-        const camposEditables = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-        camposEditables.forEach(i => {
-          const texto = celdas[i].innerText;
-          celdas[i].innerHTML = `<input value="${texto}" class="input-edicion" />`;
-        });
-      });
-      modoEdicionActivo = true;
-const btnEditar = document.getElementById('btnEditar');
-btnEditar.innerHTML = '<i class="fas fa-save"></i> Guardar Cambios';
-btnEditar.classList.add('boton-edicion');
+    const btnCargarExcel = document.getElementById('btnCargarExcel');
+    btnCargarExcel.style.display = 'inline-block';
+    btnCargarExcel.classList.add('boton-edicion');
 
-const btnCargarExcel = document.getElementById('btnCargarExcel');
-btnCargarExcel.style.display = 'inline-block';
-btnCargarExcel.classList.add('boton-edicion');
-  } else {
-      Swal.fire({
-        title: '¿Guardar cambios?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Guardar',
-        cancelButtonText: 'Cancelar',
-        background: '#1e2022',
-        color: '#ffffff',
-        iconColor: '#f39c12'
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          mostrarLoader();
-
-          const nuevasFilas = document.querySelectorAll("#tablaDetalle tbody tr");
-          const updates = [];
-
-          nuevasFilas.forEach(fila => {
-            const inputs = fila.querySelectorAll("input");
-            const codigo = fila.children[0].innerText;
-
-            updates.push({
-              codigo: codigo,
-              descripcion: inputs[0].value.trim(),
-              cantidad: inputs[1].value.trim(),
-              serie: inputs[2].value.trim(),
-              lote: inputs[3].value.trim(),
-              umb: inputs[4].value.trim(),
-              almacen_origen: inputs[5].value.trim(),
-              centro_origen: inputs[6].value.trim(),
-              contrata_entrega: inputs[7].value.trim(),
-              almacen_destino: inputs[8].value.trim(),
-              centro_destino: inputs[9].value.trim(),
-              contrata_recibe: inputs[10].value.trim(),
-              guia_remision_texto: inputs[11].value.trim()
-            });
-          });
-
-          for (let item of updates) {
-            await supabase
-              .from("traspaso_detalle")
-              .update(item)
-              .eq("id_traspaso", id)
-              .eq("codigo", item.codigo);
-          }
-
-          await supabase
-            .from("traspasos")
-            .update({ estado: "Pendiente", fecha_estado: new Date().toISOString() })
-            .eq("id", id);
-
-          await enviarCorreo(solicitud.responsable_codigo, `La solicitud ID-${id} fue editada y actualmente se encuentra pendiente de atención.`);
-
-          ocultarLoader();
-
-          Swal.fire({
-            icon: 'success',
-            title: 'Editado con éxito',
-            text: 'La solicitud ha sido actualizada.',
-            toast: true,
-            position: 'bottom-end',
-            showConfirmButton: false,
-            timer: 3000,
-            background: '#1e2022',
-            color: '#ffffff',
-            iconColor: '#2ecc71'
-          });
-
-          document.getElementById("btnCargarExcel").style.display = "none";
-          setTimeout(() => location.reload(), 1500);
-
-        } else {
-          // ✅ Restaurar botones si se cancela
-          const btnEditar = document.getElementById('btnEditar');
-          btnEditar.innerHTML = '<i class="fas fa-pen"></i> Editar Detalle';
-          btnEditar.classList.remove('boton-edicion');
-
-          const btnCargarExcel = document.getElementById('btnCargarExcel');
-          btnCargarExcel.style.display = 'none';
-          btnCargarExcel.classList.remove('boton-edicion');
-
-          modoEdicionActivo = false;
-        }
-      });
-    }
+    // Desactivar posibles inputs si los hubiera
+    const inputs = document.querySelectorAll("#tablaDetalle input");
+    inputs.forEach(input => input.disabled = true);
 
   } else {
     Swal.fire({
@@ -486,7 +392,9 @@ btnCargarExcel.classList.add('boton-edicion');
       iconColor: '#f39c12'
     });
   }
-}  
+}
+
+
 </script>
 
 <script>
