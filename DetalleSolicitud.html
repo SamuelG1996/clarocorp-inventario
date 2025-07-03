@@ -632,7 +632,7 @@ document.getElementById("inputExcelCarga").addEventListener("change", async (eve
       await supabase
         .from("traspaso_detalle")
         .update(item)
-        .eq("id", item.id);
+        .eq("id_detalle", item.id_detalle)
     }
 
     await supabase
