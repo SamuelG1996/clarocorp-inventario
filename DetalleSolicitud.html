@@ -661,12 +661,21 @@ document.getElementById("inputExcelCarga").addEventListener("change", async (eve
       .eq("id", id)
       .single();
 
-    await enviarCorreo({
-      to: solicitud.responsable_codigo,
-      subject: `⚠️ Solicitud ID-${id} ha sido editada`,
-      body: `La solicitud ID-${id} ha sido editada y ha pasado a estado Pendiente para su revisión.`
-    });
-
+    const { data: responsable } = await supabase
+      .from("usuarios")
+      .select("email")
+      .eq("codigo_usuario", solicitud.responsable_codigo)
+      .single();
+    
+    if (responsable?.email) {
+      await enviarCorreo({
+        to: responsable.email,
+        subject: `⚠️ Solicitud ID-${id} ha sido editada`,
+        body: `La solicitud ID-${id} ha sido editada y ha pasado a estado Pendiente para su revisión.`
+      });
+    } else {
+      console.warn("⚠️ No se encontró el email del responsable.");
+    }
     ocultarLoader();
 
     Swal.fire({
