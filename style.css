@@ -964,9 +964,9 @@ body.detalle-solicitud .content {
 }
 
 .boton-edicion {
-  background-color: #f39c12;
-  border: none;
-  color: white;
+  background-color: #f39c12 !important; /* naranja suave */
+  border-color: #f39c12 !important;
+  color: white !important;
   padding: 8px 16px;
   font-weight: bold;
   border-radius: 4px;
