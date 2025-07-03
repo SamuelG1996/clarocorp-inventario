@@ -46,10 +46,6 @@
         <i class="fas fa-pen"></i> Editar Detalle
       </button>
 
-      <button id="btnGuardarCambios" style="display:none;">
-  <i class="fas fa-save"></i> Guardar Cambios
-</button>
-      
       <button id="btnCargarExcel" class="boton-edicion" style="display:none;">
         <i class="fas fa-upload"></i> Subir Carga
       </button>
@@ -383,12 +379,14 @@ async function editarDetalle() {
         });
       });
       modoEdicionActivo = true;
-  document.getElementById('btnGuardarCambios').style.display = 'inline-block';
-  document.getElementById('btnCargarExcel').style.display = 'inline-block';
+const btnEditar = document.getElementById('btnEditar');
+btnEditar.innerHTML = '<i class="fas fa-save"></i> Guardar Cambios';
+btnEditar.classList.add('boton-edicion');
 
-  document.getElementById('btnGuardarCambios').classList.add('boton-edicion');
-  document.getElementById('btnCargarExcel').classList.add('boton-edicion');
-    } else {
+const btnCargarExcel = document.getElementById('btnCargarExcel');
+btnCargarExcel.style.display = 'inline-block';
+btnCargarExcel.classList.add('boton-edicion');
+  } else {
       Swal.fire({
         title: '¿Guardar cambios?',
         icon: 'question',
@@ -442,6 +440,7 @@ async function editarDetalle() {
           await enviarCorreo(solicitud.responsable_codigo, `La solicitud ID-${id} fue editada y actualmente se encuentra pendiente de atención.`);
 
           ocultarLoader();
+
           Swal.fire({
             icon: 'success',
             title: 'Editado con éxito',
@@ -454,11 +453,25 @@ async function editarDetalle() {
             color: '#ffffff',
             iconColor: '#2ecc71'
           });
+
           document.getElementById("btnCargarExcel").style.display = "none";
           setTimeout(() => location.reload(), 1500);
+
+        } else {
+          // ✅ Restaurar botones si se cancela
+          const btnEditar = document.getElementById('btnEditar');
+          btnEditar.innerHTML = '<i class="fas fa-pen"></i> Editar Detalle';
+          btnEditar.classList.remove('boton-edicion');
+
+          const btnCargarExcel = document.getElementById('btnCargarExcel');
+          btnCargarExcel.style.display = 'none';
+          btnCargarExcel.classList.remove('boton-edicion');
+
+          modoEdicionActivo = false;
         }
       });
     }
+
   } else {
     Swal.fire({
       icon: 'warning',
@@ -473,7 +486,7 @@ async function editarDetalle() {
       iconColor: '#f39c12'
     });
   }
-}
+}  
 </script>
 
 <script>
