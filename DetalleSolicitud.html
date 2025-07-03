@@ -42,11 +42,12 @@
       <button onclick="confirmarCambioEstado('Observado')">
         <i class="fas fa-exclamation-circle"></i> Observar
       </button>
-      <button id="btnEditar" onclick="editarDetalle()">
-      <i class="fas fa-pen"></i> Editar Detalle
+        <button id="btnEditar" class="boton-edicion" onclick="editarDetalle()">
+        <i class="fas fa-pen"></i> Guardar Cambios
       </button>
-      <button id="btnCargarExcel" style="display:none;">
-      <i class="fas fa-upload"></i> Subir Carga
+      
+      <button id="btnCargarExcel" class="boton-edicion" style="display:none;">
+        <i class="fas fa-upload"></i> Subir Carga
       </button>
       <input type="file" id="inputExcelCarga" accept=".xlsx, .xls" style="display:none;">
     </div>
