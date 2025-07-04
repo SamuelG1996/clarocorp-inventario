@@ -702,7 +702,7 @@ if (!solicitudCorreo || !solicitudCorreo.responsable_codigo) {
     await enviarCorreo({
       to: responsable.email,
       subject: `📌 Solicitud ID-${id} en espera de su aprobación`,
-      body: `<p>La solicitud <strong>ID-${id}</strong> ha sido actualizada y actualmente se encuentra en estado <strong>Pendiente</strong>.</p>
+      body: `<p>La solicitud <strong>ID-${id}</strong> ha sido actualizada y está nuevamente en estado <strong>Pendiente</strong>.</p>
   <p>Por favor, revise los cambios en el sistema y continúe con el proceso correspondiente.</p>`
     });
     console.log("✉️ Correo enviado al responsable:", responsable.email);
@@ -813,10 +813,10 @@ document.getElementById("inputNuevaGuia").addEventListener("change", async (even
     if (responsable?.email) {
       await enviarCorreo({
         to: responsable.email,
-        subject: `📌 Solicitud ID-${id} – Guía actualizada`,
+        subject: `📌 Solicitud ID-${id} en espera de su aprobación`,
         body: `
           <p>La solicitud <strong>ID-${id}</strong> ha sido actualizada con una nueva guía y está nuevamente en estado <strong>Pendiente</strong>.</p>
-          <p>Por favor, ingrese al sistema y revise el archivo actualizado.</p>
+          <p>Por favor, revise los cambios en el sistema y continúe con el proceso correspondiente.</p>
         `
       });
     }
