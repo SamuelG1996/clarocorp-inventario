@@ -671,8 +671,9 @@ if (!solicitudCorreo || !solicitudCorreo.responsable_codigo) {
   if (responsable?.email) {
     await enviarCorreo({
       to: responsable.email,
-      subject: `⚠️ Solicitud ID-${id} ha sido editada`,
-      body: `La solicitud ID-${id} ha sido editada y ha pasado a estado Pendiente para su revisión.`
+      subject: `📌 Solicitud ID-${id} en espera de su aprobación`,
+      body: `<p>La solicitud <strong>ID-${id}</strong> ha sido actualizada y actualmente se encuentra en estado <strong>Pendiente</strong>.</p>
+  <p>Por favor, revise los cambios en el sistema y continúe con el proceso correspondiente.</p>`
     });
     console.log("✉️ Correo enviado al responsable:", responsable.email);
   } else {
