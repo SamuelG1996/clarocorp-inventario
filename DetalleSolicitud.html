@@ -50,6 +50,11 @@
         <i class="fas fa-upload"></i> Subir Carga
       </button>
       <input type="file" id="inputExcelCarga" accept=".xlsx, .xls" style="display:none;">
+
+      <button id="btnActualizarGuia" class="boton-edicion" style="display:none;">
+      <i class="fas fa-file-upload"></i> Actualizar Guía
+    </button>
+    <input type="file" id="inputNuevaGuia" accept=".pdf,.png,.jpg,.jpeg" style="display:none;">
     </div>
     </div>
   </div>
@@ -398,6 +403,10 @@ btnEditar.onclick = () => {
     btnCargarExcel.style.display = 'inline-block';
     btnCargarExcel.classList.add('boton-edicion');
 
+    const btnActualizarGuia = document.getElementById('btnActualizarGuia');
+    btnActualizarGuia.style.display = 'inline-block';
+    btnActualizarGuia.classList.add('boton-edicion');
+
     // Desactivar posibles inputs si los hubiera
     const inputs = document.querySelectorAll("#tablaDetalle input");
     inputs.forEach(input => input.disabled = true);
@@ -721,6 +730,112 @@ if (!solicitudCorreo || !solicitudCorreo.responsable_codigo) {
   };
 
   reader.readAsArrayBuffer(file);
+});
+</script>
+  <script>
+document.getElementById("btnActualizarGuia").addEventListener("click", () => {
+  document.getElementById("inputNuevaGuia").click();
+});
+
+document.getElementById("inputNuevaGuia").addEventListener("change", async (event) => {
+  const archivo = event.target.files[0];
+  if (!archivo) return;
+
+  const extension = archivo.name.split(".").pop();
+  const nuevoNombre = `ID_${id}.${extension}`;
+
+  mostrarLoader();
+
+  // Subir archivo al bucket "traspasos"
+  const { data, error: uploadError } = await supabase.storage
+    .from("traspasos")
+    .upload(nuevoNombre, archivo, {
+      upsert: true,
+      contentType: archivo.type
+    });
+
+  if (uploadError) {
+    ocultarLoader();
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al subir archivo',
+      text: uploadError.message,
+      background: '#1e2022',
+      color: '#ffffff'
+    });
+    return;
+  }
+
+  // Obtener URL pública firmada
+  const { data: urlData } = await supabase.storage
+    .from("traspasos")
+    .createSignedUrl(nuevoNombre, 60 * 60 * 24 * 7); // 7 días
+
+  const nuevaGuiaUrl = urlData?.signedUrl;
+
+  if (!nuevaGuiaUrl) {
+    ocultarLoader();
+    Swal.fire({
+      icon: 'error',
+      title: 'No se pudo generar URL de descarga',
+      background: '#1e2022',
+      color: '#ffffff'
+    });
+    return;
+  }
+
+  // Actualizar todos los registros detalle de la solicitud
+  await supabase
+    .from("traspaso_detalle")
+    .update({ guia_remision: nuevaGuiaUrl })
+    .eq("id_traspaso", id);
+
+  // Cambiar estado de la solicitud a Pendiente
+  await supabase
+    .from("traspasos")
+    .update({ estado: "Pendiente", fecha_estado: new Date().toISOString() })
+    .eq("id", id);
+
+  // Notificar al responsable por correo
+  const { data: solicitudCorreo } = await supabase
+    .from("traspasos")
+    .select("responsable_codigo")
+    .eq("id", id)
+    .single();
+
+  if (solicitudCorreo?.responsable_codigo) {
+    const { data: responsable } = await supabase
+      .from("usuarios")
+      .select("email")
+      .eq("codigo_usuario", solicitudCorreo.responsable_codigo)
+      .single();
+
+    if (responsable?.email) {
+      await enviarCorreo({
+        to: responsable.email,
+        subject: `📌 Solicitud ID-${id} – Guía actualizada`,
+        body: `
+          <p>La solicitud <strong>ID-${id}</strong> ha sido actualizada con una nueva guía y está nuevamente en estado <strong>Pendiente</strong>.</p>
+          <p>Por favor, ingrese al sistema y revise el archivo actualizado.</p>
+        `
+      });
+    }
+  }
+
+  ocultarLoader();
+  Swal.fire({
+    icon: 'success',
+    title: 'Guía actualizada',
+    text: 'Se ha cargado correctamente y se notificó al responsable.',
+    toast: true,
+    position: 'bottom-end',
+    timer: 3000,
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#2ecc71'
+  });
+
+  setTimeout(() => location.reload(), 2000);
 });
 </script>
   <script src="Js/Loader.js"></script>
