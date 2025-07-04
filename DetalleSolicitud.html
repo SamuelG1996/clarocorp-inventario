@@ -327,23 +327,23 @@ const contenidoCorreo = `
 
 <script>
 async function editarDetalle() {
-  const usuarioActual = localStorage.getItem("usuario") || "";
-  const rol = localStorage.getItem("rol") || "";
+const codigoUsuario = localStorage.getItem("codigo_usuario") || "";
+const rol = localStorage.getItem("rol") || "";
 
-  const { data: solicitud, error } = await supabase
-    .from("traspasos")
-    .select("estado, solicitante, responsable_nombre, responsable_codigo")
-    .eq("id", id)
-    .single();
+const { data: solicitud, error } = await supabase
+  .from("traspasos")
+  .select("estado, codigo_solicitante, responsable_codigo")
+  .eq("id", id)
+  .single();
 
-  if (error) {
-    Swal.fire({ icon: 'error', title: 'Error al consultar solicitud', text: error.message });
-    return;
-  }
+if (error) {
+  Swal.fire({ icon: 'error', title: 'Error al consultar solicitud', text: error.message });
+  return;
+}
 
-  const estado = solicitud.estado;
-  const esCreador = solicitud.solicitante === usuarioActual;
-  const esResponsable = solicitud.responsable_nombre === usuarioActual;
+const estado = solicitud.estado;
+const esCreador = solicitud.codigo_solicitante === codigoUsuario;
+const esResponsable = solicitud.responsable_codigo === codigoUsuario;
   const tieneRolPermitido = ["Administrador", "Supervisor"].includes(rol);
 
   if (estado === "Atendido" || estado === "Anulado") {
