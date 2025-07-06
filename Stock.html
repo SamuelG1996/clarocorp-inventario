@@ -92,101 +92,6 @@
       }, 300);
     }
 
-  async function descargarExcel() {
-  mostrarLoader();
-  const filtro = document.getElementById("searchInput").value.toLowerCase().trim();
-  const empresaUsuario = localStorage.getItem("empresa");
-  const rolUsuario = localStorage.getItem("rol");
-
-  const registrosTotales = [];
-  let desde = 0;
-  const paso = 1000;
-  let continuar = true;
-
-  while (continuar) {
-    let query = supabase
-      .from("stock_contrata")
-      .select("*")
-      .range(desde, desde + paso - 1);
-
-    if (rolUsuario === "Contratista") {
-      query = query.ilike("empresa", empresaUsuario.toUpperCase());
-    }
-
-    if (filtro !== "") {
-      const like = `%${filtro}%`;
-      query = query.or(`
-        codigo.ilike.${like},
-        descripcion.ilike.${like},
-        centro.ilike.${like},
-        almacen.ilike.${like},
-        zona.ilike.${like},
-        empresa.ilike.${like}
-      `);
-    }
-
-    const { data, error } = await query;
-
-    if (error || !data || data.length === 0) {
-      continuar = false;
-    } else {
-      registrosTotales.push(...data);
-      desde += paso;
-      if (data.length < paso) continuar = false;
-    }
-  }
-
-  ocultarLoader();
-
-  if (registrosTotales.length === 0) {
-    Swal.fire({
-      icon: 'info',
-      title: 'Sin datos para exportar',
-      text: 'No se encontraron registros para descargar.',
-      background: '#1e2022',
-      color: '#ffffff',
-      iconColor: '#f39c12',
-      toast: true,
-      position: 'bottom-end',
-      timer: 3000,
-      showConfirmButton: false,
-      timerProgressBar: true
-    });
-    return;
-  }
-
-  const rows = registrosTotales
-  .filter(item => item.cantidad_sap && parseFloat(item.cantidad_sap) !== 0)
-  .map(item => [
-    item.codigo,
-    item.descripcion,
-    item.centro,
-    item.almacen,
-    item.cantidad_sap != null ? Number(item.cantidad_sap) : "",
-    item.lote,
-    item.tipo_material || '-', // 👈 NUEVO CAMPO
-    item.fecha_carga_sap ? new Date(item.fecha_carga_sap).toLocaleString("es-PE") : "—",
-    item.empresa,
-    item.zona,
-    item.stock_real ?? "",
-    item.stock_reservado ?? "",
-    item.stock_real != null && item.stock_reservado != null
-      ? item.stock_real - item.stock_reservado
-      : "—",
-    item.fecha_actualizacion ? new Date(item.fecha_actualizacion).toLocaleString("es-PE") : "—"
-  ]);
-
-  const headers = [
-    "Código", "Descripción", "Centro", "Almacén", "Cantidad SAP", "Lote", "Tipo Material", "Fecha SAP", "Empresa",
-    "Zona", "Stock físico", "Reservado", "Disponible", "Fecha Data"
-  ];
-
-  const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-  XLSX.utils.book_append_sheet(wb, ws, "Stock");
-  XLSX.writeFile(wb, "Stock_ClaroCorp.xlsx");
-}
-
     function logout() {
       localStorage.clear();
       window.location.href = "/index";
@@ -240,41 +145,28 @@ async function cargarStockContrata(filtro = "", pagina = 0) {
   filtroActual = filtro;
   paginaActual = pagina;
 
-  const desde = pagina * registrosPorPagina;
-  const hasta = desde + registrosPorPagina - 1;
-
   const empresaUsuario = localStorage.getItem("empresa");
   const rolUsuario = localStorage.getItem("rol");
+  const desde = pagina * registrosPorPagina;
 
-  let query = supabase
-  .from("stock_contrata")
-  .select("*", { count: "exact" })
-  .range(desde, hasta);
-
-// 🔒 Filtro por empresa si es contratista
-if (rolUsuario === "Contratista") {
-  query = query.ilike("empresa", empresaUsuario.toUpperCase());
-}
-
-// 🔍 Filtro global
-if (filtro.trim() !== "") {
-  const like = `%${filtro}%`;
-  query = query.or(
-    `codigo.ilike.${like},descripcion.ilike.${like},centro.ilike.${like},almacen.ilike.${like},zona.ilike.${like},empresa.ilike.${like}`
-  );
-}
-  const { data, error, count } = await query;
+  const { data, error } = await supabase.rpc("obtener_stock_contrata", {
+    rol_usuario: rolUsuario,
+    empresa_usuario: empresaUsuario,
+    filtro: filtro.trim(),
+    offset_val: desde,
+    limit_val: registrosPorPagina
+  });
 
   if (error) {
-    console.error("Error al cargar stock:", error);
+    console.error("Error al cargar stock con RPC:", error);
     ocultarLoader();
     return;
   }
 
   if (!data || data.length === 0) {
     tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; color:gray;">No se encontraron resultados.</td></tr>`;
-    ocultarLoader();
     renderizarControlesPaginacion(0, 0);
+    ocultarLoader();
     return;
   }
 
@@ -317,8 +209,20 @@ if (filtro.trim() !== "") {
     tbody.insertAdjacentHTML("beforeend", fila);
   });
 
-  totalPaginas = Math.ceil(count / registrosPorPagina);
-  renderizarControlesPaginacion();
+  // RPC para contar el total exacto de registros con filtro aplicado
+const { data: totalCount, error: errorCount } = await supabase.rpc("contar_stock_contrata", {
+  rol_usuario: rolUsuario,
+  empresa_usuario: empresaUsuario,
+  filtro: filtro.trim()
+});
+
+if (errorCount) {
+  console.warn("No se pudo obtener el total de registros:", errorCount);
+  totalPaginas = data.length < registrosPorPagina && pagina > 0 ? pagina + 1 : pagina + 2;
+} else {
+  totalPaginas = Math.ceil(totalCount / registrosPorPagina);
+}
+renderizarControlesPaginacion();
   ocultarLoader();
 }
     window.cargarStockContrata = cargarStockContrata;
@@ -582,7 +486,98 @@ let eliminados = 0;
   contenedor.appendChild(btnSiguiente);
 }
 
-  
+ async function descargarExcel() {
+  mostrarLoader(); // ← Añadir aquí
+
+  const empresaUsuario = localStorage.getItem("empresa");
+  const rolUsuario = localStorage.getItem("rol");
+  const filtro = document.getElementById("searchInput").value.trim();
+
+  let pagina = 0;
+  const bloques = [];
+  let continuar = true;
+
+  while (continuar) {
+    const { data, error } = await supabase.rpc("obtener_stock_contrata", {
+      rol_usuario: rolUsuario,
+      empresa_usuario: empresaUsuario,
+      filtro: filtro,
+      offset_val: pagina * registrosPorPagina,
+      limit_val: registrosPorPagina,
+    });
+
+    if (error) {
+      console.error("Error al descargar stock por RPC:", error);
+      ocultarLoader(); // ← En caso de error
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      continuar = false;
+    } else {
+      bloques.push(...data.filter(item => item.cantidad_sap && parseFloat(item.cantidad_sap) !== 0));
+      continuar = data.length === registrosPorPagina;
+      pagina++;
+    }
+  }
+
+  if (bloques.length === 0) {
+    ocultarLoader(); // ← Antes de alert
+    Swal.fire({
+      icon: "info",
+      title: "Sin datos para exportar",
+      toast: true,
+      position: "bottom-end",
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: "#1e2022",
+      color: "#ffffff",
+      iconColor: "#f39c12"
+    });
+    return;
+  }
+
+  const hoja = bloques.map((item) => ({
+    Código: item.codigo,
+    Descripción: item.descripcion,
+    Centro: item.centro,
+    Almacén: item.almacen,
+    "Stock SAP": item.cantidad_sap,
+    Lote: item.lote,
+    "Fecha SAP": item.fecha_carga_sap,
+    Empresa: item.empresa,
+    Zona: item.zona,
+    "Stock Real": item.stock_real,
+    "Reserva": item.stock_reservado,
+    "Stock Disponible": item.stock_real != null && item.stock_reservado != null
+      ? item.stock_real - item.stock_reservado
+      : null,
+    "Fecha Actualización": item.fecha_actualizacion
+  }));
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(hoja);
+  XLSX.utils.book_append_sheet(wb, ws, "Stock");
+  XLSX.writeFile(wb, "Stock_Contrata.xls");
+
+  ocultarLoader(); // ← Al final
+
+  Swal.fire({
+    icon: "success",
+    title: "¡Descarga exitosa!",
+    toast: true,
+    position: "bottom-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    background: "#1e2022",
+    color: "#ffffff",
+    iconColor: "#11a24e"
+  });
+}    
+
+window.descargarExcel = descargarExcel;    
 </script>
 
   <script>
