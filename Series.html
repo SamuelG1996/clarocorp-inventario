@@ -407,19 +407,18 @@ async function descargarExcelSeries() {
     XLSX.utils.book_append_sheet(wb, ws, "Series Contrata");
     XLSX.writeFile(wb, "Series_Contrata.xlsx");
 
-    Swal.fire({
-      icon: 'success',
-      title: 'Excel generado',
-      text: 'La descarga ha comenzado.',
-      toast: true,
-      position: 'bottom-end',
-      showConfirmButton: false,
-      timer: 2500,
-      timerProgressBar: true,
-      background: '#1e2022',
-      color: '#ffffff',
-      iconColor: '#11a24e'
-    });
+ Swal.fire({
+    icon: "success",
+    title: "¡Descarga exitosa!",
+    toast: true,
+    position: "bottom-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    background: "#1e2022",
+    color: "#ffffff",
+    iconColor: "#11a24e"
+  });
 
   } catch (error) {
     console.error("Error al exportar Excel:", error);
