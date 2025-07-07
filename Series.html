@@ -739,7 +739,7 @@ async function actualizarSAPSeries() {
         cliente: fila.Cliente || '-',
         id_devolucion: fila['ID Devolución/Traspaso'] || '-',
         comentario_contrata: fila['Comentario Contrata'] || '-',
-        estado_soporte: fila['Estado Soporte'] || '-',
+        estado_soporte: estadoSoporte,
         comentario_soporte: fila['Comentario Soporte'] || '-'
       };
 
@@ -883,7 +883,7 @@ async function procesarCargaSoporte(file) {
         almacen: fila['Almacén'],
         lote: fila['Lote'] || '-',
         nro_serie: fila['N° Serie'],
-        estado_soporte: fila['Estado Soporte'] || '-',
+        estado_soporte: estadoSoporte,
         comentario_soporte: fila['Comentario Soporte'] || '-',
         fecha_estado_soporte: obtenerFechaLocalISO(),
         estado_conciliacion: fila['Estado Conciliación'] || '-',
