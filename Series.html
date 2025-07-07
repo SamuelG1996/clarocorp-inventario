@@ -473,7 +473,8 @@ async function descargarExcelSeries() {
           cliente: (fila.Cliente || '-').toString().trim(),
           id_devolucion: fila['ID Devolución/Traspaso'] || '-',
           fecha_estado_contrata: obtenerFechaLocalISO(),
-          comentario_contrata: fila['Comentario Contrata'] || '-'
+          comentario_contrata: fila['Comentario Contrata'] || '-',
+          estado_soporte: "PENDIENTE"
         });
       }
   
