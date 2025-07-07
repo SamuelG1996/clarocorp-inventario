@@ -139,8 +139,10 @@ let paginaActual = 0;
 const tamañoPagina = 500;
 let filtroActual = '';
 let modoOrden = 'empresa'; // valores posibles: 'empresa' o 'antiguamiento'
-  
+    let yaSeEjecutó = false;
    async function cargarSeries(filtro = '', pagina = 0) {
+           if (yaSeEjecutó) return;
+  yaSeEjecutó = true;
   mostrarLoader();
   const tbody = document.getElementById("series-body");
   tbody.innerHTML = "";
@@ -977,7 +979,21 @@ async function procesarCargaSoporte(file) {
     }
   }
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    mostrarLoader();
 
+    // 🔁 Corrección de bug de duplicado
+    filtroActual = '';
+    paginaActual = 0;
+    series = [];
+    const contenedorSeries = document.getElementById("series-container");
+    if (contenedorSeries) contenedorSeries.innerHTML = "";
+
+    await cargarSeries();
+    ocultarLoader();
+  });
+</script>
 
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
