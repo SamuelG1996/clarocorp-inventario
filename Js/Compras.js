@@ -57,7 +57,7 @@ async function mostrarDetalleCompras(codigo) {
     return;
   }
 
-  let tablaHtml = `<table style="width:100%; text-align:left; border-collapse: collapse;">
+  let tablaHtml = `<table id="tablaDetalleEntregas" style="width:100%; text-align:left; border-collapse: collapse;">
     <thead>
       <tr>
         <th>Nro OC / SOLPED</th>
@@ -71,11 +71,10 @@ async function mostrarDetalleCompras(codigo) {
   entregas.forEach((e, idx) => {
     if (e.estado_solped?.toLowerCase() === "entregado") return;
 
-    const fechaFormateada = e.fecha_entrega || "";
-    tablaHtml += `<tr data-row="${idx}" data-nro="${e.nro_oc}">
+    tablaHtml += `<tr data-idx="${idx}">
       <td>${e.nro_oc}</td>
       <td>${e.cantidad}</td>
-      <td>${fechaFormateada || "Pendiente"}</td>
+      <td>${e.fecha_entrega || "Pendiente"}</td>
       <td>${e.estado_solped}</td>
     </tr>`;
   });
@@ -83,55 +82,71 @@ async function mostrarDetalleCompras(codigo) {
   tablaHtml += `</tbody></table>`;
 
   Swal.fire({
-    title: `Editar Detalle – ${codigo}`,
+    title: `Detalle de Entregas – ${codigo}`,
     html: `
       <div>${tablaHtml}</div>
       <div style="text-align:right; margin-top:15px">
-        <button id="guardarCambios" class="swal2-confirm swal2-styled" style="margin-right:10px;background:#f39c12">Guardar Cambios</button>
+        <button id="btnEditarDetalle" class="swal2-confirm swal2-styled" style="margin-right:10px;background:#f39c12">Editar Detalle</button>
         <button class="swal2-cancel swal2-styled">Cerrar</button>
       </div>
     `,
     showConfirmButton: false,
-    showCancelButton: false,
     background: '#1e2022',
     color: '#ffffff',
     width: 750,
-    customClass: {
-      popup: 'swal2-modal-custom'
-    },
     didOpen: () => {
-      // ✅ Botón guardar
-      document.getElementById("guardarCambios").addEventListener("click", async () => {
-        const filas = document.querySelectorAll("tbody tr");
-
-        for (const fila of filas) {
-          const nro_oc = fila.querySelector("td:nth-child(1)").innerText.trim();
-          const cantidad = fila.querySelector("td:nth-child(2)").innerText.trim();
-          const fecha = fila.querySelector("td:nth-child(3)").innerText.trim();
-          const estado = fila.querySelector("td:nth-child(4)").innerText.trim();
-
-          if (estado.toLowerCase() === "entregado") continue;
-
-          const fechaFormateada = fecha.includes("/") ? fecha.split("/").reverse().join("-") : fecha;
-
-          await supabaseClient
-            .from("ordenes_compra")
-            .update({
-              nro_oc: nro_oc,
-              cantidad_por_entregar: cantidad,
-              estado_solped: estado,
-              fecha_entrega_1: fechaFormateada || null
-            })
-            .eq("codigo", codigo)
-            .or(`nro_oc.eq.${nro_oc},solped.eq.${nro_oc}`);
-        }
-
-        location.reload();
-      });
-
-      // ✅ Botón cerrar (cierre inmediato)
+      // Botón cerrar
       document.querySelector(".swal2-cancel").addEventListener("click", () => {
         Swal.close();
+      });
+
+      // ✅ Botón editar: convierte las celdas en inputs
+      document.getElementById("btnEditarDetalle").addEventListener("click", () => {
+        const tabla = document.getElementById("tablaDetalleEntregas");
+        const filas = tabla.querySelectorAll("tbody tr");
+
+        filas.forEach(fila => {
+          const celdas = fila.children;
+          const nro_oc = celdas[0].innerText;
+          const cantidad = celdas[1].innerText;
+          const fecha = celdas[2].innerText;
+          const estado = celdas[3].innerText;
+
+          celdas[0].innerHTML = `<input type="text" value="${nro_oc}" data-col="nro_oc">`;
+          celdas[1].innerHTML = `<input type="number" value="${cantidad}" data-col="cantidad">`;
+          celdas[2].innerHTML = `<input type="date" value="${fecha.includes("-") ? fecha : ""}" data-col="fecha_entrega">`;
+          celdas[3].innerHTML = `<input type="text" value="${estado}" data-col="estado_solped">`;
+        });
+
+        // Cambia el botón
+        document.getElementById("btnEditarDetalle").outerHTML = `<button id="btnGuardarCambios" class="swal2-confirm swal2-styled" style="margin-right:10px;background:#f39c12">Guardar Cambios</button>`;
+
+        document.getElementById("btnGuardarCambios").addEventListener("click", async () => {
+          for (const fila of filas) {
+            const inputs = fila.querySelectorAll("input");
+            const filaDatos = {};
+            inputs.forEach(input => {
+              filaDatos[input.dataset.col] = input.value;
+            });
+
+            if (filaDatos.estado_solped?.toLowerCase() === "entregado") continue;
+
+            const fechaFormateada = filaDatos.fecha_entrega || null;
+
+            await supabaseClient
+              .from("ordenes_compra")
+              .update({
+                nro_oc: filaDatos.nro_oc,
+                cantidad_por_entregar: filaDatos.cantidad,
+                estado_solped: filaDatos.estado_solped,
+                fecha_entrega_1: fechaFormateada
+              })
+              .eq("codigo", codigo)
+              .or(`nro_oc.eq.${filaDatos.nro_oc},solped.eq.${filaDatos.nro_oc}`);
+          }
+
+          location.reload();
+        });
       });
     }
   });
