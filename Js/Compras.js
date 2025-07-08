@@ -40,115 +40,58 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
 async function mostrarDetalleCompras(codigo) {
-  const { data: entregas, error } = await supabaseClient.rpc("obtener_entregas_por_codigo", { cod: codigo });
+  const { data: entregas, error } = await supabaseClient
+    .rpc("obtener_entregas_por_codigo", { cod: codigo });
 
   if (error || !entregas || entregas.length === 0) {
     Swal.fire({
-      icon: "info",
+      icon: 'info',
       title: `Sin entregas programadas para el código ${codigo}`,
       toast: true,
-      position: "bottom-end",
+      position: 'bottom-end',
       timer: 3000,
       timerProgressBar: true,
       showConfirmButton: false,
-      background: "#1e2022",
-      color: "#ffffff",
+      background: '#1e2022',
+      color: '#ffffff'
     });
     return;
   }
 
-  let tablaHtml = `<table id="tablaDetalleEntregas" style="width:100%; text-align:left; border-collapse: collapse;">
+  let tablaHtml = `<table style="width:100%; text-align:left; border-collapse: collapse;">
     <thead>
       <tr>
-        <th>Nro OC / SOLPED</th>
-        <th>Cantidad</th>
-        <th>Fecha Entrega</th>
-        <th>Estado</th>
+        <th class="th-popup">Nro OC / SOLPED</th>
+        <th class="th-popup">Cantidad</th>
+        <th class="th-popup">Fecha Entrega</th>
+        <th class="th-popup">Estado</th>
       </tr>
     </thead>
     <tbody>`;
 
-  entregas.forEach((e, idx) => {
-    if (e.estado_solped?.toLowerCase() === "entregado") return;
-
-    tablaHtml += `<tr data-idx="${idx}">
-      <td>${e.nro_oc}</td>
-      <td>${e.cantidad}</td>
-      <td>${e.fecha_entrega || "Pendiente"}</td>
-      <td>${e.estado_solped}</td>
+  for (const e of entregas) {
+    const fechaFormateada = !e.fecha_entrega
+      ? "Pendiente"
+        : e.fecha_entrega.split("-").reverse().join("/");
+    tablaHtml += `<tr>
+      <td class="td-mini">${e.nro_oc}</td>
+      <td class="td-mini">${formatearNumero(e.cantidad)}</td>
+      <td class="td-mini">${fechaFormateada}</td>
+      <td class="td-mini">${e.estado_solped}</td>
     </tr>`;
-  });
+  }
 
   tablaHtml += `</tbody></table>`;
 
   Swal.fire({
-    title: `Detalle de Entregas – ${codigo}`,
-    html: `
-      <div>${tablaHtml}</div>
-      <div style="text-align:right; margin-top:15px">
-        <button id="btnEditarDetalle" class="swal2-confirm swal2-styled" style="margin-right:10px;background:#f39c12">Editar Detalle</button>
-        <button class="swal2-cancel swal2-styled">Cerrar</button>
-      </div>
-    `,
-    showConfirmButton: false,
+    title: `Resumen de Compras – Código ${codigo}`,
+    html: tablaHtml,
+    width: 650,
     background: '#1e2022',
     color: '#ffffff',
-    width: 750,
-    didOpen: () => {
-      // Botón cerrar
-      document.querySelector(".swal2-cancel").addEventListener("click", () => {
-        Swal.close();
-      });
-
-      // ✅ Botón editar: convierte las celdas en inputs
-      document.getElementById("btnEditarDetalle").addEventListener("click", () => {
-        const tabla = document.getElementById("tablaDetalleEntregas");
-        const filas = tabla.querySelectorAll("tbody tr");
-
-        filas.forEach(fila => {
-          const celdas = fila.children;
-          const nro_oc = celdas[0].innerText;
-          const cantidad = celdas[1].innerText;
-          const fecha = celdas[2].innerText;
-          const estado = celdas[3].innerText;
-
-          celdas[0].innerHTML = `<input type="text" value="${nro_oc}" data-col="nro_oc">`;
-          celdas[1].innerHTML = `<input type="number" value="${cantidad}" data-col="cantidad">`;
-          celdas[2].innerHTML = `<input type="date" value="${fecha.includes("-") ? fecha : ""}" data-col="fecha_entrega">`;
-          celdas[3].innerHTML = `<input type="text" value="${estado}" data-col="estado_solped">`;
-        });
-
-        // Cambia el botón
-        document.getElementById("btnEditarDetalle").outerHTML = `<button id="btnGuardarCambios" class="swal2-confirm swal2-styled" style="margin-right:10px;background:#f39c12">Guardar Cambios</button>`;
-
-        document.getElementById("btnGuardarCambios").addEventListener("click", async () => {
-          for (const fila of filas) {
-            const inputs = fila.querySelectorAll("input");
-            const filaDatos = {};
-            inputs.forEach(input => {
-              filaDatos[input.dataset.col] = input.value;
-            });
-
-            if (filaDatos.estado_solped?.toLowerCase() === "entregado") continue;
-
-            const fechaFormateada = filaDatos.fecha_entrega || null;
-
-            await supabaseClient
-              .from("ordenes_compra")
-              .update({
-                nro_oc: filaDatos.nro_oc,
-                cantidad_por_entregar: filaDatos.cantidad,
-                estado_solped: filaDatos.estado_solped,
-                fecha_entrega_1: fechaFormateada
-              })
-              .eq("codigo", codigo)
-              .or(`nro_oc.eq.${filaDatos.nro_oc},solped.eq.${filaDatos.nro_oc}`);
-          }
-
-          location.reload();
-        });
-      });
-    }
+    confirmButtonText: 'Cerrar',
+    confirmButtonColor: '#f39c12',
+    customClass: { title: 'swal-titulo-pequeno' }
   });
 }
 
@@ -197,7 +140,8 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
       const comprasCursoTd = document.createElement("td");
       comprasCursoTd.innerHTML = `<a href="#" style="text-decoration:none; color:#007bff;">${formatearNumero(item.compras_en_curso)}</a>`;
       comprasCursoTd.style.cursor = "pointer";
-          fila.appendChild(comprasCursoTd);
+      comprasCursoTd.addEventListener("click", () => mostrarDetalleCompras(item.codigo));
+      fila.appendChild(comprasCursoTd);
 
       const coberturaTotalTd = document.createElement("td");
       coberturaTotalTd.textContent = item.cobertura_total?.toFixed(1) ?? "-";
@@ -255,24 +199,6 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
     }
   });
 
-  document.addEventListener("click", function (e) {
-  const celda = e.target.closest("td");
-  if (!celda) return;
-
-  const fila = celda.closest("tr");
-  if (!fila) return;
-
-  const tabla = celda.closest("table");
-  if (!tabla) return;
-
-  const encabezado = tabla.querySelectorAll("thead th")[celda.cellIndex];
-  const nombreColumna = encabezado?.innerText.trim().toLowerCase();
-
-  if (nombreColumna === "compras en curso") {
-    const codigo = fila.querySelector("td")?.innerText.trim();
-    mostrarDetalleCompras(codigo);
-  }
-});
   // Llamada inicial
   cargarCompras();
-}); // ✅ ESTA LÍNEA CORRIGE EL ERROR
+});
