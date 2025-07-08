@@ -979,21 +979,6 @@ async function procesarCargaSoporte(file) {
     }
   }
 </script>
-<script>
-  document.addEventListener("DOMContentLoaded", async () => {
-    mostrarLoader();
-
-    // 🔁 Corrección de bug de duplicado
-    filtroActual = '';
-    paginaActual = 0;
-    series = [];
-    const contenedorSeries = document.getElementById("series-container");
-    if (contenedorSeries) contenedorSeries.innerHTML = "";
-
-    await cargarSeries();
-    ocultarLoader();
-  });
-</script>
 
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
