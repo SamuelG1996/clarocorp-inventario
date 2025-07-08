@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       : enteroFormateado;
   }
 
+// Lógica para mostrar y editar detalle de compras desde la celda "Compras en curso"
 async function mostrarDetalleCompras(codigo) {
   const { data: entregas, error } = await supabaseClient
     .rpc("obtener_entregas_por_codigo", { cod: codigo });
@@ -61,37 +62,70 @@ async function mostrarDetalleCompras(codigo) {
   let tablaHtml = `<table style="width:100%; text-align:left; border-collapse: collapse;">
     <thead>
       <tr>
-        <th class="th-popup">Nro OC / SOLPED</th>
-        <th class="th-popup">Cantidad</th>
-        <th class="th-popup">Fecha Entrega</th>
-        <th class="th-popup">Estado</th>
+        <th>Nro OC / SOLPED</th>
+        <th>Cantidad</th>
+        <th>Fecha Entrega</th>
+        <th>Estado</th>
       </tr>
     </thead>
     <tbody>`;
 
-  for (const e of entregas) {
-    const fechaFormateada = !e.fecha_entrega
-      ? "Pendiente"
-        : e.fecha_entrega.split("-").reverse().join("/");
+  entregas.forEach((e, idx) => {
+    if (e.estado_solped === "Entregado") return; // Ocultar entregas completadas
+
+    const fecha = e.fecha_entrega ? e.fecha_entrega.split("-").reverse().join("/") : "Pendiente";
+
     tablaHtml += `<tr>
-      <td class="td-mini">${e.nro_oc}</td>
-      <td class="td-mini">${formatearNumero(e.cantidad)}</td>
-      <td class="td-mini">${fechaFormateada}</td>
-      <td class="td-mini">${e.estado_solped}</td>
+      <td><input type="text" class="input-edit" value="${e.nro_oc}" data-row="${idx}" data-col="nro_oc"></td>
+      <td><input type="number" class="input-edit" value="${e.cantidad}" data-row="${idx}" data-col="cantidad"></td>
+      <td><input type="date" class="input-edit" value="${e.fecha_entrega || ''}" data-row="${idx}" data-col="fecha_entrega"></td>
+      <td><input type="text" class="input-edit" value="${e.estado_solped}" data-row="${idx}" data-col="estado_solped"></td>
     </tr>`;
-  }
+  });
 
   tablaHtml += `</tbody></table>`;
 
   Swal.fire({
-    title: `Resumen de Compras – Código ${codigo}`,
-    html: tablaHtml,
-    width: 650,
+    title: `Editar Detalle – ${codigo}`,
+    html: `
+      <div>${tablaHtml}</div>
+      <div style="text-align:right; margin-top:15px">
+        <button id="guardarCambios" class="swal2-confirm swal2-styled" style="margin-right:10px;background:#f39c12">Guardar Cambios</button>
+        <button class="swal2-cancel swal2-styled">Cerrar</button>
+      </div>
+    `,
+    showConfirmButton: false,
+    showCancelButton: false,
     background: '#1e2022',
     color: '#ffffff',
-    confirmButtonText: 'Cerrar',
-    confirmButtonColor: '#f39c12',
-    customClass: { title: 'swal-titulo-pequeno' }
+    width: 750,
+    didOpen: () => {
+      document.getElementById("guardarCambios").addEventListener("click", async () => {
+        const filas = document.querySelectorAll(".input-edit");
+        const cambios = {};
+
+        filas.forEach(input => {
+          const row = input.dataset.row;
+          const col = input.dataset.col;
+          cambios[row] = cambios[row] || {};
+          cambios[row][col] = input.value;
+        });
+
+        // Guardar en Supabase - ejemplo: actualiza ordenes_compra (requiere adaptación)
+        for (const fila of Object.values(cambios)) {
+          if (!fila.nro_oc || !fila.cantidad || !fila.estado_solped) continue;
+
+          await supabaseClient.from("ordenes_compra").update({
+            nro_oc: fila.nro_oc,
+            cantidad_por_entregar: fila.cantidad,
+            estado_solped: fila.estado_solped,
+            fecha_entrega_1: fila.fecha_entrega || null // ¡Ojo! adaptar si hay varias fechas
+          }).eq("codigo", codigo).eq("nro_oc", fila.nro_oc);
+        }
+
+        location.reload();
+      });
+    }
   });
 }
 
