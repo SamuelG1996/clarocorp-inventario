@@ -287,6 +287,49 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
     }
   });
 
+  document.addEventListener("click", function (e) {
+  const celda = e.target.closest("td");
+  if (!celda) return;
+
+  const fila = celda.closest("tr");
+  if (!fila) return;
+
+  const tabla = celda.closest("table");
+  if (!tabla) return;
+
+  const encabezado = tabla.querySelectorAll("thead th")[celda.cellIndex];
+  const nombreColumna = encabezado?.innerText.trim().toLowerCase();
+
+  if (nombreColumna === "compras en curso") {
+    const codigo = fila.querySelector("td")?.innerText.trim();
+
+    Swal.fire({
+      title: `Acción para: ${codigo}`,
+      html: `
+        <p>¿Deseas editar el detalle de las entregas para este material?</p>
+        <button id="btnEditarDetalle" class="swal2-confirm swal2-styled" style="background:#f39c12">Editar Detalle</button>
+        <button class="swal2-cancel swal2-styled">Cerrar</button>
+      `,
+      showConfirmButton: false,
+      background: '#1e2022',
+      color: '#ffffff',
+      customClass: {
+        popup: 'swal2-modal-custom'
+      },
+      didOpen: () => {
+        document.getElementById("btnEditarDetalle").addEventListener("click", () => {
+          Swal.close();
+          mostrarDetalleCompras(codigo);
+        });
+
+        document.querySelector(".swal2-cancel").addEventListener("click", () => {
+          Swal.close();
+        });
+      }
+    });
+  }
+});
+
   // Llamada inicial
   cargarCompras();
 });
