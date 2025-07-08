@@ -39,7 +39,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       : enteroFormateado;
   }
 
-// Función para mostrar detalle de compras (solo se activa al hacer clic en "Compras en curso")
 async function mostrarDetalleCompras(codigo) {
   const { data: entregas, error } = await supabaseClient.rpc("obtener_entregas_por_codigo", { cod: codigo });
 
@@ -86,25 +85,57 @@ async function mostrarDetalleCompras(codigo) {
   Swal.fire({
     title: `Editar Detalle – ${codigo}`,
     html: `
-      <div id="contenedor-edicion">
-        ${tablaHtml}
-        <div style="text-align:right; margin-top:15px">
-          <button id="btnEditar" class="swal2-confirm swal2-styled" style="margin-right:10px;background:#f39c12">Editar Detalle</button>
-          <button id="btnCerrar" class="swal2-cancel swal2-styled">Cerrar</button>
-        </div>
+      <div>${tablaHtml}</div>
+      <div style="text-align:right; margin-top:15px">
+        <button id="guardarCambios" class="swal2-confirm swal2-styled" style="margin-right:10px;background:#f39c12">Guardar Cambios</button>
+        <button class="swal2-cancel swal2-styled">Cerrar</button>
       </div>
     `,
     showConfirmButton: false,
     showCancelButton: false,
-    background: "#1e2022",
-    color: "#ffffff",
+    background: '#1e2022',
+    color: '#ffffff',
     width: 750,
-    didOpen: () => {
-      document.getElementById("btnEditar").addEventListener("click", () => activarEdicion(entregas, codigo));
+    customClass: {
+      popup: 'swal2-modal-custom'
     },
+    didOpen: () => {
+      // ✅ Botón guardar
+      document.getElementById("guardarCambios").addEventListener("click", async () => {
+        const filas = document.querySelectorAll("tbody tr");
+
+        for (const fila of filas) {
+          const nro_oc = fila.querySelector("td:nth-child(1)").innerText.trim();
+          const cantidad = fila.querySelector("td:nth-child(2)").innerText.trim();
+          const fecha = fila.querySelector("td:nth-child(3)").innerText.trim();
+          const estado = fila.querySelector("td:nth-child(4)").innerText.trim();
+
+          if (estado.toLowerCase() === "entregado") continue;
+
+          const fechaFormateada = fecha.includes("/") ? fecha.split("/").reverse().join("-") : fecha;
+
+          await supabaseClient
+            .from("ordenes_compra")
+            .update({
+              nro_oc: nro_oc,
+              cantidad_por_entregar: cantidad,
+              estado_solped: estado,
+              fecha_entrega_1: fechaFormateada || null
+            })
+            .eq("codigo", codigo)
+            .or(`nro_oc.eq.${nro_oc},solped.eq.${nro_oc}`);
+        }
+
+        location.reload();
+      });
+
+      // ✅ Botón cerrar (cierre inmediato)
+      document.querySelector(".swal2-cancel").addEventListener("click", () => {
+        Swal.close();
+      });
+    }
   });
 }
-
 function activarEdicion(entregas, codigo) {
   const tbody = document.querySelector(".swal2-container table tbody");
   tbody.innerHTML = "";
