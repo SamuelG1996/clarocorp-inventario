@@ -139,10 +139,7 @@ let paginaActual = 0;
 const tamañoPagina = 500;
 let filtroActual = '';
 let modoOrden = 'empresa'; // valores posibles: 'empresa' o 'antiguamiento'
-    let yaSeEjecutó = false;
    async function cargarSeries(filtro = '', pagina = 0) {
-           if (yaSeEjecutó) return;
-  yaSeEjecutó = true;
   mostrarLoader();
   const tbody = document.getElementById("series-body");
   tbody.innerHTML = "";
@@ -579,13 +576,27 @@ function confirmarCargaExcel(file) {
 </script>
 
     
-  <script>
-  document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("searchInput").value = ""; // 🔄 Limpia el campo
-  cargarSeries('');
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  if (window.yaSeEjecutó) return;
+  window.yaSeEjecutó = true;
+
+  const rol = localStorage.getItem("rol");
+
+  // Oculta botones si no es admin o soporte
+  if (rol !== "Administrador" && rol !== "Soporte") {
+    const botonSAP = document.querySelector("button[onclick='abrirDialogoSAPSeries()']");
+    if (botonSAP) botonSAP.style.display = "none";
+
+    const botonNotificador = document.querySelector("button[onclick='probarNotificador()']");
+    if (botonNotificador) botonNotificador.style.display = "none";
+  }
+
+  document.getElementById("searchInput").value = "";
+  mostrarLoader();
+  cargarSeries('').then(() => ocultarLoader());
 });
 </script>
-
   <script>
 function paginaSiguiente() {
   cargarSeries(filtroActual, paginaActual + 1);
@@ -635,23 +646,6 @@ function renderizarControlesPaginacionSeries(pagina, totalPaginas) {
   });
 </script>
   
-  <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const rol = localStorage.getItem("rol");
-
-  // Oculta el botón si NO eres Administrador o Soporte
-if (rol !== "Administrador" && rol !== "Soporte") {
-  const botonSAP = document.querySelector("button[onclick='abrirDialogoSAPSeries()']");
-  if (botonSAP) botonSAP.style.display = "none";
-
-  const botonNotificador = document.querySelector("button[onclick='probarNotificador()']");
-  if (botonNotificador) botonNotificador.style.display = "none";
-}
-
-  document.getElementById("searchInput").value = "";
-  cargarSeries('');
-});
-</script>
   
   <script>
 async function actualizarSAPSeries() {
@@ -980,7 +974,9 @@ async function procesarCargaSoporte(file) {
   }
 </script>
 
+
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
 </body>
 </html>
+
