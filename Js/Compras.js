@@ -274,5 +274,5 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
   }
 });
   // Llamada inicial
-   cargarCompras();
-}
+  cargarCompras();
+}); // ✅ ESTA LÍNEA CORRIGE EL ERROR
