@@ -228,8 +228,7 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
       const comprasCursoTd = document.createElement("td");
       comprasCursoTd.innerHTML = `<a href="#" style="text-decoration:none; color:#007bff;">${formatearNumero(item.compras_en_curso)}</a>`;
       comprasCursoTd.style.cursor = "pointer";
-      comprasCursoTd.addEventListener("click", () => mostrarDetalleCompras(item.codigo));
-      fila.appendChild(comprasCursoTd);
+          fila.appendChild(comprasCursoTd);
 
       const coberturaTotalTd = document.createElement("td");
       coberturaTotalTd.textContent = item.cobertura_total?.toFixed(1) ?? "-";
