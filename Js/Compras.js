@@ -71,7 +71,7 @@ async function mostrarDetalleCompras(codigo) {
     <tbody>`;
 
   entregas.forEach((e, idx) => {
-    if (e.estado_solped === "Entregado") return; // Ocultar entregas completadas
+    if ((e.estado_solped || '').trim().toLowerCase() === "entregado") return;
 
     const fecha = e.fecha_entrega ? e.fecha_entrega.split("-").reverse().join("/") : "Pendiente";
 
