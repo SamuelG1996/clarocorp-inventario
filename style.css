@@ -1048,3 +1048,9 @@ body.detalle-solicitud .content {
   font-weight: bold;
   text-align: left;
 }
+
+.mensaje-fecha-stock {
+  margin-top: 5px;
+  font-size: 13px;
+  color: #ffffffcc;
+}
