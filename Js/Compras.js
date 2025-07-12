@@ -199,6 +199,31 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
     }
   });
 
+  async function mostrarFechaActualizacionStock() {
+  const { data, error } = await supabaseClient
+    .from('stock_claro')
+    .select('fecha_carga_sap')
+    .order('fecha_carga_sap', { ascending: false })
+    .limit(1);
+
+  if (error) {
+    console.error('Error obteniendo fecha de stock:', error);
+    return;
+  }
+
+  if (data && data.length > 0) {
+    const fecha = new Date(data[0].fecha_carga_sap);
+    const fechaFormateada = fecha.toLocaleDateString('es-PE', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    });
+
+    document.getElementById('mensajeFechaStock').textContent =
+      `(*) El stock ha sido actualizado el ${fechaFormateada}`;
+  }
+}
   // Llamada inicial
   cargarCompras();
+  mostrarFechaActualizacionStock();
 });
