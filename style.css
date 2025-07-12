@@ -1049,8 +1049,9 @@ body.detalle-solicitud .content {
   text-align: left;
 }
 
-.mensaje-fecha-stock {
-  margin-top: 5px;
+#mensajeFechaStock {
+  margin-top: 6px;
   font-size: 13px;
   color: #ffffffcc;
+  font-style: italic;
 }
