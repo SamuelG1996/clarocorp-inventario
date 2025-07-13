@@ -232,7 +232,7 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
   }
 }
 
-  async function mostrarStockDetalle(codigo, tipoAlmacen) {
+async function mostrarStockDetalle(codigo, tipoAlmacen) {
   const { data, error } = await supabaseClient.rpc("obtener_stock_claro_detalle", {
     _codigo: codigo,
     _tipo: tipoAlmacen
@@ -250,7 +250,7 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
           <tr>
             <th class="th-popup">Centro</th>
             <th class="th-popup">Almacén</th>
-            <th class="th-popup">Zona</th>
+            <th class="th-popup">Lote</th>
             <th class="th-popup">Tipo Almacén</th>
             <th class="th-popup">Cantidad</th>
           </tr>
@@ -263,7 +263,7 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
         <tr>
           <td class="td-mini">${row.centro}</td>
           <td class="td-mini">${row.almacen}</td>
-          <td class="td-mini">${row.zona}</td>
+          <td class="td-mini">${row.lote}</td>
           <td class="td-mini">${row.tipo_almacen}</td>
           <td class="td-mini">${row.cantidad_sap}</td>
         </tr>
@@ -275,13 +275,12 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
     Swal.fire({
       title: `Detalle de Stock – ${tipoAlmacen}`,
       html: tablaHTML,
-      width: 650,
+      width: "50%",
       background: "#1e2022",
       color: "#ffffff",
-      confirmButtonText: 'Cerrar',
-      confirmButtonColor: '#f39c12',
+      showConfirmButton: false,
       position: "center",
-  customClass: { title: 'swal-titulo-pequeno' },
+    customClass: { title: 'swal-titulo-pequeno' },
     });
   } else {
     Swal.fire({
