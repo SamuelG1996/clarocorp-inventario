@@ -232,7 +232,34 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
   }
 }
 
-  async function obtenerDetalleStockClaro(codigo, tipoAlmacen) {
+ 
+
+ 
+
+  // Llamada inicial
+  cargarCompras();
+  mostrarFechaActualizacionStock();
+});
+  async function mostrarStockDetalle(codigo, tipoAlmacen) {
+  const registros = await obtenerDetalleStockClaro(codigo, tipoAlmacen);
+  if (registros.length > 0) {
+    mostrarDetalleStockClaroPopup(codigo, tipoAlmacen, registros);
+  } else {
+    Swal.fire({
+      icon: 'info',
+      title: 'Sin stock registrado',
+      text: `No se encontró stock en ${tipoAlmacen} para el código ${codigo}`,
+      background: "#1e2022",
+      color: "#ffffff",
+      position: "bottom-end",
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true
+    });
+  }
+}
+
+ async function obtenerDetalleStockClaro(codigo, tipoAlmacen) {
   const { data, error } = await supabaseClient
     .from("stock_claro")
     .select("centro, almacen, zona, tipo_almacen, cantidad_sap")
@@ -247,7 +274,7 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
   return data;
 }
 
-  function mostrarDetalleStockClaroPopup(codigo, tipoAlmacen, registros) {
+ function mostrarDetalleStockClaroPopup(codigo, tipoAlmacen, registros) {
   let tablaHTML = `
     <table style="width: 100%; border-collapse: collapse;">
       <thead>
@@ -290,28 +317,4 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
     timer: 10000,
     timerProgressBar: true
   });
-}
-
-
-  // Llamada inicial
-  cargarCompras();
-  mostrarFechaActualizacionStock();
-});
-  async function mostrarStockDetalle(codigo, tipoAlmacen) {
-  const registros = await obtenerDetalleStockClaro(codigo, tipoAlmacen);
-  if (registros.length > 0) {
-    mostrarDetalleStockClaroPopup(codigo, tipoAlmacen, registros);
-  } else {
-    Swal.fire({
-      icon: 'info',
-      title: 'Sin stock registrado',
-      text: `No se encontró stock en ${tipoAlmacen} para el código ${codigo}`,
-      background: "#1e2022",
-      color: "#ffffff",
-      position: "bottom-end",
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true
-    });
-  }
 }
