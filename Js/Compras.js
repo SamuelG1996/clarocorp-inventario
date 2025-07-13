@@ -302,7 +302,7 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
 }
  
 
- 
+   window.mostrarStockDetalle = mostrarStockDetalle;
 
   // Llamada inicial
   cargarCompras();
