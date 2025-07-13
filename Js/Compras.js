@@ -223,6 +223,21 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
       `(*) El stock ha sido actualizado el ${fechaFormateada}`;
   }
 }
+
+  async function obtenerDetalleStockClaro(codigo, tipoAlmacen) {
+  const { data, error } = await supabase
+    .from("stock_claro")
+    .select("centro, almacen, zona, tipo_almacen, cantidad_sap")
+    .eq("codigo", codigo)
+    .eq("tipo_almacen", tipoAlmacen);
+
+  if (error) {
+    console.error("Error consultando Supabase:", error);
+    return [];
+  }
+
+  return data;
+}
   // Llamada inicial
   cargarCompras();
   mostrarFechaActualizacionStock();
