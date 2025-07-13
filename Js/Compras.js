@@ -225,7 +225,7 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
 }
 
   async function obtenerDetalleStockClaro(codigo, tipoAlmacen) {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("stock_claro")
     .select("centro, almacen, zona, tipo_almacen, cantidad_sap")
     .eq("codigo", codigo)
@@ -237,6 +237,51 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
   }
 
   return data;
+}
+
+  function mostrarDetalleStockClaroPopup(codigo, tipoAlmacen, registros) {
+  let tablaHTML = `
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th class="th-popup">Centro</th>
+          <th class="th-popup">Almacén</th>
+          <th class="th-popup">Zona</th>
+          <th class="th-popup">Tipo Almacén</th>
+          <th class="th-popup">Cantidad</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  registros.forEach(row => {
+    tablaHTML += `
+      <tr>
+        <td class="td-mini">${row.centro}</td>
+        <td class="td-mini">${row.almacen}</td>
+        <td class="td-mini">${row.zona}</td>
+        <td class="td-mini">${row.tipo_almacen}</td>
+        <td class="td-mini">${row.cantidad_sap}</td>
+      </tr>
+    `;
+  });
+
+  tablaHTML += `</tbody></table>`;
+
+  Swal.fire({
+    title: `Detalle de Stock – ${tipoAlmacen}`,
+    html: tablaHTML,
+    width: "50%",
+    background: "#1e2022",
+    color: "#ffffff",
+    showConfirmButton: false,
+    position: "center",
+    customClass: {
+      popup: "swal2-modal-custom"
+    },
+    timer: 10000,
+    timerProgressBar: true
+  });
 }
   // Llamada inicial
   cargarCompras();
