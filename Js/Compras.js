@@ -124,15 +124,15 @@ async function mostrarDetalleCompras(codigo) {
         <td>${valorCompra}</td>
         <td class="columna-consumo">${formatearNumero(consumo)}</td>
         <td>
-          <a href="#" style="color:#00d5ff;" onclick="mostrarStockDetalle('${item.codigo}', 'LIMA')">
-            ${formatearNumero(item.stock_lima)}
-          </a>
-        </td>
-        <td>
-          <a href="#" style="color:#00d5ff;" onclick="mostrarStockDetalle('${item.codigo}', 'PROVINCIA')">
-            ${formatearNumero(item.stock_provincia)}
-          </a>
-        </td>
+        <a href="#" style="color:#00d5ff;" onclick="mostrarStockDetalle('${item.codigo}', 'LIMA')">
+          ${formatearNumero(item.stock_lima)}
+        </a>
+      </td>
+      <td>
+        <a href="#" style="color:#00d5ff;" onclick="mostrarStockDetalle('${item.codigo}', 'PROVINCIA')">
+          ${formatearNumero(item.stock_provincia)}
+        </a>
+      </td>
       `;
 
       const coberturaTd = document.createElement("td");
@@ -232,18 +232,60 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
   }
 }
 
- 
-
- 
-
-  // Llamada inicial
-  cargarCompras();
-  mostrarFechaActualizacionStock();
-});
   async function mostrarStockDetalle(codigo, tipoAlmacen) {
-  const registros = await obtenerDetalleStockClaro(codigo, tipoAlmacen);
-  if (registros.length > 0) {
-    mostrarDetalleStockClaroPopup(codigo, tipoAlmacen, registros);
+  const { data, error } = await supabaseClient.rpc("obtener_stock_claro_detalle", {
+    _codigo: codigo,
+    _tipo: tipoAlmacen
+  });
+
+  if (error) {
+    console.error("Error al consultar stock claro:", error);
+    return;
+  }
+
+  if (data.length > 0) {
+    let tablaHTML = `
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th class="th-popup">Centro</th>
+            <th class="th-popup">Almacén</th>
+            <th class="th-popup">Zona</th>
+            <th class="th-popup">Tipo Almacén</th>
+            <th class="th-popup">Cantidad</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    data.forEach(row => {
+      tablaHTML += `
+        <tr>
+          <td class="td-mini">${row.centro}</td>
+          <td class="td-mini">${row.almacen}</td>
+          <td class="td-mini">${row.zona}</td>
+          <td class="td-mini">${row.tipo_almacen}</td>
+          <td class="td-mini">${row.cantidad_sap}</td>
+        </tr>
+      `;
+    });
+
+    tablaHTML += `</tbody></table>`;
+
+    Swal.fire({
+      title: `Detalle de Stock – ${tipoAlmacen}`,
+      html: tablaHTML,
+      width: "50%",
+      background: "#1e2022",
+      color: "#ffffff",
+      showConfirmButton: false,
+      position: "center",
+      customClass: {
+        popup: "swal2-modal-custom"
+      },
+      timer: 10000,
+      timerProgressBar: true
+    });
   } else {
     Swal.fire({
       icon: 'info',
@@ -258,63 +300,12 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
     });
   }
 }
+ 
 
- async function obtenerDetalleStockClaro(codigo, tipoAlmacen) {
-  const { data, error } = await supabaseClient
-    .from("stock_claro")
-    .select("centro, almacen, zona, tipo_almacen, cantidad_sap")
-    .eq("codigo", codigo)
-    .eq("tipo_almacen", tipoAlmacen);
+ 
 
-  if (error) {
-    console.error("Error consultando Supabase:", error);
-    return [];
-  }
+  // Llamada inicial
+  cargarCompras();
+  mostrarFechaActualizacionStock();
+});
 
-  return data;
-}
-
- function mostrarDetalleStockClaroPopup(codigo, tipoAlmacen, registros) {
-  let tablaHTML = `
-    <table style="width: 100%; border-collapse: collapse;">
-      <thead>
-        <tr>
-          <th class="th-popup">Centro</th>
-          <th class="th-popup">Almacén</th>
-          <th class="th-popup">Zona</th>
-          <th class="th-popup">Tipo Almacén</th>
-          <th class="th-popup">Cantidad</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
-
-  registros.forEach(row => {
-    tablaHTML += `
-      <tr>
-        <td class="td-mini">${row.centro}</td>
-        <td class="td-mini">${row.almacen}</td>
-        <td class="td-mini">${row.zona}</td>
-        <td class="td-mini">${row.tipo_almacen}</td>
-        <td class="td-mini">${row.cantidad_sap}</td>
-      </tr>
-    `;
-  });
-
-  tablaHTML += `</tbody></table>`;
-
-  Swal.fire({
-    title: `Detalle de Stock – ${tipoAlmacen}`,
-    html: tablaHTML,
-    width: "50%",
-    background: "#1e2022",
-    color: "#ffffff",
-    showConfirmButton: false,
-    position: "center",
-    customClass: {
-      popup: "swal2-modal-custom"
-    },
-    timer: 10000,
-    timerProgressBar: true
-  });
-}
