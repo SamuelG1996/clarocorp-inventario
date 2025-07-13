@@ -275,10 +275,11 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
     Swal.fire({
       title: `Detalle de Stock – ${tipoAlmacen}`,
       html: tablaHTML,
-      width: "50%",
+      width: 650,
       background: "#1e2022",
       color: "#ffffff",
-      showConfirmButton: false,
+      confirmButtonText: 'Cerrar',
+      confirmButtonColor: '#f39c12',
       position: "center",
   customClass: { title: 'swal-titulo-pequeno' },
     });
