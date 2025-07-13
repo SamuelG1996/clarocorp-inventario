@@ -292,6 +292,11 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
   });
 }
 
+
+  // Llamada inicial
+  cargarCompras();
+  mostrarFechaActualizacionStock();
+});
   async function mostrarStockDetalle(codigo, tipoAlmacen) {
   const registros = await obtenerDetalleStockClaro(codigo, tipoAlmacen);
   if (registros.length > 0) {
@@ -310,7 +315,3 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
     });
   }
 }
-  // Llamada inicial
-  cargarCompras();
-  mostrarFechaActualizacionStock();
-});
