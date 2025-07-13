@@ -291,6 +291,25 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
     timerProgressBar: true
   });
 }
+
+  async function mostrarStockDetalle(codigo, tipoAlmacen) {
+  const registros = await obtenerDetalleStockClaro(codigo, tipoAlmacen);
+  if (registros.length > 0) {
+    mostrarDetalleStockClaroPopup(codigo, tipoAlmacen, registros);
+  } else {
+    Swal.fire({
+      icon: 'info',
+      title: 'Sin stock registrado',
+      text: `No se encontró stock en ${tipoAlmacen} para el código ${codigo}`,
+      background: "#1e2022",
+      color: "#ffffff",
+      position: "bottom-end",
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true
+    });
+  }
+}
   // Llamada inicial
   cargarCompras();
   mostrarFechaActualizacionStock();
