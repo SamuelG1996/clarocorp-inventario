@@ -280,11 +280,7 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
       color: "#ffffff",
       showConfirmButton: false,
       position: "center",
-      customClass: {
-        popup: "swal2-modal-custom"
-      },
-      timer: 10000,
-      timerProgressBar: true
+  customClass: { title: 'swal-titulo-pequeno' },
     });
   } else {
     Swal.fire({
