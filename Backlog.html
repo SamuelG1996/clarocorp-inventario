@@ -87,6 +87,7 @@
 let paginaActual = 1;
 const elementosPorPagina = 300;
     async function cargarBacklog(pagina = 1) {
+    mostrarLoader();
   const desde = (pagina - 1) * elementosPorPagina;
   const hasta = desde + elementosPorPagina - 1;
         const { data, error } = await supabaseClient
@@ -125,16 +126,18 @@ const elementosPorPagina = 300;
 	    
   paginaActual = pagina;
   document.getElementById("pageIndicator").textContent = `Página ${pagina}`;
+ocultarLoader();
     }
 
-	  function cambiarPagina(direccion) {
+	function cambiarPagina(direccion) {
+  inputBuscar.value = ""; // limpiar búsqueda al cambiar página
   const nuevaPagina = paginaActual + direccion;
   if (nuevaPagina < 1) return;
   cargarBacklog(nuevaPagina);
 }
 
 	function descargarExcel() {
-	  const tablaElement = document.getElementById("tablaSeries");
+	  const tablaElement = document.getElementById("tablaBacklog");
 	  const wb = XLSX.utils.book_new();
 
 	  // Convertir tabla HTML a una hoja de Excel
