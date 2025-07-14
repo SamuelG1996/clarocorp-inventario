@@ -39,6 +39,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       : enteroFormateado;
   }
 
+      function irABacklog() {
+  window.location.href = "/Backlog"; 
+}
+
 async function mostrarDetalleCompras(codigo) {
   const { data: entregas, error } = await supabaseClient
     .rpc("obtener_entregas_por_codigo", { cod: codigo });
