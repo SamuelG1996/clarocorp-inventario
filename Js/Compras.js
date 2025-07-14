@@ -167,7 +167,8 @@ const backlogTd = document.createElement("td");
 backlogTd.classList.add("backlog");
 backlogTd.textContent = "-"; // Valor por defecto hasta que se actualice
 fila.appendChild(backlogTd);
-      
+
+
       // Columna ESTADO (posición final)
      const estadoTd = document.createElement("td");
     if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
@@ -187,6 +188,25 @@ fila.appendChild(backlogTd);
     });
 
     tabla.appendChild(fragment);
+
+    const { data: backlog, error: errorBacklog } = await supabaseClient.rpc("obtener_backlog_por_codsap");
+
+    if (errorBacklog) {
+      console.error("❌ Error al obtener backlog:", errorBacklog);
+    } else {
+      console.log("✅ Backlog recibido:", backlog);
+      backlog.forEach(item => {
+        const filas = document.querySelectorAll("#tablaComprasBody tr");
+        filas.forEach(fila => {
+          const codigo = fila.cells[0]?.textContent.trim();
+          const celdaBacklog = fila.querySelector(".backlog");
+          if (codigo === item.codigo && celdaBacklog) {
+            celdaBacklog.textContent = item.total_cantidad;
+          }
+        });
+      });
+    }
+    
      ocultarLoader();
   }
 
@@ -305,25 +325,6 @@ data.forEach(row => {
   timerProgressBar: true
 });
   }
-}
- // Consultar la cantidad pendiente del backlog por cod_sap
-const { data: backlog, error: errorBacklog } = await supabaseClient.rpc("obtener_backlog_por_codsap");
-
-if (errorBacklog) {
-  console.error("Error al obtener backlog:", errorBacklog);
-} else {
-  backlog.forEach(item => {
-    // Buscar la fila correspondiente en la tabla usando el código SAP
-    const filas = document.querySelectorAll("#tablaComprasBody tr");
-    filas.forEach(fila => {
-      const codSapCelda = fila.cells[0]; // Primera columna: Código
-      if (codSapCelda && codSapCelda.textContent.trim() === item.cod_sap) {
-        const celdaPendiente = document.createElement("td");
-        celdaPendiente.textContent = item.total_cantidad;
-        fila.insertBefore(celdaPendiente, fila.cells[fila.cells.length - 1]); // Insertar antes del último td (Estado)
-      }
-    });
-  });
 }
 
    window.mostrarStockDetalle = mostrarStockDetalle;
