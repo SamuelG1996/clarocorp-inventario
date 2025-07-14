@@ -244,6 +244,7 @@ async function mostrarStockDetalle(codigo, tipoAlmacen) {
   }
 
   if (data.length > 0) {
+    data.sort((a, b) => b.cantidad_sap - a.cantidad_sap); // Ordena de mayor a menor
     let tablaHTML = `
       <table style="width: 100%; border-collapse: collapse;">
         <thead>
