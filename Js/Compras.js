@@ -285,8 +285,7 @@ async function mostrarStockDetalle(codigo, tipoAlmacen) {
   } else {
     Swal.fire({
       icon: 'info',
-      title: 'Sin stock registrado',
-      text: `No se encontró stock en ${tipoAlmacen} para el código ${codigo}`,
+      title: `No se encontró stock en ${tipoAlmacen} para el código ${codigo}`,
       background: "#1e2022",
       color: "#ffffff",
       position: "bottom-end",
