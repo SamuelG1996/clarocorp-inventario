@@ -124,12 +124,12 @@ async function mostrarDetalleCompras(codigo) {
         <td>${valorCompra}</td>
         <td class="columna-consumo">${formatearNumero(consumo)}</td>
         <td>
-        <a href="#";" onclick="mostrarStockDetalle('${item.codigo}', 'LIMA')">
-          ${formatearNumero(item.stock_lima)}
-        </a>
+    <a href="#" style="color: black; text-decoration: none;" onclick="mostrarStockDetalle('${item.codigo}', 'LIMA')">
+      ${formatearNumero(item.stock_lima)}
+    </a>
       </td>
       <td>
-        <a href="#";" onclick="mostrarStockDetalle('${item.codigo}', 'PROVINCIA')">
+        <a href="#" style="color: black; text-decoration: none;" onclick="mostrarStockDetalle('${item.codigo}', 'PROVINCIA')">
           ${formatearNumero(item.stock_provincia)}
         </a>
       </td>
