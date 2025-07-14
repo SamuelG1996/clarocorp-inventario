@@ -278,7 +278,8 @@ async function mostrarStockDetalle(codigo, tipoAlmacen) {
       width: "50%",
       background: "#1e2022",
       color: "#ffffff",
-      showConfirmButton: false,
+    confirmButtonText: 'Cerrar',
+    confirmButtonColor: '#f39c12',
       position: "center",
     customClass: { title: 'swal-titulo-pequeno' },
     });
