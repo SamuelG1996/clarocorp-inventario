@@ -21,6 +21,10 @@
       "destination": "/FormularioTraspaso.html"
     },
     {
+      "source": "/Backlog",
+      "destination": "/Backlog.html"
+    },
+    {
       "source": "/Traspaso",
       "destination": "/Traspaso.html"
     },
