@@ -266,7 +266,7 @@ data.forEach(row => {
       <td class="td-mini">${row.centro}</td>
       <td class="td-mini">${row.almacen}</td>
       <td class="td-mini">${row.lote}</td>
-      <td class="td-mini">${row.cantidad_sap}</td>
+      <td class="td-mini td-cantidad">${row.cantidad_sap}</td>
       <td class="td-mini">${row.tipo_almacen}</td>
       <td class="td-mini">${row.ciudad ?? "-"}</td>
     </tr>
