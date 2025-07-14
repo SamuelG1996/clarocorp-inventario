@@ -165,6 +165,7 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
 // 👉 NUEVA columna: BACKLOG
 const backlogTd = document.createElement("td");
 backlogTd.classList.add("backlog");
+backlogTd.style.textAlign = "center";      
 backlogTd.textContent = "-"; // Valor por defecto hasta que se actualice
 fila.appendChild(backlogTd);
 
