@@ -1,4 +1,4 @@
-// Versión optimizada usando la función RPC obtener_compras_optimizadas()
+
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("DOM cargado");
 
