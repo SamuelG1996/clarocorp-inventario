@@ -161,6 +161,13 @@ if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
       }
       fila.appendChild(coberturaTotalTd);
 
+
+// 👉 NUEVA columna: BACKLOG
+const backlogTd = document.createElement("td");
+backlogTd.classList.add("backlog");
+backlogTd.textContent = "-"; // Valor por defecto hasta que se actualice
+fila.appendChild(backlogTd);
+      
       // Columna ESTADO (posición final)
      const estadoTd = document.createElement("td");
     if (typeof coberturaValor === "number" && !isNaN(coberturaValor)) {
