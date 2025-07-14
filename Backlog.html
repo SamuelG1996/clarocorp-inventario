@@ -50,6 +50,9 @@
             <th>Código SAP</th>
             <th>Fecha Generación</th>
             <th>Fecha Compromiso</th>
+	    <th>Estado Soporte</th>
+	<th>Comentario Soporte</th>
+	<th>Fecha Estado Soporte</th>  
           </tr>
         </thead>
         <tbody id="tablaBacklogBody">
@@ -81,15 +84,21 @@
     function formatearFecha(fecha) {
       return fecha ? fecha.split("-").reverse().join("/") : "-";
     }
+let paginaActual = 1;
+const elementosPorPagina = 300;
+    async function cargarBacklog(pagina = 1) {
+  const desde = (pagina - 1) * elementosPorPagina;
+  const hasta = desde + elementosPorPagina - 1;
+        const { data, error } = await supabaseClient
+    .from("backlog_compras")
+    .select("*", { count: "exact" })
+    .range(desde, hasta);
 
-    async function cargarBacklog() {
-      const { data, error } = await supabaseClient.from("backlog_compras").select("*");
+  if (error) {
+    console.error("Error al obtener datos:", error);
+    return;
+  }
 
-      if (error) {
-        console.error("Error al obtener datos:", error);
-        return;
-      }
-console.log("Datos recibidos:", data);
       tabla.innerHTML = "";
 
       data.forEach(item => {
@@ -107,9 +116,15 @@ console.log("Datos recibidos:", data);
           <td>${item.nuevo_codigo || "-"}</td>
           <td>${formatearFecha(item.fecha_generacion)}</td>
           <td>${formatearFecha(item.fecha_compromiso)}</td>
+	  <td>${item.estado_soporte || "PENDIENTE"}</td>
+	<td>${item.comentario_soporte || "-"}</td>
+	<td>${item.fecha_estado_soporte ? formatearFecha(item.fecha_estado_soporte.split("T")[0]) : "-"}</td>
         `;
         tabla.appendChild(fila);
       });
+	    
+  paginaActual = pagina;
+  document.getElementById("pageIndicator").textContent = `Página ${pagina}`;
     }
 
 	function descargarExcel() {
