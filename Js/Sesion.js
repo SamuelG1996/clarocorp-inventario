@@ -3,7 +3,7 @@
 const excludedPages = [
   "Perfil.html", "Stock.html", "Series.html",
   "FormularioTraspaso.html", "index.html", 
-  "DetalleSolicitud.html", "CentroAyuda.html", "/Compras.html", "/Perfil", "/Stock", "/Series", "/FormularioTraspaso", "/DetalleSolicitud", "/CentroAyuda",
+  "DetalleSolicitud.html", "CentroAyuda.html", "/Compras.html", "/Backlog.html", "/Perfil", "/Stock", "/Series", "/FormularioTraspaso", "/DetalleSolicitud", "/CentroAyuda", "/Backlog",
   "/Compras"
 ];
 
