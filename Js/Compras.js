@@ -284,15 +284,16 @@ async function mostrarStockDetalle(codigo, tipoAlmacen) {
     });
   } else {
     Swal.fire({
-      icon: 'info',
-      title: `No se encontró stock en ${tipoAlmacen} para el código ${codigo}`,
-      background: "#1e2022",
-      color: "#ffffff",
-      position: "bottom-end",
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true
-    });
+  icon: 'info',
+  title: `No se encontró stock en ${tipoAlmacen} para el código ${codigo}`,
+  toast: true,
+  position: "bottom-end",
+  background: "#1e2022",
+  color: "#ffffff",
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true
+});
   }
 }
  
