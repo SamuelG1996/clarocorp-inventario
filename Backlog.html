@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Portal Inventario || Backlog</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <link rel="icon" type="image/x-icon" href="Imagenes/favicon.ico">
+</head>
+<body class="menu-page formulario-traspaso">
+    <div class="content">
+	  <div class="contenedor">
+    
+    <a href="/Compras" class="volver">
+	      <i class="fas fa-arrow-left"></i> Volver a Compras
+    </a>
+	
+    <h2><i class="fas fa-chart-bar"></i> Seguimiento de backlog</h2>
+
+    <div class="acciones-tabla acciones-series">
+      <button onclick="descargarExcel()">
+        <i class="fas fa-file-excel"></i> Descargar Excel
+      </button>
+      
+ <div class="search-bar-paginacion">
+  <input type="text" id="inputBuscar" placeholder="Buscar por código, descripción, SOT o cliente..." oninput="filtrarTabla()" />
+  <div class="paginacion">
+    <button id="prevPage" onclick="cambiarPagina(-1)">Anterior</button>
+    <span id="pageIndicator">Página 1</span>
+    <button id="nextPage" onclick="cambiarPagina(1)">Siguiente</button>
+  </div>
+</div>
+
+      <div class="tabla-scroll">
+      <table id="tablaSeries">
+        <thead>	
+          <tr>
+            <th>Proyecto</th>
+            <th>SOT</th>
+            <th>Estado SOT</th>
+            <th>Cliente</th>
+            <th>Tipo Trabajo</th>
+            <th>Tipo Proyecto</th>
+            <th>Sede</th>
+            <th>Cantidad</th>
+            <th>Descripción</th>
+            <th>Código SAP</th>
+            <th>F. Generación</th>
+            <th>F. Compromiso</th>
+          </tr>
+        </thead>
+        <tbody id="tablaBacklogBody">
+          <!-- Se llenará dinámicamente -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const { createClient } = supabase;
+    const supabaseUrl = "https://bsrtuievwjtzwejuxqee.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI";
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+    const tabla = document.getElementById("tablaBacklogBody");
+    const inputBuscar = document.getElementById("inputBuscar");
+
+    inputBuscar.addEventListener("input", () => {
+      const filtro = inputBuscar.value.toLowerCase();
+      const filas = tabla.getElementsByTagName("tr");
+
+      for (let i = 0; i < filas.length; i++) {
+        const textoFila = filas[i].textContent.toLowerCase();
+        filas[i].style.display = textoFila.includes(filtro) ? "" : "none";
+      }
+    });
+
+    function formatearFecha(fecha) {
+      return fecha ? fecha.split("-").reverse().join("/") : "-";
+    }
+
+    async function cargarBacklog() {
+      const { data, error } = await supabaseClient.from("backlog_compras").select("*");
+
+      if (error) {
+        console.error("Error al obtener datos:", error);
+        return;
+      }
+
+      tabla.innerHTML = "";
+
+      data.forEach(item => {
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+          <td>${item.proyecto || "-"}</td>
+          <td>${item.codsolot || "-"}</td>
+          <td>${item.estado_sot || "-"}</td>
+          <td>${item.cliente || "-"}</td>
+          <td>${item.tipotrabajo || "-"}</td>
+          <td>${item.tipoproyecto || "-"}</td>
+          <td>${item.sede || "-"}</td>
+          <td>${item.cantidad ?? "-"}</td>
+          <td title="${item.descripcion}">${item.descripcion || "-"}</td>
+          <td>${item.nuevo_codigo || "-"}</td>
+          <td>${formatearFecha(item.f_generacion)}</td>
+          <td>${formatearFecha(item.f_compromiso)}</td>
+        `;
+        tabla.appendChild(fila);
+      });
+    }
+
+	function descargarExcel() {
+	  const tablaElement = document.getElementById("tablaSeries");
+	  const wb = XLSX.utils.book_new();
+
+	  // Convertir tabla HTML a una hoja de Excel
+	  const ws = XLSX.utils.table_to_sheet(tablaElement, { raw: true });
+
+	  // Agregar la hoja al libro de Excel
+	  XLSX.utils.book_append_sheet(wb, ws, "Backlog");
+
+	  // Descargar el archivo .xlsx
+	  XLSX.writeFile(wb, "backlog_compras.xlsx");
+	}
+
+    document.addEventListener("DOMContentLoaded", cargarBacklog);
+  </script>
+</body>
+</html>
