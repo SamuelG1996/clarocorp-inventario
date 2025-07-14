@@ -33,6 +33,7 @@
     <button id="nextPage" onclick="cambiarPagina(1)">Siguiente</button>
   </div>
 </div>
+<div id="resumenResultados" class="resumen-resultados"></div>
 
       <div class="tabla-scroll">
       <table id="tablaBacklog">
@@ -65,37 +66,42 @@
 	
     const supabaseUrl = "https://bsrtuievwjtzwejuxqee.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI";
-  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 	  
   document.addEventListener("DOMContentLoaded", () => {
     const tabla = document.getElementById("tablaBacklogBody");
     const inputBuscar = document.getElementById("inputBuscar");
-
-    inputBuscar.addEventListener("input", () => {
-      const filtro = inputBuscar.value.toLowerCase();
-      const filas = tabla.getElementsByTagName("tr");
-
-      for (let i = 0; i < filas.length; i++) {
-        const textoFila = filas[i].textContent.toLowerCase();
-        filas[i].style.display = textoFila.includes(filtro) ? "" : "none";
-      }
-    });
-
+	  
+let timeout = null;
+  inputBuscar.addEventListener("input", () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      paginaActual = 1; // reinicia a la primera página al hacer nueva búsqueda
+      cargarBacklog();
+    }, 300); // espera 300ms después de dejar de escribir
+  });
+	  
     function formatearFecha(fecha) {
       return fecha ? fecha.split("-").reverse().join("/") : "-";
     }
 let paginaActual = 1;
+let totalResultados = 0;
 const elementosPorPagina = 300;
-    async function cargarBacklog(pagina = 1) {
+ async function cargarBacklog(pagina = 1) {
   mostrarLoader();
 
-  const inputBuscar = document.getElementById("inputBuscar").value.trim();
+  const termino = document.getElementById("inputBuscar").value.trim();
   const desde = (pagina - 1) * elementosPorPagina;
-const offset = (pagina - 1) * elementosPorPagina;
+  const limite = elementosPorPagina;
+
+  // 1. Obtener cantidad total
+  totalResultados = await contarResultados(termino);
+
+  // 2. Obtener registros de la página actual
   const { data, error } = await supabaseClient.rpc("buscar_backlog_compras", {
-    termino: inputBuscar,
+    termino,
     offset_val: desde,
-    limit_val: hasta
+    limit_val: limite
   });
 
   if (error) {
@@ -104,7 +110,10 @@ const offset = (pagina - 1) * elementosPorPagina;
     return;
   }
 
+  // 3. Llenar tabla
+  const tabla = document.getElementById("tablaBacklogBody");
   tabla.innerHTML = "";
+
   data.forEach(item => {
     const fila = document.createElement("tr");
     fila.innerHTML = `
@@ -127,18 +136,36 @@ const offset = (pagina - 1) * elementosPorPagina;
     tabla.appendChild(fila);
   });
 
+  // 4. Actualizar resumen
+  const hasta = Math.min(desde + elementosPorPagina, totalResultados);
+  const resumenDiv = document.getElementById("resumenResultados");
+  resumenDiv.textContent = `Mostrando ${desde + 1}–${hasta} de ${totalResultados} resultados para '${termino || "todos"}'`;
+
+  // 5. Actualizar paginador
   paginaActual = pagina;
   document.getElementById("pageIndicator").textContent = `Página ${pagina}`;
+ // Desactivar botones si corresponde
+document.getElementById("prevPage").disabled = paginaActual === 1;
+document.getElementById("nextPage").disabled = (paginaActual * elementosPorPagina) >= totalResultados;
   ocultarLoader();
 }
-
 	function cambiarPagina(direccion) {
 
   const nuevaPagina = paginaActual + direccion;
   if (nuevaPagina < 1) return;
   cargarBacklog(nuevaPagina);
 }
+async function contarResultados(termino) {
+  const { data, error } = await supabaseClient
+    .rpc("contar_backlog_compras", { termino });
 
+  if (error) {
+    console.error("Error al contar:", error);
+    return 0;
+  }
+
+  return data;
+}
 	function descargarExcel() {
 	  const tablaElement = document.getElementById("tablaBacklog");
 	  const wb = XLSX.utils.book_new();
@@ -157,6 +184,7 @@ const offset = (pagina - 1) * elementosPorPagina;
     window.descargarExcel = descargarExcel;
 
     // Cargar datos al iniciar
+	  
     cargarBacklog();
   });
   </script>
