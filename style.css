@@ -1060,7 +1060,7 @@ body.detalle-solicitud .content {
   text-align: center;
 }
 
-.backlog-page td.estado-sot,
+.backlog-page td.estado_sot,
 .backlog-page td.cliente,
 .backlog-page td.sede {
   text-align: left !important;
