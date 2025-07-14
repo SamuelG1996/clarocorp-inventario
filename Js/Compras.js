@@ -245,32 +245,33 @@ async function mostrarStockDetalle(codigo, tipoAlmacen) {
 
   if (data.length > 0) {
     data.sort((a, b) => b.cantidad_sap - a.cantidad_sap); // Ordena de mayor a menor
-    let tablaHTML = `
-      <table style="width: 100%; border-collapse: collapse;">
-        <thead>
-          <tr>
-            <th class="th-popup">Centro</th>
-            <th class="th-popup">Almacén</th>
-            <th class="th-popup">Lote</th>
-            <th class="th-popup">Tipo Almacén</th>
-            <th class="th-popup">Cantidad</th>
-          </tr>
-        </thead>
-        <tbody>
-    `;
+   let tablaHTML = `
+  <table style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th class="th-popup">Centro</th>
+        <th class="th-popup">Almacén</th>
+        <th class="th-popup">Lote</th>
+        <th class="th-popup">Cantidad</th>
+        <th class="th-popup">Tipo Almacén</th>
+        <th class="th-popup">Ciudad</th>
+      </tr>
+    </thead>
+    <tbody>
+`;
 
-    data.forEach(row => {
-      tablaHTML += `
-        <tr>
-          <td class="td-mini">${row.centro}</td>
-          <td class="td-mini">${row.almacen}</td>
-          <td class="td-mini">${row.lote}</td>
-          <td class="td-mini">${row.tipo_almacen}</td>
-          <td class="td-mini">${row.cantidad_sap}</td>
-        </tr>
-      `;
-    });
-
+data.forEach(row => {
+  tablaHTML += `
+    <tr>
+      <td class="td-mini">${row.centro}</td>
+      <td class="td-mini">${row.almacen}</td>
+      <td class="td-mini">${row.lote}</td>
+      <td class="td-mini">${row.cantidad_sap}</td>
+      <td class="td-mini">${row.tipo_almacen}</td>
+      <td class="td-mini">${row.ciudad ?? "-"}</td>
+    </tr>
+  `;
+});
     tablaHTML += `</tbody></table>`;
 
     Swal.fire({
