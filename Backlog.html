@@ -127,6 +127,12 @@ const elementosPorPagina = 300;
   document.getElementById("pageIndicator").textContent = `Página ${pagina}`;
     }
 
+	  function cambiarPagina(direccion) {
+  const nuevaPagina = paginaActual + direccion;
+  if (nuevaPagina < 1) return;
+  cargarBacklog(nuevaPagina);
+}
+
 	function descargarExcel() {
 	  const tablaElement = document.getElementById("tablaSeries");
 	  const wb = XLSX.utils.book_new();
