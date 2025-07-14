@@ -24,7 +24,6 @@
       <button onclick="descargarExcel()">
         <i class="fas fa-file-excel"></i> Descargar Excel
       </button>
-      <button onclick="irABacklog()">Ver Backlog</button>    
       </div>
  <div class="search-bar-paginacion">
   <input type="text" id="inputBuscar" placeholder="Buscar por código, descripción, SOT o cliente..." />
@@ -112,10 +111,6 @@ console.log("Datos recibidos:", data);
         tabla.appendChild(fila);
       });
     }
-	  
-	  function irABacklog() {
-	window.location.href = "/Backlog"; 
-	}
 
 	function descargarExcel() {
 	  const tablaElement = document.getElementById("tablaSeries");
