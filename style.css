@@ -1062,6 +1062,7 @@ body.detalle-solicitud .content {
 
 .backlog-page td.estado_sot,
 .backlog-page td.cliente,
+.backlog-page td.descripcion,
 .backlog-page td.sede {
   text-align: left !important;
 }
