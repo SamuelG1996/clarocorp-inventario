@@ -87,50 +87,53 @@
 let paginaActual = 1;
 const elementosPorPagina = 300;
     async function cargarBacklog(pagina = 1) {
-    mostrarLoader();
+  mostrarLoader();
+
+  const inputBuscar = document.getElementById("inputBuscar").value.trim();
   const desde = (pagina - 1) * elementosPorPagina;
-  const hasta = desde + elementosPorPagina - 1;
-        const { data, error } = await supabaseClient
-    .from("backlog_compras")
-    .select("*", { count: "exact" })
-    .range(desde, hasta);
+const offset = (pagina - 1) * elementosPorPagina;
+  const { data, error } = await supabaseClient.rpc("buscar_backlog_compras", {
+    termino: inputBuscar,
+    offset_val: desde,
+    limit_val: hasta
+  });
 
   if (error) {
-    console.error("Error al obtener datos:", error);
+    console.error("Error al buscar:", error);
+    ocultarLoader();
     return;
   }
 
-      tabla.innerHTML = "";
+  tabla.innerHTML = "";
+  data.forEach(item => {
+    const fila = document.createElement("tr");
+    fila.innerHTML = `
+      <td>${item.proyecto || "-"}</td>
+      <td>${item.codsolot || "-"}</td>
+      <td>${item.estado_sot || "-"}</td>
+      <td>${item.cliente || "-"}</td>
+      <td>${item.tipotrabajo || "-"}</td>
+      <td>${item.tipoproyecto || "-"}</td>
+      <td>${item.sede || "-"}</td>
+      <td>${item.cantidad ?? "-"}</td>
+      <td>${item.descripcion || "-"}</td>
+      <td>${item.nuevo_codigo || "-"}</td>
+      <td>${formatearFecha(item.fecha_generacion)}</td>
+      <td>${formatearFecha(item.fecha_compromiso)}</td>
+      <td>${item.estado_soporte || "PENDIENTE"}</td>
+      <td>${item.comentario_soporte || "-"}</td>
+      <td>${item.fecha_estado_soporte ? formatearFecha(item.fecha_estado_soporte.split("T")[0]) : "-"}</td>
+    `;
+    tabla.appendChild(fila);
+  });
 
-      data.forEach(item => {
-        const fila = document.createElement("tr");
-        fila.innerHTML = `
-          <td>${item.proyecto || "-"}</td>
-          <td>${item.codsolot || "-"}</td>
-        <td class="estado_sot">${item.estado_sot || "-"}</td>
-         <td class="cliente">${item.cliente || "-"}</td>
-          <td>${item.tipotrabajo || "-"}</td>
-          <td>${item.tipoproyecto || "-"}</td>
-          <td class="sede">${item.sede || "-"}</td>
-          <td>${item.cantidad ?? "-"}</td>
-          <td class="descripcion">${item.descripcion || "-"}</td>
-          <td>${item.nuevo_codigo || "-"}</td>
-          <td>${formatearFecha(item.fecha_generacion)}</td>
-          <td>${formatearFecha(item.fecha_compromiso)}</td>
-	  <td>${item.estado_soporte || "PENDIENTE"}</td>
-	<td>${item.comentario_soporte || "-"}</td>
-	<td>${item.fecha_estado_soporte ? formatearFecha(item.fecha_estado_soporte.split("T")[0]) : "-"}</td>
-        `;
-        tabla.appendChild(fila);
-      });
-	    
   paginaActual = pagina;
   document.getElementById("pageIndicator").textContent = `Página ${pagina}`;
-ocultarLoader();
-    }
+  ocultarLoader();
+}
 
 	function cambiarPagina(direccion) {
-  inputBuscar.value = ""; // limpiar búsqueda al cambiar página
+
   const nuevaPagina = paginaActual + direccion;
   if (nuevaPagina < 1) return;
   cargarBacklog(nuevaPagina);
