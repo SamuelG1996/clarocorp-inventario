@@ -1055,3 +1055,7 @@ body.detalle-solicitud .content {
   color: #ffffffcc;
   font-style: italic;
 }
+
+.td-cantidad {
+  text-align: center;
+}
