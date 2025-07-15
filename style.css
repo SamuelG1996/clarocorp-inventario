@@ -1088,7 +1088,7 @@ body.detalle-solicitud .content {
   color: #ffffff;
 }
 
-.backlog-page td.descripcion,
-.backlog-page tr.tipotrabajo {
+.backlog-page th.descripcion,
+.backlog-page th.tipotrabajo {
   text-align: left !important;
 }
