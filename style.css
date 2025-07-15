@@ -1059,7 +1059,7 @@ body.detalle-solicitud .content {
 .td-cantidad {
   text-align: center;
 }
-
+/* --- ESTILOS PARA EL SUBMóDULO DE BACKLOG --- */
 .backlog-page td.estado_sot,
 .backlog-page td.cliente,
 .backlog-page td.descripcion,
@@ -1091,4 +1091,9 @@ body.detalle-solicitud .content {
 .backlog-page th.descripcion,
 .backlog-page th.tipotrabajo {
   text-align: left !important;
+}
+
+.backlog-page td,
+.backlog-page th {
+  padding: 4px 6px !important; /* más compacto */
 }
