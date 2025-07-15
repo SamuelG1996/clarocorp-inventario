@@ -235,6 +235,9 @@ async function procesarExcelSoporte(archivo) {
     const registros = XLSX.utils.sheet_to_json(sheet);
     const fechaActual = new Date().toISOString().split("T")[0];
 
+    let exitos = 0;
+    let fallos = 0;
+
     for (const fila of registros) {
       const { codigo_sap, sot, estado_soporte, comentario_soporte } = fila;
       if (!codigo_sap || !sot) continue;
@@ -249,40 +252,43 @@ async function procesarExcelSoporte(archivo) {
         .eq("nuevo_codigo", codigo_sap)
         .eq("codsolot", sot);
 
-      if (error) console.warn("Error actualizando fila:", error.message);
+      if (error) {
+        console.warn("Error actualizando fila:", error.message);
+        fallos++;
+      } else {
+        exitos++;
+      }
     }
 
     Swal.fire({
-      icon: "success",
-      title: "Actualización completa",
-      text: "Los registros fueron actualizados correctamente.",
-      timer: 3000,
+      icon: 'info',
+      title: 'Carga finalizada',
+      html: `✅ Registros actualizados: <b>${exitos}</b><br>❌ Registros fallidos: <b>${fallos}</b>`,
+      toast: true,
+      position: 'bottom-end',
       showConfirmButton: false,
-      position: "bottom-end",
-      background: "#1e2022",
-      color: "#fff"
+      timer: 5000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
     });
 
     cargarBacklog();
   } catch (err) {
     console.error(err);
     Swal.fire({
-	  icon: "error",
-	  title: "Error",
-	  text: "No se pudo procesar el archivo",
-	  position: "bottom-end",
-	  background: "#1e2022",
-	  color: "#ffffff",
-	  iconColor: "#f39c12",
-	  showConfirmButton: false,
-	  timer: 3000,
-	  timerProgressBar: true
-	});
+      icon: 'error',
+      title: 'Error',
+      text: 'No se pudo procesar el archivo',
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
+    });
   } finally {
     ocultarLoader();
   }
 }
-
 function descargarPlantillaSoporte() {
   const wb = XLSX.utils.book_new();
   const datos = [
