@@ -123,11 +123,11 @@ const elementosPorPagina = 300;
     fila.innerHTML = `
       <td>${item.proyecto || "-"}</td>
       <td>${item.codsolot || "-"}</td>
-      <td>${item.estado_sot || "-"}</td>
+      <td class="estado_sot">${item.estado_sot || "-"}</td>
       <td class="cliente">${item.cliente || "-"}</td>
-      <td>${item.tipotrabajo || "-"}</td>
+      <td class="tipotrabajo">${item.tipotrabajo || "-"}</td>
       <td>${item.tipoproyecto || "-"}</td>
-      <td>${item.sede || "-"}</td>
+      <td class="sede">${item.sede || "-"}</td>
       <td>${item.nuevo_codigo || "-"}</td>
       <td class="descripcion">${item.descripcion || "-"}</td>
       <td>${item.cantidad ?? "-"}</td>
