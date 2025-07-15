@@ -1099,35 +1099,31 @@ body.detalle-solicitud .content {
 }
 
 
-/* === AJUSTE CORRECTO PARA TRUNCAR DESCRIPCIÓN Y UNIFICAR ALTURA EN COMPRAS === */
+/* === CORTE DE TEXTO EN LA DESCRIPCION SIN ROMPER ALTURA === */
 
-/* Aplica solo al módulo de Compras */
-body[data-modulo="compras"] #tablaStock tbody tr {
-  height: 60px !important; /* Altura fija */
-}
-
-body[data-modulo="compras"] #tablaStock tbody td,
-body[data-modulo="compras"] #tablaStock tbody th {
-  vertical-align: middle;
-  padding: 6px !important;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 220px;
-}
-
-/* Aplica solo a la columna Descripción */
+/* Aplica solo al modulo COMPRAS y solo a la columna Descripcion */
 body[data-modulo="compras"] #tablaStock td.descripcion {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 220px;
+  max-width: 250px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
-/* Asegura compatibilidad con encabezados */
-body[data-modulo="compras"] #tablaStock thead th {
-  white-space: nowrap;
+/* Asegura que todas las filas tengan altura fija */
+body[data-modulo="compras"] #tablaStock tbody tr {
+  height: 50px !important;
 }
+
+/* Evita herencia que rompa el corte */
+body[data-modulo="compras"] #tablaStock td {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  vertical-align: middle !important;
+  padding: 6px;
+}
+
+/* Solo aplica truncamiento visual, no afecta el contenido ni lo borra */
 
 
 
