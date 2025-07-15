@@ -24,7 +24,7 @@
       <button onclick="descargarExcel()">
         <i class="fas fa-file-excel"></i> Descargar Excel
       </button>
-	<button onclick="mostrarPopupActualizarSoporte()">
+	<button onclick="mostrarMenuCargaSoporte()">
 	  <i class="fas fa-upload"></i> Actualizar Estados Soporte
 	</button>
       </div>
@@ -200,61 +200,24 @@ async function contarResultados(termino) {
   </script>
 
  <script>
-function mostrarPopupActualizarSoporte() {
+function mostrarMenuCargaSoporte() {
   Swal.fire({
-    title: 'Actualizar soporte',
-    customClass: {
-      popup: 'swal2-modal-custom'
-    },
-    showCancelButton: false,
-    showConfirmButton: false,
-    didOpen: () => {
-      const container = Swal.getPopup();
-      const content = document.createElement('div');
-      content.classList.add('popup-actualizar');
-
-      // Botón de descarga
-      const botonDescargar = document.createElement('button');
-      botonDescargar.textContent = '📥 Descargar plantilla';
-      botonDescargar.className = 'btn-popup';
-      botonDescargar.onclick = descargarPlantillaSoporte;
-      content.appendChild(botonDescargar);
-
-      // Input de archivo
-      const inputArchivo = document.createElement('input');
-      inputArchivo.type = 'file';
-      inputArchivo.accept = '.xlsx';
-      inputArchivo.id = 'archivoSoporte';
-      inputArchivo.className = 'swal2-file';
-      content.appendChild(inputArchivo);
-
-      // Botón cancelar
-      const botonCancelar = document.createElement('button');
-      botonCancelar.textContent = '❌ Cancelar';
-      botonCancelar.className = 'btn-popup-cancelar';
-      botonCancelar.onclick = () => Swal.close();
-      content.appendChild(botonCancelar);
-
-      container.appendChild(content);
-
-      // Listener para subir archivo
-      inputArchivo.addEventListener('change', async () => {
-        const archivo = inputArchivo.files[0];
-        if (!archivo) return;
-
-        const confirmacion = await Swal.fire({
-	    title: '¿Deseas continuar con la carga?',
-	    text: 'Se actualizarán los datos según el archivo que selecciones.',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: 'Sí, actualizar',
-          cancelButtonText: 'Cancelar'
-        });
-
-        if (confirmacion.isConfirmed) {
-          procesarExcelSoporte(archivo);
-        }
-      });
+    title: 'Actualización Estado Soporte',
+    text: '¿Qué deseas hacer?',
+    icon: 'question',
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: 'Subir carga',
+    denyButtonText: 'Descargar plantilla',
+    cancelButtonText: 'Cancelar',
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      document.getElementById('excelInputSoporte').click(); // tu input hidden de tipo file
+    } else if (result.isDenied) {
+      descargarPlantillaSoporte(); // esta función debe generar la plantilla
     }
   });
 }
