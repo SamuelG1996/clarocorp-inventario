@@ -1098,33 +1098,29 @@ body.detalle-solicitud .content {
   padding: 8px 8px !important; /* más compacto */
 }
 
-
 /* === CORTE DE TEXTO EN LA DESCRIPCION SIN ROMPER ALTURA === */
 
 /* Aplica solo al modulo COMPRAS y solo a la columna Descripcion */
 body[data-modulo="compras"] #tablaStock td.descripcion {
-  max-width: 250px !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Asegura que todas las filas tengan altura fija */
 body[data-modulo="compras"] #tablaStock tbody tr {
-  height: 50px !important;
+  height: 60px;
 }
 
 /* Evita herencia que rompa el corte */
 body[data-modulo="compras"] #tablaStock td {
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  vertical-align: middle !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
   padding: 6px;
 }
-
-/* Solo aplica truncamiento visual, no afecta el contenido ni lo borra */
-
 
 
 
