@@ -199,22 +199,43 @@ async function contarResultados(termino) {
   });
   </script>
 
-  <script>
-	  function mostrarPopupActualizarSoporte() {
+ <script>
+function mostrarPopupActualizarSoporte() {
   Swal.fire({
-    title: 'Actualizar soporte',
-    html: `
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        <button class="swal2-confirm swal2-styled" onclick="descargarPlantillaSoporte()">📥 Descargar plantilla</button>
-        <input type="file" id="archivoSoporte" accept=".xlsx" class="swal2-file">
-        <button class="swal2-cancel swal2-styled" onclick="Swal.close()">❌ Cancelar</button>
-      </div>
-    `,
+    icon: 'question',
+    title: 'Actualización Estado Soporte',
+    html: `<b>¿Qué deseas hacer?</b>`,
+    showCancelButton: true,
     showConfirmButton: false,
-    didOpen: () => {
-      const input = document.getElementById('archivoSoporte');
-      input.addEventListener('change', async () => {
-        const archivo = input.files[0];
+    cancelButtonText: "Cancelar",
+    customClass: {
+      popup: 'swal2-modal-custom'
+    },
+    didRender: () => {
+      const contenedor = Swal.getHtmlContainer();
+
+      const subirBtn = document.createElement('button');
+      subirBtn.textContent = 'Subir carga';
+      subirBtn.className = 'swal2-confirm swal2-styled';
+      subirBtn.style.background = '#5b51d8';
+      subirBtn.style.marginRight = '10px';
+
+      const descargarBtn = document.createElement('button');
+      descargarBtn.textContent = 'Descargar plantilla';
+      descargarBtn.className = 'swal2-confirm swal2-styled';
+      descargarBtn.style.background = '#e74c3c';
+
+      const inputArchivo = document.createElement('input');
+      inputArchivo.type = 'file';
+      inputArchivo.accept = '.xlsx';
+      inputArchivo.style.display = 'none';
+
+      subirBtn.addEventListener('click', () => {
+        inputArchivo.click();
+      });
+
+      inputArchivo.addEventListener('change', async () => {
+        const archivo = inputArchivo.files[0];
         if (!archivo) return;
 
         const confirmacion = await Swal.fire({
@@ -230,9 +251,18 @@ async function contarResultados(termino) {
           procesarExcelSoporte(archivo);
         }
       });
+
+      descargarBtn.addEventListener('click', () => {
+        descargarPlantillaSoporte();
+      });
+
+      contenedor.appendChild(subirBtn);
+      contenedor.appendChild(descargarBtn);
+      contenedor.appendChild(inputArchivo);
     }
   });
 }
+
 async function procesarExcelSoporte(archivo) {
   try {
     mostrarLoader();
@@ -241,7 +271,6 @@ async function procesarExcelSoporte(archivo) {
     const workbook = XLSX.read(data, { type: 'buffer' });
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const registros = XLSX.utils.sheet_to_json(sheet);
-
     const fechaActual = new Date().toISOString().split("T")[0];
 
     for (const fila of registros) {
@@ -295,7 +324,6 @@ function descargarPlantillaSoporte() {
   XLSX.utils.book_append_sheet(wb, ws, "Plantilla");
   XLSX.writeFile(wb, "Plantilla_Soporte_Backlog.xlsx");
 }
-	  
 </script>
   
   <script src="Js/Loader.js"></script>
