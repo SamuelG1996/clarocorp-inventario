@@ -1130,3 +1130,10 @@ body[data-modulo="compras"] #tablaStock td {
   text-align: left !important;
 }
 
+#tablaStock th.consumo-mensual {
+  text-align: center !important;
+}
+
+#tablaStock th.stock-lima {
+  text-align: center !important;
+}
