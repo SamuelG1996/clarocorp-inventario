@@ -1110,18 +1110,26 @@ body[data-modulo="compras"] #tablaStock tbody td,
 body[data-modulo="compras"] #tablaStock tbody th {
   vertical-align: middle;
   padding: 6px 6px !important; /* Padding equilibrado */
-  white-space: nowrap;
+  white-space: nowrap; /* Esto corta el texto que se desborda */
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 250px;
 }
 
-/* Descripciones largas con puntos suspensivos */
+/* Asegura que la celda Descripción tenga el mismo estilo truncado */
 body[data-modulo="compras"] #tablaStock td.descripcion {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 250px;
 }
+
+/* Para evitar estilos previos que sobrescriben altura/padding globales */
+body[data-modulo="compras"] #tablaStock td,
+body[data-modulo="compras"] #tablaStock th {
+  height: 60px !important;
+}
+
+
 
 
