@@ -155,6 +155,9 @@ document.getElementById("nextPage").disabled = (paginaActual * elementosPorPagin
   if (nuevaPagina < 1) return;
   cargarBacklog(nuevaPagina);
 }
+
+window.cambiarPagina = cambiarPagina;
+	  
 async function contarResultados(termino) {
   const { data, error } = await supabaseClient
     .rpc("contar_backlog_compras", { termino });
