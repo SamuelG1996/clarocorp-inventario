@@ -1087,3 +1087,8 @@ body.detalle-solicitud .content {
   font-weight: 500;
   color: #ffffff;
 }
+
+.backlog-page td.descripcion,
+.backlog-page tr.tipotrabajo {
+  text-align: left !important;
+}
