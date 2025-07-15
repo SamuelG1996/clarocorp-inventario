@@ -88,7 +88,8 @@ let timeout = null;
       cargarBacklog();
     }, 300); // espera 300ms después de dejar de escribir
   });
-	  
+
+
     function formatearFecha(fecha) {
       return fecha ? fecha.split("-").reverse().join("/") : "-";
     }
@@ -193,11 +194,13 @@ async function contarResultados(termino) {
 
     // Asignar función al botón
     window.descargarExcel = descargarExcel;
-
+	window.cargarBacklog = cargarBacklog;  
 
     // Cargar datos al iniciar  
     cargarBacklog();
+
   });
+
   </script>
 
  <script>
@@ -263,7 +266,18 @@ async function procesarExcelSoporte(archivo) {
     cargarBacklog();
   } catch (err) {
     console.error(err);
-    Swal.fire("Error", "No se pudo procesar el archivo", "error");
+    Swal.fire({
+	  icon: "error",
+	  title: "Error",
+	  text: "No se pudo procesar el archivo",
+	  position: "bottom-end",
+	  background: "#1e2022",
+	  color: "#ffffff",
+	  iconColor: "#f39c12",
+	  showConfirmButton: false,
+	  timer: 3000,
+	  timerProgressBar: true
+	});
   } finally {
     ocultarLoader();
   }
