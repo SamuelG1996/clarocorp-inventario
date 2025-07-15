@@ -178,23 +178,69 @@ async function contarResultados(termino) {
 
   return data;
 }
-	function descargarExcel() {
-	  const tablaElement = document.getElementById("tablaBacklog");
-	  const wb = XLSX.utils.book_new();
+	  
+async function descargarExcel() {
+mostrarLoader();
+  const { data, error } = await supabaseClient.rpc("buscar_backlog_compras", {
+    termino: "",      // sin filtro
+    offset_val: 0,     // desde el inicio
+    limit_val: 100000  // valor alto para traer todo
+  });
 
-	  // Convertir tabla HTML a una hoja de Excel
-	  const ws = XLSX.utils.table_to_sheet(tablaElement, { raw: true });
+  if (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al descargar',
+      text: 'No se pudo obtener los datos del servidor.',
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12',
+      timer: 3000,
+      showConfirmButton: false,
+      position: 'bottom-end',
+      toast: true,
+      timerProgressBar: true
+    });
+    return;
+  }
 
-	  // Agregar la hoja al libro de Excel
-	  XLSX.utils.book_append_sheet(wb, ws, "Backlog");
+  // Convertir datos a hoja Excel
+  const encabezados = [
+    "Proyecto", "SOT", "Estado SOT", "Cliente", "Tipo Trabajo", "Tipo Proyecto",
+    "Sede", "Código SAP", "Descripción", "Cantidad", "F. Generación",
+    "F. Compromiso", "Estado Soporte", "Comentario Soporte", "F. Estado Soporte"
+  ];
 
-	  // Descargar el archivo .xlsx
-	  XLSX.writeFile(wb, "backlog_compras.xlsx");
-	}
+  const filas = data.map(item => [
+    item.proyecto || "-",
+    item.codsolot || "-",
+    item.estado_sot || "-",
+    item.cliente || "-",
+    item.tipotrabajo || "-",
+    item.tipoproyecto || "-",
+    item.sede || "-",
+    item.nuevo_codigo || "-",
+    item.descripcion || "-",
+    item.cantidad ?? "-",
+    formatearFecha(item.fecha_generacion),
+    formatearFecha(item.fecha_compromiso),
+    item.estado_soporte || "PENDIENTE",
+    item.comentario_soporte || "-",
+    item.fecha_estado_soporte ? formatearFecha(item.fecha_estado_soporte.split("T")[0]) : "-"
+  ]);
 
-    // Asignar función al botón
-    window.descargarExcel = descargarExcel;
-	window.cargarBacklog = cargarBacklog;  
+  const hoja = [encabezados, ...filas];
+  const ws = XLSX.utils.aoa_to_sheet(hoja);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Backlog");
+  XLSX.writeFile(wb, "backlog_seguimiento.xlsx");
+
+ocultarLoader();
+}
+
+
+window.descargarExcel = descargarExcel;
+window.cargarBacklog = cargarBacklog;  
 
     // Cargar datos al iniciar  
     cargarBacklog();
