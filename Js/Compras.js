@@ -114,7 +114,7 @@ async function mostrarDetalleCompras(codigo) {
     compras.forEach((item) => {
       const fila = document.createElement("tr");
 
-      const valorCompra = item.precio_compra && item.moneda ? `${item.precio_compra} ${item.moneda}` : "-";
+      //const valorCompra = item.precio_compra && item.moneda ? `${item.precio_compra} ${item.moneda}` : "-";
       const consumo = item.consumo_promedio_mensual ?? "-";
 
       fila.innerHTML = `
@@ -123,7 +123,6 @@ async function mostrarDetalleCompras(codigo) {
         <td>${item.grupo_material || "-"}</td>
         <td>${item.tipo_compra || "-"}</td>
         <td>${item.proveedor || "-"}</td>
-        <td>${valorCompra}</td>
         <td class="columna-consumo">${formatearNumero(consumo)}</td>
         <td>
     <a href="#" style="color: #007bff; text-decoration: none;" onclick="mostrarStockDetalle('${item.codigo}', 'LIMA')">
