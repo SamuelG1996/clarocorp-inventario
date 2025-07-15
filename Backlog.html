@@ -24,6 +24,9 @@
       <button onclick="descargarExcel()">
         <i class="fas fa-file-excel"></i> Descargar Excel
       </button>
+	<button onclick="mostrarPopupActualizarSoporte()">
+	  <i class="fas fa-upload"></i> Actualizar Estados Soporte
+	</button>
       </div>
  <div class="search-bar-paginacion">
   <input type="text" id="inputBuscar" placeholder="Buscar por código, descripción, SOT o cliente..." autocomplete="off" />
@@ -190,11 +193,111 @@ async function contarResultados(termino) {
     // Asignar función al botón
     window.descargarExcel = descargarExcel;
 
-    // Cargar datos al iniciar
-	  
+
+    // Cargar datos al iniciar  
     cargarBacklog();
   });
   </script>
+
+  <script>
+	  function mostrarPopupActualizarSoporte() {
+  Swal.fire({
+    title: 'Actualizar soporte',
+    html: `
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="swal2-confirm swal2-styled" onclick="descargarPlantillaSoporte()">📥 Descargar plantilla</button>
+        <input type="file" id="archivoSoporte" accept=".xlsx" class="swal2-file">
+        <button class="swal2-cancel swal2-styled" onclick="Swal.close()">❌ Cancelar</button>
+      </div>
+    `,
+    showConfirmButton: false,
+    didOpen: () => {
+      const input = document.getElementById('archivoSoporte');
+      input.addEventListener('change', async () => {
+        const archivo = input.files[0];
+        if (!archivo) return;
+
+        const confirmacion = await Swal.fire({
+          title: '¿Actualizar registros?',
+          text: '¿Estás seguro de subir y actualizar el estado de soporte?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, actualizar',
+          cancelButtonText: 'Cancelar'
+        });
+
+        if (confirmacion.isConfirmed) {
+          procesarExcelSoporte(archivo);
+        }
+      });
+    }
+  });
+}
+async function procesarExcelSoporte(archivo) {
+  try {
+    mostrarLoader();
+
+    const data = await archivo.arrayBuffer();
+    const workbook = XLSX.read(data, { type: 'buffer' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const registros = XLSX.utils.sheet_to_json(sheet);
+
+    const fechaActual = new Date().toISOString().split("T")[0];
+
+    for (const fila of registros) {
+      const { codigo_sap, sot, estado_soporte, comentario_soporte } = fila;
+      if (!codigo_sap || !sot) continue;
+
+      const { error } = await supabaseClient
+        .from("backlog_compras")
+        .update({
+          estado_soporte: estado_soporte || "PENDIENTE",
+          comentario_soporte: comentario_soporte || "-",
+          fecha_estado_soporte: fechaActual
+        })
+        .eq("nuevo_codigo", codigo_sap)
+        .eq("codsolot", sot);
+
+      if (error) console.warn("Error actualizando fila:", error.message);
+    }
+
+    Swal.fire({
+      icon: "success",
+      title: "Actualización completa",
+      text: "Los registros fueron actualizados correctamente.",
+      timer: 3000,
+      showConfirmButton: false,
+      position: "bottom-end",
+      background: "#1e2022",
+      color: "#fff"
+    });
+
+    cargarBacklog();
+  } catch (err) {
+    console.error(err);
+    Swal.fire("Error", "No se pudo procesar el archivo", "error");
+  } finally {
+    ocultarLoader();
+  }
+}
+
+function descargarPlantillaSoporte() {
+  const wb = XLSX.utils.book_new();
+  const datos = [
+    {
+      codigo_sap: "",
+      sot: "",
+      estado_soporte: "",
+      comentario_soporte: ""
+    }
+  ];
+  const ws = XLSX.utils.json_to_sheet(datos);
+  XLSX.utils.book_append_sheet(wb, ws, "Plantilla");
+  XLSX.writeFile(wb, "Plantilla_Soporte_Backlog.xlsx");
+}
+	  
+</script>
+  
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
 
