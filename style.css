@@ -1088,10 +1088,6 @@ body.detalle-solicitud .content {
   color: #ffffff;
 }
 
-#tablaStock td, 
-#tablaStock th {
-  padding: 4px 6px !important;  /* Ajusta estos valores según lo compacto que lo necesites */
-}
 .backlog-page th.descripcion,
 .backlog-page th.tipotrabajo {
   text-align: left !important;
@@ -1102,47 +1098,27 @@ body.detalle-solicitud .content {
   padding: 8px 8px !important; /* más compacto */
 }
 
-/* Estilo para igualar altura mínima de las celdas de descripción en #tablaStock sin importar la longitud del texto */
-#tablaStock td.descripcion {
-  min-height: 48px;
-  line-height: 1.2;
-  display: table-cell;
-  vertical-align: middle;
-  white-space: normal;
-  padding-top: 6px !important;
-  padding-bottom: 6px !important;
+
+/* === AJUSTE FINAL UNIFICADO PARA ALTURA DE FILAS EN COMPRAS === */
+
+/* Aplica solo al módulo de Compras */
+body[data-modulo="compras"] #tablaStock tbody tr {
+  height: 60px; /* Altura unificada para todas las filas */
 }
 
-/* Opcional: si deseas forzar que todas tengan al menos 2 líneas de altura visual */
-#tablaStock td.descripcion::after {
+body[data-modulo="compras"] #tablaStock tbody td,
+body[data-modulo="compras"] #tablaStock tbody th {
+  vertical-align: middle;
+  padding: 6px 6px !important; /* Padding equilibrado */
+  white-space: normal;
+  overflow-wrap: break-word;
+  max-width: 250px;
+}
+
+/* Asegura que las celdas con descripción tengan altura visual uniforme */
+body[data-modulo="compras"] #tablaStock td.descripcion::after {
   content: "\A"; /* Salto de línea invisible */
   white-space: pre;
 }
 
-/* Solución definitiva para igualar la altura de todas las filas de tablaStock solo en el módulo de Compras */
 
-body[data-modulo="compras"] #tablaStock tbody tr {
-  height: 60px; /* fija altura para todas las filas */
-  display: table-row;
-}
-
-body[data-modulo="compras"] #tablaStock td,
-body[data-modulo="compras"] #tablaStock th {
-  vertical-align: middle;
-  padding-left: 6px;
-  padding-right: 6px;
-  /* se omite padding vertical para evitar conflicto con height */
-}
-
-/* Aseguramos que la columna de Descripción rompa líneas y no deforme altura */
-body[data-modulo="compras"] #tablaStock td.descripcion {
-  white-space: normal;
-  word-break: break-word;
-  max-width: 250px;
-}
-
-/* Quitamos cualquier min-height heredado que esté forzando la celda */
-body[data-modulo="compras"] #tablaStock td.descripcion {
-  min-height: unset;
-  line-height: 1.2;
-}
