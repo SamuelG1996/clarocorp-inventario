@@ -1102,7 +1102,7 @@ body.detalle-solicitud .content {
 
 /* Aplica solo al modulo COMPRAS y solo a la columna Descripcion */
 body[data-modulo="compras"] #tablaStock td.descripcion {
-  max-width: 250px;
+  max-width: 200px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
