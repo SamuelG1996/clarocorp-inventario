@@ -1126,4 +1126,7 @@ body[data-modulo="compras"] #tablaStock td {
   text-align: center !important;
 }
 
+#tablaStock td.tipo-producto {
+  text-align: left !important;
+}
 
