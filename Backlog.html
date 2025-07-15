@@ -235,17 +235,30 @@ async function procesarExcelSoporte(archivo) {
     const registros = XLSX.utils.sheet_to_json(sheet);
     const fechaActual = new Date().toISOString().split("T")[0];
 
+    const estadosValidos = ["PENDIENTE", "INSTALADO", "ABASTECIDO", "ATENDIDO", "RECHAZADO"];
     let exitos = 0;
     let fallos = 0;
 
     for (const fila of registros) {
-      const { codigo_sap, sot, estado_soporte, comentario_soporte } = fila;
-      if (!codigo_sap || !sot) continue;
+      const { codigo_sap, sot } = fila;
+      let { estado_soporte, comentario_soporte } = fila;
+
+      if (!codigo_sap || !sot) {
+        fallos++;
+        continue;
+      }
+
+      estado_soporte = (estado_soporte || "").toString().trim().toUpperCase();
+
+      if (!estadosValidos.includes(estado_soporte)) {
+        fallos++;
+        continue;
+      }
 
       const { error } = await supabaseClient
         .from("backlog_compras")
         .update({
-          estado_soporte: estado_soporte || "PENDIENTE",
+          estado_soporte,
           comentario_soporte: comentario_soporte || "-",
           fecha_estado_soporte: fechaActual
         })
@@ -279,16 +292,21 @@ async function procesarExcelSoporte(archivo) {
     console.error(err);
     Swal.fire({
       icon: 'error',
-      title: 'Error',
-      text: 'No se pudo procesar el archivo',
+      title: 'Error al procesar archivo',
+      text: err.message,
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 4000,
       background: '#1e2022',
       color: '#ffffff',
-      iconColor: '#f39c12'
+      iconColor: '#e74c3c'
     });
   } finally {
     ocultarLoader();
   }
 }
+	 
 function descargarPlantillaSoporte() {
   const wb = XLSX.utils.book_new();
   const datos = [
