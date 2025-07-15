@@ -1110,15 +1110,18 @@ body[data-modulo="compras"] #tablaStock tbody td,
 body[data-modulo="compras"] #tablaStock tbody th {
   vertical-align: middle;
   padding: 6px 6px !important; /* Padding equilibrado */
-  white-space: normal;
-  overflow-wrap: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   max-width: 250px;
 }
 
-/* Asegura que las celdas con descripción tengan altura visual uniforme */
-body[data-modulo="compras"] #tablaStock td.descripcion::after {
-  content: "\A"; /* Salto de línea invisible */
-  white-space: pre;
+/* Descripciones largas con puntos suspensivos */
+body[data-modulo="compras"] #tablaStock td.descripcion {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
 }
 
 
