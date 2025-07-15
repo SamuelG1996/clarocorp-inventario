@@ -1079,3 +1079,9 @@ body.detalle-solicitud .content {
   color: black;
   background: #f1f1f1;	
 }
+
+.resumen-resultados {
+  margin-top: 10px;
+  font-weight: 500;
+  color: #444;
+}
