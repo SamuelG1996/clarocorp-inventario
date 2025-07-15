@@ -180,18 +180,67 @@ async function contarResultados(termino) {
 }
 	  
 async function descargarExcel() {
-mostrarLoader();
-  const { data, error } = await supabaseClient.rpc("buscar_backlog_compras", {
-    termino: "",      // sin filtro
-    offset_val: 0,     // desde el inicio
-    limit_val: 100000  // valor alto para traer todo
-  });
+  try {
+    mostrarLoader();
 
-  if (error) {
+    const encabezados = [
+      "Proyecto", "SOT", "Estado SOT", "Cliente", "Tipo Trabajo", "Tipo Proyecto",
+      "Sede", "Código SAP", "Descripción", "Cantidad", "F. Generación",
+      "F. Compromiso", "Estado Soporte", "Comentario Soporte", "F. Estado Soporte"
+    ];
+
+    let offset = 0;
+    const limit = 1000;
+    let todasFilas = [];
+
+    while (true) {
+      const { data, error } = await supabaseClient.rpc("buscar_backlog_compras", {
+        termino: "",
+        offset_val: offset,
+        limit_val: limit
+      });
+
+      if (error) {
+        throw new Error("Error al obtener datos del servidor: " + error.message);
+      }
+
+      if (!data || data.length === 0) break;
+
+      const filas = data.map(item => [
+        item.proyecto || "-",
+        item.codsolot || "-",
+        item.estado_sot || "-",
+        item.cliente || "-",
+        item.tipotrabajo || "-",
+        item.tipoproyecto || "-",
+        item.sede || "-",
+        item.nuevo_codigo || "-",
+        item.descripcion || "-",
+        item.cantidad ?? "-",
+        item.fecha_generacion ? item.fecha_generacion.split("-").reverse().join("/") : "-",
+        item.fecha_compromiso ? item.fecha_compromiso.split("-").reverse().join("/") : "-",
+        item.estado_soporte || "PENDIENTE",
+        item.comentario_soporte || "-",
+        item.fecha_estado_soporte ? item.fecha_estado_soporte.split("T")[0].split("-").reverse().join("/") : "-"
+      ]);
+
+      todasFilas.push(...filas);
+
+      if (data.length < limit) break;
+      offset += limit;
+    }
+
+    const hoja = [encabezados, ...todasFilas];
+    const ws = XLSX.utils.aoa_to_sheet(hoja);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Backlog");
+    XLSX.writeFile(wb, "backlog_seguimiento.xlsx");
+
+  } catch (err) {
     Swal.fire({
       icon: 'error',
       title: 'Error al descargar',
-      text: 'No se pudo obtener los datos del servidor.',
+      text: err.message,
       background: '#1e2022',
       color: '#ffffff',
       iconColor: '#f39c12',
@@ -201,41 +250,9 @@ mostrarLoader();
       toast: true,
       timerProgressBar: true
     });
-    return;
+  } finally {
+    ocultarLoader();
   }
-
-  // Convertir datos a hoja Excel
-  const encabezados = [
-    "Proyecto", "SOT", "Estado SOT", "Cliente", "Tipo Trabajo", "Tipo Proyecto",
-    "Sede", "Código SAP", "Descripción", "Cantidad", "F. Generación",
-    "F. Compromiso", "Estado Soporte", "Comentario Soporte", "F. Estado Soporte"
-  ];
-
-  const filas = data.map(item => [
-    item.proyecto || "-",
-    item.codsolot || "-",
-    item.estado_sot || "-",
-    item.cliente || "-",
-    item.tipotrabajo || "-",
-    item.tipoproyecto || "-",
-    item.sede || "-",
-    item.nuevo_codigo || "-",
-    item.descripcion || "-",
-    item.cantidad ?? "-",
-    formatearFecha(item.fecha_generacion),
-    formatearFecha(item.fecha_compromiso),
-    item.estado_soporte || "PENDIENTE",
-    item.comentario_soporte || "-",
-    item.fecha_estado_soporte ? formatearFecha(item.fecha_estado_soporte.split("T")[0]) : "-"
-  ]);
-
-  const hoja = [encabezados, ...filas];
-  const ws = XLSX.utils.aoa_to_sheet(hoja);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Backlog");
-  XLSX.writeFile(wb, "backlog_seguimiento.xlsx");
-
-ocultarLoader();
 }
 
 
