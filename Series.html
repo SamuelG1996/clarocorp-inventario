@@ -945,17 +945,19 @@ async function procesarCargaSoporte(file) {
       const resultado = await respuesta.json();
       console.log("✅ Resultado:", resultado);
 
-      Swal.fire({
-        icon: "success",
-        title: "Correo enviado correctamente",
-        text: resultado.message,
-        background: "#1e2022",
-        color: "#fff",
-        timer: 3000,
-        timerProgressBar: true,
-        showConfirmButton: false,
-        position: "bottom-end"
-      });
+    Swal.fire({
+      icon: "success",
+      title: "Correo enviado correctamente",
+      text: resultado.message,
+      background: "#1e2022",
+      color: "#ffffff",
+      iconColor: "#f39c12",
+      timer: 3000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+      position: "bottom-end",
+      toast: true
+    });
 
     } catch (error) {
       console.error("❌ Error al enviar:", error);
