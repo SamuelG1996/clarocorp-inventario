@@ -1099,35 +1099,34 @@ body.detalle-solicitud .content {
 }
 
 
-/* === AJUSTE FINAL UNIFICADO PARA ALTURA DE FILAS EN COMPRAS === */
+/* === AJUSTE CORRECTO PARA TRUNCAR DESCRIPCIÓN Y UNIFICAR ALTURA EN COMPRAS === */
 
 /* Aplica solo al módulo de Compras */
 body[data-modulo="compras"] #tablaStock tbody tr {
-  height: 60px; /* Altura unificada para todas las filas */
+  height: 60px !important; /* Altura fija */
 }
 
 body[data-modulo="compras"] #tablaStock tbody td,
 body[data-modulo="compras"] #tablaStock tbody th {
   vertical-align: middle;
-  padding: 6px 6px !important; /* Padding equilibrado */
-  white-space: nowrap; /* Esto corta el texto que se desborda */
+  padding: 6px !important;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 250px;
+  max-width: 220px;
 }
 
-/* Asegura que la celda Descripción tenga el mismo estilo truncado */
+/* Aplica solo a la columna Descripción */
 body[data-modulo="compras"] #tablaStock td.descripcion {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 250px;
+  max-width: 220px;
 }
 
-/* Para evitar estilos previos que sobrescriben altura/padding globales */
-body[data-modulo="compras"] #tablaStock td,
-body[data-modulo="compras"] #tablaStock th {
-  height: 60px !important;
+/* Asegura compatibilidad con encabezados */
+body[data-modulo="compras"] #tablaStock thead th {
+  white-space: nowrap;
 }
 
 
