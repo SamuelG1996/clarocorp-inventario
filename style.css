@@ -1088,8 +1088,8 @@ body.detalle-solicitud .content {
   color: #ffffff;
 }
 
-#tablaCompras td,
-#tablaCompras th {
+#tablaStock td, 
+#tablaStock th {
   padding: 4px 6px !important;  /* Ajusta estos valores según lo compacto que lo necesites */
 }
 .backlog-page th.descripcion,
