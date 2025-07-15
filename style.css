@@ -1119,3 +1119,20 @@ body.detalle-solicitud .content {
   white-space: pre;
 }
 
+
+/* ✅ AGREGA esto debajo para un control específico en Compras */
+body[data-modulo="compras"] #tablaStock tbody tr {
+  height: 60px;
+}
+
+body[data-modulo="compras"] #tablaStock tbody td {
+  vertical-align: middle;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+body[data-modulo="compras"] #tablaStock td {
+  white-space: normal;
+  overflow-wrap: break-word;
+  max-width: 250px;
+}
