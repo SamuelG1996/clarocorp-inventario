@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (rol === "Contratista") {
     ocultarRutas = ["Stock Claro", "Compras", "Reportes", "Configuración"];
   } else if (rol === "Analista" || rol === "Soporte") {
-    ocultarRutas = ["Configuración", "Compras", "Reportes"];
+    ocultarRutas = ["Configuración", "Reportes"];
   }
 
 // Control visual por rol desde el inicio
