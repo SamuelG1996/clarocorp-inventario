@@ -202,45 +202,49 @@ async function contarResultados(termino) {
  <script>
 function mostrarPopupActualizarSoporte() {
   Swal.fire({
-    icon: 'question',
-    title: 'Actualización Estado Soporte',
-    html: `<b>¿Qué deseas hacer?</b>`,
-    showCancelButton: true,
-    showConfirmButton: false,
-    cancelButtonText: "Cancelar",
+    title: 'Actualizar soporte',
     customClass: {
       popup: 'swal2-modal-custom'
     },
-    didRender: () => {
-      const contenedor = Swal.getHtmlContainer();
+    showCancelButton: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      const container = Swal.getPopup();
+      const content = document.createElement('div');
+      content.classList.add('popup-actualizar');
 
-      const subirBtn = document.createElement('button');
-      subirBtn.textContent = 'Subir carga';
-      subirBtn.className = 'swal2-confirm swal2-styled';
-      subirBtn.style.background = '#5b51d8';
-      subirBtn.style.marginRight = '10px';
+      // Botón de descarga
+      const botonDescargar = document.createElement('button');
+      botonDescargar.textContent = '📥 Descargar plantilla';
+      botonDescargar.className = 'btn-popup';
+      botonDescargar.onclick = descargarPlantillaSoporte;
+      content.appendChild(botonDescargar);
 
-      const descargarBtn = document.createElement('button');
-      descargarBtn.textContent = 'Descargar plantilla';
-      descargarBtn.className = 'swal2-confirm swal2-styled';
-      descargarBtn.style.background = '#e74c3c';
-
+      // Input de archivo
       const inputArchivo = document.createElement('input');
       inputArchivo.type = 'file';
       inputArchivo.accept = '.xlsx';
-      inputArchivo.style.display = 'none';
+      inputArchivo.id = 'archivoSoporte';
+      inputArchivo.className = 'swal2-file';
+      content.appendChild(inputArchivo);
 
-      subirBtn.addEventListener('click', () => {
-        inputArchivo.click();
-      });
+      // Botón cancelar
+      const botonCancelar = document.createElement('button');
+      botonCancelar.textContent = '❌ Cancelar';
+      botonCancelar.className = 'btn-popup-cancelar';
+      botonCancelar.onclick = () => Swal.close();
+      content.appendChild(botonCancelar);
 
+      container.appendChild(content);
+
+      // Listener para subir archivo
       inputArchivo.addEventListener('change', async () => {
         const archivo = inputArchivo.files[0];
         if (!archivo) return;
 
         const confirmacion = await Swal.fire({
-          title: '¿Actualizar registros?',
-          text: '¿Estás seguro de subir y actualizar el estado de soporte?',
+	    title: '¿Deseas continuar con la carga?',
+	    text: 'Se actualizarán los datos según el archivo que selecciones.',
           icon: 'warning',
           showCancelButton: true,
           confirmButtonText: 'Sí, actualizar',
@@ -251,18 +255,9 @@ function mostrarPopupActualizarSoporte() {
           procesarExcelSoporte(archivo);
         }
       });
-
-      descargarBtn.addEventListener('click', () => {
-        descargarPlantillaSoporte();
-      });
-
-      contenedor.appendChild(subirBtn);
-      contenedor.appendChild(descargarBtn);
-      contenedor.appendChild(inputArchivo);
     }
   });
 }
-
 async function procesarExcelSoporte(archivo) {
   try {
     mostrarLoader();
