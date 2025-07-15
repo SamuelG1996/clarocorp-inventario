@@ -1119,20 +1119,30 @@ body.detalle-solicitud .content {
   white-space: pre;
 }
 
+/* Solución definitiva para igualar la altura de todas las filas de tablaStock solo en el módulo de Compras */
 
-/* ✅ AGREGA esto debajo para un control específico en Compras */
 body[data-modulo="compras"] #tablaStock tbody tr {
-  height: 60px;
+  height: 60px; /* fija altura para todas las filas */
+  display: table-row;
 }
 
-body[data-modulo="compras"] #tablaStock tbody td {
+body[data-modulo="compras"] #tablaStock td,
+body[data-modulo="compras"] #tablaStock th {
   vertical-align: middle;
-  padding-top: 6px;
-  padding-bottom: 6px;
+  padding-left: 6px;
+  padding-right: 6px;
+  /* se omite padding vertical para evitar conflicto con height */
 }
 
-body[data-modulo="compras"] #tablaStock td {
+/* Aseguramos que la columna de Descripción rompa líneas y no deforme altura */
+body[data-modulo="compras"] #tablaStock td.descripcion {
   white-space: normal;
-  overflow-wrap: break-word;
+  word-break: break-word;
   max-width: 250px;
+}
+
+/* Quitamos cualquier min-height heredado que esté forzando la celda */
+body[data-modulo="compras"] #tablaStock td.descripcion {
+  min-height: unset;
+  line-height: 1.2;
 }
