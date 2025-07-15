@@ -27,6 +27,7 @@
 	<button onclick="mostrarMenuCargaSoporte()">
 	  <i class="fas fa-upload"></i> Actualizar Estados Soporte
 	</button>
+	<input type="file" id="excelInputSoporte" accept=".xlsx, .xls" style="display:none" onchange="procesarExcelSoporte(this.files[0])">    
       </div>
  <div class="search-bar-paginacion">
   <input type="text" id="inputBuscar" placeholder="Buscar por código, descripción, SOT o cliente..." autocomplete="off" />
