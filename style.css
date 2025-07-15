@@ -1082,6 +1082,7 @@ body.detalle-solicitud .content {
 
 .resumen-resultados {
   margin-top: 10px;
+  margin-bottom: 10px;
   font-weight: 500;
-  color: #444;
+  color: #ffffff;
 }
