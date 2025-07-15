@@ -46,9 +46,9 @@
             <th>Tipo Trabajo</th>
             <th>Tipo Proyecto</th>
             <th>Sede</th>
-            <th>Cantidad</th>
+	    <th>Código SAP</th>  
             <th>Descripción</th>
-            <th>Código SAP</th>
+	    <th>Cantidad</th>  
             <th>Fecha Generación</th>
             <th>Fecha Compromiso</th>
 	    <th>Estado Soporte</th>
@@ -124,13 +124,13 @@ const elementosPorPagina = 300;
       <td>${item.proyecto || "-"}</td>
       <td>${item.codsolot || "-"}</td>
       <td>${item.estado_sot || "-"}</td>
-      <td>${item.cliente || "-"}</td>
+      <td class="cliente">${item.cliente || "-"}</td>
       <td>${item.tipotrabajo || "-"}</td>
       <td>${item.tipoproyecto || "-"}</td>
       <td>${item.sede || "-"}</td>
-      <td>${item.cantidad ?? "-"}</td>
-      <td>${item.descripcion || "-"}</td>
       <td>${item.nuevo_codigo || "-"}</td>
+      <td class="descripcion">${item.descripcion || "-"}</td>
+      <td>${item.cantidad ?? "-"}</td>
       <td>${formatearFecha(item.fecha_generacion)}</td>
       <td>${formatearFecha(item.fecha_compromiso)}</td>
       <td>${item.estado_soporte || "PENDIENTE"}</td>
