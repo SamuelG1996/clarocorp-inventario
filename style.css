@@ -1122,5 +1122,9 @@ body[data-modulo="compras"] #tablaStock td {
   padding: 6px;
 }
 
-
+/* Alinea al centro la columna Consumo Mensual solo en Compras */
+body[data-modulo="compras"] #tablaStock td.columna-consumo {
+  text-align: center;
+  vertical-align: middle;
+}
 
