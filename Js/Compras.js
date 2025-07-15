@@ -120,7 +120,7 @@ async function mostrarDetalleCompras(codigo) {
       fila.innerHTML = `
         <td>${item.codigo}</td>
         <td class="columna-descripcion" title="${item.descripcion}">${item.descripcion}</td>
-        <td>${item.grupo_material || "-"}</td>
+        <td class="tipo-producto">${item.grupo_material || "-"}</td>
         <td>${item.tipo_compra || "-"}</td>
         <td>${item.proveedor || "-"}</td>
         <td class="columna-consumo">${formatearNumero(consumo)}</td>
