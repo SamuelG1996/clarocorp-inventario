@@ -976,7 +976,59 @@ async function procesarCargaSoporte(file) {
   }
 </script>
 
+<script>
+  async function enviarResumenGlobal() {
+    try {
+      mostrarLoader();
 
+      const respuesta = await fetch("https://notificador-series.onrender.com/api/utilsSeriesReporteClaro", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!respuesta.ok) {
+        const errorText = await respuesta.text();
+        throw new Error(`HTTP ${respuesta.status}: ${errorText}`);
+      }
+
+      const resultado = await respuesta.json();
+
+      Swal.fire({
+        icon: "success",
+        title: "Resumen enviado correctamente",
+        text: resultado.message || "Correo enviado a los destinatarios",
+        background: "#1e2022",
+        color: "#ffffff",
+        iconColor: "#f39c12",
+        toast: true,
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        position: "bottom-end"
+      });
+
+    } catch (error) {
+      console.error("❌ Error al enviar resumen:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error al enviar resumen",
+        text: error.message,
+        background: "#1e2022",
+        color: "#ffffff",
+        toast: true,
+        timer: 3000,
+        showConfirmButton: false,
+        position: "bottom-end"
+      });
+    } finally {
+      ocultarLoader();
+    }
+  }
+</script>
+
+  
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
 </body>
