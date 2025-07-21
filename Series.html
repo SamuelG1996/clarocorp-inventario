@@ -48,6 +48,7 @@
       </button>
       
       <button onclick="probarNotificador()">@</button>
+      <button onclick="enviarResumenGlobal()">*</button>
       
     </div>
       <div class="search-bar-paginacion">
@@ -590,6 +591,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const botonNotificador = document.querySelector("button[onclick='probarNotificador()']");
     if (botonNotificador) botonNotificador.style.display = "none";
+
+  const botonResumen = document.querySelector("button[onclick='enviarResumenGlobal()']");
+  if (botonResumen) botonResumen.style.display = "none";
   }
 
   document.getElementById("searchInput").value = "";
