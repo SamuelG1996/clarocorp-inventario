@@ -851,78 +851,77 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 </script>
-
 <script>
-async function popupActualizarEstado() {
-  const idSolicitud = new URLSearchParams(window.location.search).get("id");
+  async function popupActualizarEstado() {
+    const idSolicitud = new URLSearchParams(window.location.search).get("id");
 
-  Swal.fire({
-    title: "Actualizar estado de la solicitud",
-    input: "textarea",
-    inputLabel: "Comentario",
-    inputPlaceholder: "Escribe un comentario para que el solicitante sepa en qué estado se encuentra su solicitud...",
-    inputAttributes: {
-      "aria-label": "Comentario de actualización",
-    },
-    showCancelButton: true,
-    confirmButtonText: "Actualizar",
-    cancelButtonText: "Cancelar",
-    icon: "question",
-    background: "#1e2022",
-    color: "#ffffff",
-    customClass: {
-      popup: "swal2-modal-custom"
-    },
-    preConfirm: async (comentario) => {
-      if (!comentario) {
-        Swal.showValidationMessage("Debes ingresar un comentario.");
-        return false;
+    Swal.fire({
+      title: "Actualizar estado de la solicitud",
+      html: `
+        <p>Al confirmar, se registrará tu comentario y se actualizará el estado de la solicitud en el sistema.</p>
+        <textarea id="comentario" class="swal2-textarea" placeholder="Escribe un comentario..."></textarea>
+      `,
+      showCancelButton: true,
+      confirmButtonText: "Actualizar",
+      cancelButtonText: "Cancelar",
+      icon: "question",
+      background: "#1e2022",
+      color: "#ffffff",
+      customClass: {
+        popup: "swal2-modal-custom"
+      },
+      preConfirm: async () => {
+        const comentario = document.getElementById("comentario").value.trim();
+        if (!comentario) {
+          Swal.showValidationMessage("Debes ingresar un comentario.");
+          return false;
+        }
+
+        try {
+          // Actualizar traspasos: estado
+          const { error: errorTraspaso } = await supabase
+            .from("traspasos")
+            .update({ estado: "En proceso" })
+            .eq("id", idSolicitud);
+
+          if (errorTraspaso) throw errorTraspaso;
+
+          // Actualizar traspaso_detalle: comentario_observacion
+          const { error: errorDetalle } = await supabase
+            .from("traspaso_detalle")
+            .update({ comentario_observacion: comentario })
+            .eq("id_traspaso", idSolicitud);
+
+          if (errorDetalle) throw errorDetalle;
+
+          return true;
+        } catch (err) {
+          console.error("Error actualizando:", err);
+          Swal.showValidationMessage("Hubo un error al actualizar.");
+          return false;
+        }
       }
-
-      try {
-        // Actualizar traspasos: estado
-        const { error: errorTraspaso } = await supabase
-          .from("traspasos")
-          .update({ estado: "En proceso" })
-          .eq("id", idSolicitud);
-
-        if (errorTraspaso) throw errorTraspaso;
-
-        // Actualizar traspaso_detalle: comentario_observacion
-        const { error: errorDetalle } = await supabase
-          .from("traspaso_detalle")
-          .update({ comentario_observacion: comentario })
-          .eq("id_traspaso", idSolicitud);
-
-        if (errorDetalle) throw errorDetalle;
-
-        return true;
-      } catch (err) {
-        console.error("Error actualizando:", err);
-        Swal.showValidationMessage("Hubo un error al actualizar.");
-        return false;
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Solicitud actualizada',
+          text: 'Se ha cargado correctamente y se notificó al responsable.',
+          toast: true,
+          position: 'bottom-end',
+          timer: 3000,
+          showConfirmButton: false,
+          background: '#1e2022',
+          color: '#ffffff',
+          iconColor: '#2ecc71'
+        }).then(() => {
+          location.reload();
+        });
       }
-    }
-  }).then((result) => {
-    if (result.isConfirmed) {
-      Swal.fire({
-        icon: 'success',
-        title: 'Solicitud actualizada',
-        text: 'Se ha cargado correctamente y se notificó al responsable.',
-        toast: true,
-        position: 'bottom-end',
-        timer: 3000,
-        showConfirmButton: false,
-        background: '#1e2022',
-        color: '#ffffff',
-        iconColor: '#2ecc71'
-      }).then(() => {
-        location.reload();
-      });
-    }
-  });
-}
+    });
+  }
 </script>
+
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
 </body>
