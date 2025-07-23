@@ -851,8 +851,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 </script>
+
 <script>
-function popupActualizarEstado() {
+async function popupActualizarEstado() {
   const idSolicitud = new URLSearchParams(window.location.search).get("id");
 
   Swal.fire({
@@ -875,33 +876,39 @@ function popupActualizarEstado() {
         return false;
       }
 
-      // Llamada a Supabase para actualizar el estado y comentario
-      const { data, error } = await supabase
-        .from("solicitudes")
-        .update({
-          estado_soporte: "En revisión",
-          comentario_soporte: comentario,
-          fecha_estado_soporte: new Date().toISOString(),
-        })
-        .eq("id", idSolicitud);
+      try {
+        // Actualizar traspasos: estado
+        const { error: errorTraspaso } = await supabase
+          .from("traspasos")
+          .update({ estado: "En revisión" })
+          .eq("id", idSolicitud);
 
-      if (error) {
-        console.error(error);
-        Swal.showValidationMessage("Error al actualizar solicitud.");
+        if (errorTraspaso) throw errorTraspaso;
+
+        // Actualizar traspaso_detalle: comentario_observacion
+        const { error: errorDetalle } = await supabase
+          .from("traspaso_detalle")
+          .update({ comentario_observacion: comentario })
+          .eq("id_traspaso", idSolicitud);
+
+        if (errorDetalle) throw errorDetalle;
+
+        return true;
+      } catch (err) {
+        console.error("Error actualizando:", err);
+        Swal.showValidationMessage("Hubo un error al actualizar.");
         return false;
       }
-
-      return true;
     },
   }).then((result) => {
     if (result.isConfirmed) {
       Swal.fire("Actualizado", "La solicitud fue actualizada.", "success").then(() => {
-        location.reload(); // refresca la página para mostrar cambios
+        location.reload(); // Recargar para reflejar cambios
       });
     }
   });
 }
-  </script>
+</script>
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
 </body>
