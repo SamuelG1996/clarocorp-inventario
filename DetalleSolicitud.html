@@ -374,7 +374,7 @@ const esCreador = solicitud.codigo_solicitante === codigoUsuario;
 const esResponsable = solicitud.responsable_codigo === codigoUsuario;
   const tieneRolPermitido = ["Administrador", "Supervisor"].includes(rol);
 
-  if (estado === "Atendido" || estado === "Anulado" || estado === "En revisión") {
+  if (estado === "Atendido" || estado === "Anulado" || estado === "En proceso") {
     document.getElementById("btnEditar").disabled = true;
     Swal.fire({
       icon: 'info',
@@ -857,10 +857,10 @@ async function popupActualizarEstado() {
   const idSolicitud = new URLSearchParams(window.location.search).get("id");
 
   Swal.fire({
-    title: "Actualizar estado a En revisión",
+    title: "Actualizar estado de la solicitud",
     input: "textarea",
     inputLabel: "Comentario",
-    inputPlaceholder: "Escribe el motivo del cambio de estado...",
+    inputPlaceholder: "Escribe un comentario para que el solicitante sepa en qué estado se encuentra su solicitud...",
     inputAttributes: {
       "aria-label": "Comentario de actualización",
     },
@@ -880,7 +880,7 @@ async function popupActualizarEstado() {
         // Actualizar traspasos: estado
         const { error: errorTraspaso } = await supabase
           .from("traspasos")
-          .update({ estado: "En revisión" })
+          .update({ estado: "En proceso" })
           .eq("id", idSolicitud);
 
         if (errorTraspaso) throw errorTraspaso;
