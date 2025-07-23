@@ -864,7 +864,7 @@ body.formulario-traspaso .acciones-tabla button {
 
 /* ---  ESTILOS PARA EL SUBMODULO DE DETALLE SOLICITUD --- */
 .detalle-solicitud .tabla-scroll {
-  width: 100%;
+  width: 100% !important;
   overflow-x: auto;
   background-color: white;
   border: 1px solid #ccc;
