@@ -867,8 +867,11 @@ async function popupActualizarEstado() {
     showCancelButton: true,
     confirmButtonText: "Actualizar",
     cancelButtonText: "Cancelar",
+    icon: "question",
+    background: "#1e2022",
+    color: "#ffffff",
     customClass: {
-      popup: "swal2-modal-custom",
+      popup: "swal2-modal-custom"
     },
     preConfirm: async (comentario) => {
       if (!comentario) {
@@ -899,11 +902,22 @@ async function popupActualizarEstado() {
         Swal.showValidationMessage("Hubo un error al actualizar.");
         return false;
       }
-    },
+    }
   }).then((result) => {
     if (result.isConfirmed) {
-      Swal.fire("Actualizado", "La solicitud fue actualizada.", "success").then(() => {
-        location.reload(); // Recargar para reflejar cambios
+      Swal.fire({
+        icon: 'success',
+        title: 'Solicitud actualizada',
+        text: 'Se ha cargado correctamente y se notificó al responsable.',
+        toast: true,
+        position: 'bottom-end',
+        timer: 3000,
+        showConfirmButton: false,
+        background: '#1e2022',
+        color: '#ffffff',
+        iconColor: '#2ecc71'
+      }).then(() => {
+        location.reload();
       });
     }
   });
