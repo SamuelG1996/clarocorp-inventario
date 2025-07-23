@@ -56,9 +56,7 @@
     </button>
     <input type="file" id="inputNuevaGuia" accept=".pdf,.png,.jpg,.jpeg" style="display:none;">
 
-<button id="btnActualizarEstado" style="display: none;" class="boton-edicion" onclick="popupActualizarEstado()">
-  Actualizar Estado
-</button>
+ <button id="btnActualizarEstado" class="boton-edicion" onclick="popupActualizarEstado()"> Actualizar Estado</button>
     </div>
     </div>
   </div>
@@ -844,13 +842,14 @@ document.getElementById("inputNuevaGuia").addEventListener("change", async (even
 </script>
 
 <script>
-const rolesPermitidos = ["Administrador", "Soporte"];
-const rolUsuario = localStorage.getItem("rol");
+document.addEventListener("DOMContentLoaded", () => {
+  const rolesPermitidos = ["Administrador", "Soporte"];
+  const rolUsuario = localStorage.getItem("rol");
 
-if (rolesPermitidos.includes(rolUsuario)) {
-  document.getElementById("btnActualizarEstado").style.display = "inline-block";
-}
-
+  if (rolesPermitidos.includes(rolUsuario)) {
+    document.getElementById("btnActualizarEstado").style.display = "inline-block";
+  }
+});
 </script>
 <script>
 function popupActualizarEstado() {
