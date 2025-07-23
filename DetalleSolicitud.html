@@ -56,7 +56,8 @@
     </button>
     <input type="file" id="inputNuevaGuia" accept=".pdf,.png,.jpg,.jpeg" style="display:none;">
 
-    <button id="btnActualizar" class="boton-edicion"><i class="fas fa-sync-alt"></i>Actualizar Estado</button>
+  <button  id="btnActualizar" class="boton-edicion" onclick="actualizarComentarioObservacion()">
+  <i class="fas fa-sync-alt"></i> Actualizar Estado</button>
     </div>
     </div>
   </div>
@@ -840,34 +841,22 @@ document.getElementById("inputNuevaGuia").addEventListener("change", async (even
   setTimeout(() => location.reload(), 2000);
 });
 </script>
-  
+
 <script>
-  // Mostrar botón solo si el rol está permitido
   const rolesPermitidos = ["Administrador", "Soporte"];
   const rolUsuario = localStorage.getItem("rol");
 
   if (rolesPermitidos.includes(rolUsuario)) {
     document.getElementById("btnActualizar").style.display = "inline-block";
   }
-
-  // Parámetros de la URL
+</script>
+  
+<script>
+  const ID_SOLICITUD = document.getElementById("solicitudId").value;
   const urlParams = new URLSearchParams(window.location.search);
   const ID_DETALLE = urlParams.get("id");
 
-  // Obtener ID_SOLICITUD desde el input oculto o campo visible
-  const inputSolicitud = document.getElementById("solicitudId");
-  const ID_SOLICITUD = inputSolicitud ? inputSolicitud.value : null;
-
-  // Asignar evento al botón
-  const btn = document.getElementById("btnActualizar");
-  if (btn && ID_DETALLE && ID_SOLICITUD) {
-    btn.addEventListener("click", function () {
-      actualizarComentarioObservacion(ID_DETALLE, ID_SOLICITUD);
-    });
-  }
-
-  // Función para actualizar el comentario y cambiar el estado
-  async function actualizarComentarioObservacion(id_detalle, id_solicitud) {
+  async function actualizarComentarioObservacion() {
     const { value: nuevoComentario, isConfirmed } = await Swal.fire({
       title: "Actualizar comentario de observación",
       input: "textarea",
@@ -884,11 +873,11 @@ document.getElementById("inputNuevaGuia").addEventListener("change", async (even
     if (isConfirmed && nuevoComentario.trim() !== "") {
       const comentarioFinal = nuevoComentario.trim();
 
-      // 1. Actualizar comentario en traspaso_detalle
+      // Paso 1: Actualizar comentario en traspaso_detalle
       const { error: errorDetalle } = await supabase
         .from("traspaso_detalle")
         .update({ comentario_observacion: comentarioFinal })
-        .eq("id", id_detalle);
+        .eq("id", ID_DETALLE);
 
       if (errorDetalle) {
         console.error("Error al actualizar comentario:", errorDetalle.message);
@@ -896,20 +885,20 @@ document.getElementById("inputNuevaGuia").addEventListener("change", async (even
         return;
       }
 
-      // 2. Cambiar estado a 'En revisión' en traspasos
+      // Paso 2: Cambiar estado a 'En revisión' en traspasos
       const { error: errorSolicitud } = await supabase
         .from("traspasos")
         .update({ estado: "En revisión" })
-        .eq("id", id_solicitud);
+        .eq("id", ID_SOLICITUD);
 
       if (errorSolicitud) {
-        console.error("Error al actualizar estado:", errorSolicitud.message);
-        Swal.fire("Advertencia", "Comentario actualizado, pero no se pudo cambiar el estado.", "warning");
+        console.error("Error al actualizar estado de solicitud:", errorSolicitud.message);
+        Swal.fire("Error", "Se actualizó el comentario, pero no se pudo cambiar el estado.", "warning");
         return;
       }
 
       Swal.fire("¡Actualizado!", "El comentario fue registrado y la solicitud pasó a 'En revisión'.", "success");
-      location.reload();
+      location.reload(); 
     }
   }
 </script>
