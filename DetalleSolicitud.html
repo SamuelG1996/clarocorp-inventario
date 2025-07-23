@@ -56,7 +56,7 @@
     </button>
     <input type="file" id="inputNuevaGuia" accept=".pdf,.png,.jpg,.jpeg" style="display:none;">
 
-<button id="btnActualizarEstado" class="boton-edicion" onclick="popupActualizarEstado()">
+<button id="btnActualizarEstado" style="display: none;" class="boton-edicion" onclick="popupActualizarEstado()">
   Actualizar Estado
 </button>
     </div>
@@ -844,51 +844,61 @@ document.getElementById("inputNuevaGuia").addEventListener("change", async (even
 </script>
 
 <script>
-  const rolesPermitidos = ["Administrador", "Soporte"];
-  const rolUsuario = localStorage.getItem("rol");
+const rolesPermitidos = ["Administrador", "Soporte"];
+const rolUsuario = localStorage.getItem("rol");
 
-  if (rolesPermitidos.includes(rolUsuario)) {
-    document.getElementById("btnActualizar").style.display = "inline-block";
-  }
+if (rolesPermitidos.includes(rolUsuario)) {
+  document.getElementById("btnActualizarEstado").style.display = "inline-block";
+}
 
 </script>
 <script>
 function popupActualizarEstado() {
+  const idSolicitud = new URLSearchParams(window.location.search).get("id");
+
   Swal.fire({
     title: "Actualizar estado a EN REVISIÓN",
     input: "textarea",
-    inputLabel: "Comentario de observación",
-    inputPlaceholder: "Escribe aquí el motivo...",
+    inputLabel: "Comentario",
+    inputPlaceholder: "Escribe el motivo del cambio de estado...",
     inputAttributes: {
-      "aria-label": "Comentario de observación"
+      "aria-label": "Comentario de actualización",
     },
     showCancelButton: true,
     confirmButtonText: "Actualizar",
     cancelButtonText: "Cancelar",
-    inputValidator: (value) => {
-      if (!value.trim()) {
-        return "Debes escribir un comentario";
+    customClass: {
+      popup: "swal2-modal-custom",
+    },
+    preConfirm: async (comentario) => {
+      if (!comentario) {
+        Swal.showValidationMessage("Debes ingresar un comentario.");
+        return false;
       }
-    }
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      const comentario = result.value;
 
+      // Llamada a Supabase para actualizar el estado y comentario
       const { data, error } = await supabase
-        .from("traspaso")
+        .from("solicitudes")
         .update({
-          estado: "EN REVISIÓN",
-          comentario_observacion: comentario
+          estado_soporte: "EN REVISIÓN",
+          comentario_soporte: comentario,
+          fecha_estado_soporte: new Date().toISOString(),
         })
-        .eq("id", id_solicitud); // solo se usa id_solicitud (cabecera)
+        .eq("id", idSolicitud);
 
       if (error) {
-        console.error("Error actualizando:", error);
-        Swal.fire("Error", "No se pudo actualizar la solicitud", "error");
-      } else {
-        Swal.fire("Listo", "Estado actualizado correctamente", "success")
-          .then(() => location.reload());
+        console.error(error);
+        Swal.showValidationMessage("Error al actualizar solicitud.");
+        return false;
       }
+
+      return true;
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Swal.fire("Actualizado", "La solicitud fue actualizada.", "success").then(() => {
+        location.reload(); // refresca la página para mostrar cambios
+      });
     }
   });
 }
