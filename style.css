@@ -862,7 +862,14 @@ body.formulario-traspaso .acciones-tabla button {
 }
 /* --- FIN ESTILOS PARA EL MODULO DE TRASPASOS --- */
 
+
 /* ---  ESTILOS PARA EL SUBMODULO DE DETALLE SOLICITUD --- */
+
+#tablaDetalle {
+  width: 100% !important;
+  border-collapse: collapse; /* opcional para que las celdas no tengan espacios */
+}
+
 .detalle-solicitud .tabla-scroll {
   width: 100% !important;
   overflow-x: auto;
