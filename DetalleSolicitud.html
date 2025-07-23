@@ -857,7 +857,7 @@ function popupActualizarEstado() {
   const idSolicitud = new URLSearchParams(window.location.search).get("id");
 
   Swal.fire({
-    title: "Actualizar estado a EN REVISIÓN",
+    title: "Actualizar estado a En revisión",
     input: "textarea",
     inputLabel: "Comentario",
     inputPlaceholder: "Escribe el motivo del cambio de estado...",
@@ -880,7 +880,7 @@ function popupActualizarEstado() {
       const { data, error } = await supabase
         .from("solicitudes")
         .update({
-          estado_soporte: "EN REVISIÓN",
+          estado_soporte: "En revisión",
           comentario_soporte: comentario,
           fecha_estado_soporte: new Date().toISOString(),
         })
