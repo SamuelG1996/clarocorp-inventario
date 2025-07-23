@@ -56,9 +56,9 @@
     </button>
     <input type="file" id="inputNuevaGuia" accept=".pdf,.png,.jpg,.jpeg" style="display:none;">
 
-    <button onclick="actualizarComentarioObservacion()" id="btnActualizar" class="boton-edicion" style="display: none;">
-    <i class="fas fa-sync-alt"></i> Actualizar Estado
-    </button>
+<button id="btnActualizarEstado" onclick="popupActualizarEstado()" class="btn btn-info" style="display: none;">
+  Actualizar Estado
+</button>
     </div>
     </div>
   </div>
@@ -850,67 +850,49 @@ document.getElementById("inputNuevaGuia").addEventListener("change", async (even
   if (rolesPermitidos.includes(rolUsuario)) {
     document.getElementById("btnActualizar").style.display = "inline-block";
   }
+
 </script>
-  
 <script>
-  const urlParams = new URLSearchParams(window.location.search);
-  const ID_DETALLE = urlParams.get("id");
-  const ID_SOLICITUD = document.getElementById("solicitudId")?.value || null;
-
-  const rolesPermitidos = ["Administrador", "Soporte"];
-  const rolUsuario = localStorage.getItem("rol");
-  if (!rolesPermitidos.includes(rolUsuario)) {
-    document.getElementById("btnActualizar").style.display = "none";
-  } else {
-    document.getElementById("btnActualizar").style.display = "inline-block";
-  }
-
-  // ✅ Esta función debe estar en global (sin const, sin module)
-  async function actualizarComentarioObservacion() {
-    const { value: nuevoComentario, isConfirmed } = await Swal.fire({
-      title: "Actualizar comentario de observación",
-      input: "textarea",
-      inputLabel: "Escribe el nuevo comentario",
-      inputPlaceholder: "Ingresa el comentario de observación...",
-      showCancelButton: true,
-      confirmButtonText: "Actualizar",
-      cancelButtonText: "Cancelar",
-      customClass: {
-        popup: 'swal2-modal-custom'
+function popupActualizarEstado() {
+  Swal.fire({
+    title: "Actualizar estado a EN REVISIÓN",
+    input: "textarea",
+    inputLabel: "Comentario de observación",
+    inputPlaceholder: "Escribe aquí el motivo...",
+    inputAttributes: {
+      "aria-label": "Comentario de observación"
+    },
+    showCancelButton: true,
+    confirmButtonText: "Actualizar",
+    cancelButtonText: "Cancelar",
+    inputValidator: (value) => {
+      if (!value.trim()) {
+        return "Debes escribir un comentario";
       }
-    });
-
-    if (isConfirmed && nuevoComentario.trim() !== "") {
-      const comentarioFinal = nuevoComentario.trim();
-
-      const { error: errorDetalle } = await supabase
-        .from("traspaso_detalle")
-        .update({ comentario_observacion: comentarioFinal })
-        .eq("id", ID_DETALLE);
-
-      if (errorDetalle) {
-        console.error("Error al actualizar comentario:", errorDetalle.message);
-        Swal.fire("Error", "Hubo un problema al actualizar el comentario.", "error");
-        return;
-      }
-
-      const { error: errorSolicitud } = await supabase
-        .from("traspasos")
-        .update({ estado: "En revisión" })
-        .eq("id", ID_SOLICITUD);
-
-      if (errorSolicitud) {
-        console.error("Error al actualizar estado de solicitud:", errorSolicitud.message);
-        Swal.fire("Error", "Se actualizó el comentario, pero no se pudo cambiar el estado.", "warning");
-        return;
-      }
-
-      Swal.fire("¡Actualizado!", "El comentario fue registrado y la solicitud pasó a 'En revisión'.", "success");
-      location.reload();
     }
-  }
-</script>
-  
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      const comentario = result.value;
+
+      const { data, error } = await supabase
+        .from("traspaso")
+        .update({
+          estado: "EN REVISIÓN",
+          comentario_observacion: comentario
+        })
+        .eq("id", id_solicitud); // solo se usa id_solicitud (cabecera)
+
+      if (error) {
+        console.error("Error actualizando:", error);
+        Swal.fire("Error", "No se pudo actualizar la solicitud", "error");
+      } else {
+        Swal.fire("Listo", "Estado actualizado correctamente", "success")
+          .then(() => location.reload());
+      }
+    }
+  });
+}
+  </script>
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
 </body>
