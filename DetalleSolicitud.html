@@ -56,8 +56,9 @@
     </button>
     <input type="file" id="inputNuevaGuia" accept=".pdf,.png,.jpg,.jpeg" style="display:none;">
 
-  <button  id="btnActualizar" class="boton-edicion" onclick="actualizarComentarioObservacion()">
-  <i class="fas fa-sync-alt"></i> Actualizar Estado</button>
+    <button onclick="actualizarComentarioObservacion()" id="btnActualizar" class="boton-edicion" style="display: none;">
+    <i class="fas fa-sync-alt"></i> Actualizar Estado
+    </button>
     </div>
     </div>
   </div>
@@ -852,10 +853,19 @@ document.getElementById("inputNuevaGuia").addEventListener("change", async (even
 </script>
   
 <script>
-  const ID_SOLICITUD = document.getElementById("solicitudId").value;
   const urlParams = new URLSearchParams(window.location.search);
   const ID_DETALLE = urlParams.get("id");
+  const ID_SOLICITUD = document.getElementById("solicitudId")?.value || null;
 
+  const rolesPermitidos = ["Administrador", "Soporte"];
+  const rolUsuario = localStorage.getItem("rol");
+  if (!rolesPermitidos.includes(rolUsuario)) {
+    document.getElementById("btnActualizar").style.display = "none";
+  } else {
+    document.getElementById("btnActualizar").style.display = "inline-block";
+  }
+
+  // ✅ Esta función debe estar en global (sin const, sin module)
   async function actualizarComentarioObservacion() {
     const { value: nuevoComentario, isConfirmed } = await Swal.fire({
       title: "Actualizar comentario de observación",
@@ -873,7 +883,6 @@ document.getElementById("inputNuevaGuia").addEventListener("change", async (even
     if (isConfirmed && nuevoComentario.trim() !== "") {
       const comentarioFinal = nuevoComentario.trim();
 
-      // Paso 1: Actualizar comentario en traspaso_detalle
       const { error: errorDetalle } = await supabase
         .from("traspaso_detalle")
         .update({ comentario_observacion: comentarioFinal })
@@ -885,7 +894,6 @@ document.getElementById("inputNuevaGuia").addEventListener("change", async (even
         return;
       }
 
-      // Paso 2: Cambiar estado a 'En revisión' en traspasos
       const { error: errorSolicitud } = await supabase
         .from("traspasos")
         .update({ estado: "En revisión" })
@@ -898,7 +906,7 @@ document.getElementById("inputNuevaGuia").addEventListener("change", async (even
       }
 
       Swal.fire("¡Actualizado!", "El comentario fue registrado y la solicitud pasó a 'En revisión'.", "success");
-      location.reload(); 
+      location.reload();
     }
   }
 </script>
