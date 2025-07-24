@@ -311,9 +311,9 @@ function filtrarTabla() {
   </script>
 
   
-  <script>
+<script>
 async function descargarExcelSeries() {
-  mostrarLoader(); // 👈 Mostrar
+  mostrarLoader();
   const pageSize = 1000;
   let page = 0;
   let allData = [];
@@ -326,16 +326,19 @@ async function descargarExcelSeries() {
     do {
       let query = supabase
         .from('series_contrata')
-        .select('*')
+        .select(`
+          codigo, descripcion, centro, almacen, lote, nro_serie, empresa, tipo_material,
+          fecha_ingreso, fecha_compra, estado_contrata, proyecto_sot, cliente, id_devolucion,
+          fecha_estado_contrata, comentario_contrata, estado_soporte, comentario_soporte,
+          fecha_estado_soporte, estado_conciliacion, subestado_conciliacion
+        `)
         .range(page * pageSize, (page + 1) * pageSize - 1);
 
-      // ✅ Aplicar filtro de empresa si es contratista
       if (rolUsuario === "Contratista") {
         query = query.eq("empresa", empresaUsuario);
       }
 
       const { data, error } = await query;
-
       if (error) throw error;
 
       fetched = data;
@@ -349,22 +352,14 @@ async function descargarExcelSeries() {
       return;
     }
 
-    // Paso 1: Obtener todos los códigos únicos
     const codigosUnicos = [...new Set(allData.map(s => s.codigo).filter(Boolean))];
-    
-    // Paso 2: Obtener todos los precios de esos códigos en una sola consulta
+
     const { data: preciosCrudos, error: errorPrecios } = await supabase
       .from('material_precios')
       .select('material, precio, fecha_data')
       .in('material', codigosUnicos);
-    
-    if (errorPrecios) {
-      console.error("❌ Error al consultar precios:", errorPrecios);
-    }
-    
-    // Paso 3: Elegir el precio más reciente por código
+
     const preciosMaterial = {};
-    
     (preciosCrudos || []).forEach(p => {
       const actual = preciosMaterial[p.material];
       if (!actual || new Date(p.fecha_data) > new Date(actual.fecha_data)) {
@@ -375,58 +370,62 @@ async function descargarExcelSeries() {
       }
     });
 
-    const datos = allData.map(serie => ({
-      Código: serie.codigo,
-      Descripción: serie.descripcion,
-      Centro: serie.centro,
-      Almacén: serie.almacen,
-      Lote: serie.lote,
-      "N° Serie": serie.nro_serie,
-      Empresa: serie.empresa,
-      "Tipo Material": serie.tipo_material || '',
-      "Valor": preciosMaterial[serie.codigo]?.precio || 0,
-      "Fecha Ingreso": formatearFechaSegura(serie.fecha_ingreso),
-      Antiguamiento: calcularAntiguamiento(serie.fecha_ingreso) + ' días',
-      "Fecha Compra": formatearFechaSegura(serie.fecha_compra),
-      "Antiguamiento Compra": serie.fecha_compra ? calcularAntiguamiento(serie.fecha_compra) + ' días' : '',
-      "Estado Contrata": serie.estado_contrata,
-      SOT: serie.proyecto_sot,
-      Cliente: serie.cliente,
-      "ID Devolución/Traspaso": serie.id_devolucion,
-      "Fecha Estado Contrata": formatearFechaSegura(serie.fecha_estado_contrata),
-      "Comentario Contrata": serie.comentario_contrata,
-      "Estado Soporte": serie.estado_soporte,
-      "Comentario Soporte": serie.comentario_soporte,
-      "Fecha Estado Soporte": formatearFechaSegura(serie.fecha_estado_soporte),
-      "Estado Conciliación": serie.estado_conciliacion || '-',
-      "Subestado Conciliación": serie.subestado_conciliacion || '-'
-    }));
+    const datos = allData.map(serie => {
+      const fechaIngreso = serie.fecha_ingreso ? formatearFechaSegura(serie.fecha_ingreso) : "";
+      const fechaCompra = serie.fecha_compra ? formatearFechaSegura(serie.fecha_compra) : "";
+      return {
+        Código: serie.codigo,
+        Descripción: serie.descripcion,
+        Centro: serie.centro,
+        Almacén: serie.almacen,
+        Lote: serie.lote,
+        "N° Serie": serie.nro_serie,
+        Empresa: serie.empresa,
+        "Tipo Material": serie.tipo_material || '',
+        "Valor": preciosMaterial[serie.codigo]?.precio || 0,
+        "Fecha Ingreso": fechaIngreso,
+        Antiguamiento: serie.fecha_ingreso ? calcularAntiguamiento(serie.fecha_ingreso) + ' días' : '',
+        "Fecha Compra": fechaCompra,
+        "Antiguamiento Compra": serie.fecha_compra ? calcularAntiguamiento(serie.fecha_compra) + ' días' : '',
+        "Estado Contrata": serie.estado_contrata,
+        SOT: serie.proyecto_sot,
+        Cliente: serie.cliente,
+        "ID Devolución/Traspaso": serie.id_devolucion,
+        "Fecha Estado Contrata": formatearFechaSegura(serie.fecha_estado_contrata),
+        "Comentario Contrata": serie.comentario_contrata,
+        "Estado Soporte": serie.estado_soporte,
+        "Comentario Soporte": serie.comentario_soporte,
+        "Fecha Estado Soporte": formatearFechaSegura(serie.fecha_estado_soporte),
+        "Estado Conciliación": serie.estado_conciliacion || '-',
+        "Subestado Conciliación": serie.subestado_conciliacion || '-'
+      };
+    });
 
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(datos);
     XLSX.utils.book_append_sheet(wb, ws, "Series Contrata");
     XLSX.writeFile(wb, "Series_Contrata.xlsx");
 
- Swal.fire({
-    icon: "success",
-    title: "¡Descarga exitosa!",
-    toast: true,
-    position: "bottom-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    background: "#1e2022",
-    color: "#ffffff",
-    iconColor: "#11a24e"
-  });
+    Swal.fire({
+      icon: "success",
+      title: "¡Descarga exitosa!",
+      toast: true,
+      position: "bottom-end",
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: "#1e2022",
+      color: "#ffffff",
+      iconColor: "#11a24e"
+    });
 
   } catch (error) {
     console.error("Error al exportar Excel:", error);
   } finally {
-    ocultarLoader(); // 👈 Siempre ocultar al final
+    ocultarLoader();
   }
 }
-  </script>
+</script>
   
   <script>
   async function procesarExcelSeries(file) {
