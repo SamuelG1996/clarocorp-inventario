@@ -597,6 +597,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   document.getElementById("searchInput").value = "";
+
+  // 🟨 LLAMADA A LA FUNCIÓN RPC PARA ACTUALIZAR EQUIPOS DISPONIBLES CON ANTIGUAMIENTO
+  try {
+    await supabase.rpc("observar_equipos_disponibles_con_antiguamiento");
+    console.log("RPC ejecutado correctamente.");
+  } catch (error) {
+    console.error("Error al ejecutar RPC:", error);
+  }
+
   mostrarLoader();
   cargarSeries('').then(() => ocultarLoader());
 });
