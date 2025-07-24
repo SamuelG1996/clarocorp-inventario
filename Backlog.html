@@ -217,11 +217,11 @@ async function descargarExcel() {
         item.nuevo_codigo || "-",
         item.descripcion || "-",
         item.cantidad ?? "-",
-        item.fecha_generacion ? item.fecha_generacion.split("-").reverse().join("/") : "-",
-        item.fecha_compromiso ? item.fecha_compromiso.split("-").reverse().join("/") : "-",
+	item.fecha_generacion ? new Date(item.fecha_generacion) : null,
+	item.fecha_compromiso ? new Date(item.fecha_compromiso) : null,
         item.estado_soporte || "PENDIENTE",
         item.comentario_soporte || "-",
-        item.fecha_estado_soporte ? item.fecha_estado_soporte.split("T")[0].split("-").reverse().join("/") : "-"
+        item.fecha_estado_soporte ? new Date(item.fecha_estado_soporte.split("T")[0]) : null
       ]);
 
       todasFilas.push(...filas);
