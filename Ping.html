@@ -36,8 +36,14 @@
 
     async function pingSupabase() {
       try {
-        // Calienta Supabase y registra el log
+        // Consultas mínimas para "despertar" cada tabla importante
         await client.from('usuarios').select('id').limit(1);
+        await client.from('traspasos').select('id').limit(1);
+        await client.from('traspaso_detalle').select('id').limit(1);
+        await client.from('series_contrata').select('id').limit(1);
+        await client.from('stock_contrata').select('id').limit(1);
+
+        // Registrar el ping (opcional)
         await client.from('ping_log').insert({ origen: 'cronjob.org' });
 
         console.log("Ping registrado correctamente");
