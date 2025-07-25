@@ -55,6 +55,7 @@
 	    <th>Cantidad</th>  
             <th>Fecha Generación</th>
             <th>Fecha Compromiso</th>
+	    <th>Estado Backlog</th>  
 	    <th>Estado Soporte</th>
 	<th>Comentario Soporte</th>
 	<th>Fecha Estado Soporte</th>  
@@ -138,6 +139,7 @@ const elementosPorPagina = 300;
       <td>${item.cantidad ?? "-"}</td>
       <td>${formatearFecha(item.fecha_generacion)}</td>
       <td>${formatearFecha(item.fecha_compromiso)}</td>
+       <td>${calcularEstadoBacklog(item.fecha_compromiso)}</td>
       <td>${item.estado_soporte || "PENDIENTE"}</td>
       <td>${item.comentario_soporte || "-"}</td>
       <td>${item.fecha_estado_soporte ? formatearFecha(item.fecha_estado_soporte.split("T")[0]) : "-"}</td>
@@ -178,6 +180,19 @@ async function contarResultados(termino) {
 
   return data;
 }
+
+function calcularEstadoBacklog(fechaCompromiso) {
+  if (!fechaCompromiso) return "-";
+  const hoy = new Date();
+  const fecha = new Date(fechaCompromiso);
+
+  // Diferencia en días
+  const diffDias = Math.ceil((fecha - hoy) / (1000 * 60 * 60 * 24));
+
+  if (diffDias <= 0) return "Vencido";
+  if (diffDias <= 60) return "Por vencer";
+  return "En plazo";
+}
 	  
 async function descargarExcel() {
   try {
@@ -186,7 +201,7 @@ async function descargarExcel() {
     const encabezados = [
       "Proyecto", "SOT", "Estado SOT", "Cliente", "Tipo Trabajo", "Tipo Proyecto",
       "Sede", "Código SAP", "Descripción", "Cantidad", "F. Generación",
-      "F. Compromiso", "Estado Soporte", "Comentario Soporte", "F. Estado Soporte"
+      "F. Compromiso", "Estado Backlog", "Estado Soporte", "Comentario Soporte", "F. Estado Soporte"
     ];
 
     let offset = 0;
@@ -219,6 +234,7 @@ async function descargarExcel() {
         item.cantidad ?? "-",
 	item.fecha_generacion ? new Date(item.fecha_generacion) : null,
 	item.fecha_compromiso ? new Date(item.fecha_compromiso) : null,
+	calcularEstadoBacklog(item.fecha_compromiso),
         item.estado_soporte || "PENDIENTE",
         item.comentario_soporte || "-",
         item.fecha_estado_soporte ? new Date(item.fecha_estado_soporte.split("T")[0]) : null
