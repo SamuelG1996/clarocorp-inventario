@@ -223,7 +223,7 @@ async function descargarExcel() {
 
       const filas = data.map(item => [
         item.proyecto || "-",
-        item.codsolot || "-",
+        item.codsolot !== null ? Number(item.codsolot) : null, // ✅ convertido a número
         item.estado_sot || "-",
         item.cliente || "-",
         item.tipotrabajo || "-",
