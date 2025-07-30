@@ -381,7 +381,7 @@ const esResponsable = solicitud.responsable_codigo === codigoUsuario;
     Swal.fire({
       icon: 'info',
       title: `La solicitud tiene estado ${estado}`,
-      text: 'No se puede editar una solicitud que ya fue atendida o anulada.',
+      text: 'No se puede editar una solicitud que ya fue atendida, anulada o que se encuentra en proceso.'
       toast: true,
       position: 'bottom-end',
       showConfirmButton: false,
@@ -883,7 +883,10 @@ document.addEventListener("DOMContentLoaded", () => {
           // Actualizar traspasos: estado
           const { error: errorTraspaso } = await supabase
             .from("traspasos")
-            .update({ estado: "En proceso" })
+              .update({
+                estado: "En proceso",
+                fecha_estado: new Date().toISOString()
+              })
             .eq("id", idSolicitud);
 
           if (errorTraspaso) throw errorTraspaso;
