@@ -334,23 +334,22 @@ async function procesarExcelSoporte(archivo) {
         continue;
       }
 
-      const { error } = await supabaseClient
-        .from("backlog_compras")
-        .update({
-          estado_soporte,
-          comentario_soporte: comentario_soporte || "-",
-          fecha_estado_soporte: fechaActual
-        })
-        .eq("nuevo_codigo", codigo_sap)
-        .eq("codsolot", sot);
-
-      if (error) {
-        console.warn("Error actualizando fila:", error.message);
-        fallos++;
-      } else {
-        exitos++;
-      }
-    }
+	 const { error, count } = await supabaseClient
+	  .from("backlog_compras")
+	  .update({
+	    estado_soporte,
+	    comentario_soporte: comentario_soporte || "-",
+	    fecha_estado_soporte: fechaActual
+	  }, { count: "exact" })
+	  .eq("nuevo_codigo", codigo_sap)
+	  .eq("codsolot", sot);
+	
+	if (error || count === 0) {
+	  console.warn("Error o fila no encontrada:", error?.message || "No se encontró combinación código_sap + SOT");
+	  fallos++;
+	} else {
+	  exitos++;
+	}
 
     Swal.fire({
       icon: 'info',
