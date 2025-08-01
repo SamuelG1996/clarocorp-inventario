@@ -582,9 +582,28 @@ window.descargarExcel = descargarExcel;
 
   <script>
 function mostrarMenuCargaStock() {
-  document.getElementById('excelInput').click();
+  Swal.fire({
+    title: 'Actualización de Stock',
+    text: '¿Qué deseas hacer?',
+    icon: 'question',
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: 'Subir archivo',
+    denyButtonText: 'Descargar plantilla',
+    cancelButtonText: 'Cancelar',
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      document.getElementById('excelInput').click();
+    } else if (result.isDenied) {
+      generarPlantillaStock();
+    }
+  });
 }
 
+    
 function confirmarCargaExcelStock(file) {
   Swal.fire({
     title: '¿Deseas continuar con la actualización?',
@@ -603,6 +622,20 @@ function confirmarCargaExcelStock(file) {
   });
 }
 
+    function generarPlantillaStock() {
+  const headers = [
+    ["codigo", "centro", "almacen", "stock_fisico", "stock_reservado"]
+  ];
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(headers);
+  XLSX.utils.book_append_sheet(wb, ws, "Plantilla");
+
+  const fechaHoy = new Date().toISOString().split('T')[0];
+  const nombreArchivo = `Plantilla_Actualizar_Stock_${fechaHoy}.xlsx`;
+
+  XLSX.writeFile(wb, nombreArchivo);
+}
 </script>
 
   <script>
@@ -661,3 +694,4 @@ function confirmarCargaExcelSAP(file) {
 
 </body>
 </html>
+
