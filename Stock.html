@@ -240,15 +240,15 @@ renderizarControlesPaginacion();
 
     // Creamos un array de promesas para actualizaciones paralelas
     const promesas = data.map(async (fila) => {
-      const codigo = fila['Código']?.toString().trim();
-      const centro = fila['Centro']?.toString().trim();
-      const almacen = fila['Almacén']?.toString().trim();
-      const lote = fila['Lote']?.toString().trim();
+    const codigo = fila['codigo']?.toString().trim();
+    const centro = fila['centro']?.toString().trim();
+    const almacen = fila['almacen']?.toString().trim();
+    const lote = fila['lote']?.toString().trim();
 
       if (!codigo || !centro || !almacen || !lote) return false;
 
-      const stock_real = parseFloat(fila['Stock físico']);
-      const stock_reservado = parseFloat(fila['Reservado']);
+    const stock_real = parseFloat(fila['stock_fisico']);
+    const stock_reservado = parseFloat(fila['stock_reservado']);
 
       if (isNaN(stock_real) || isNaN(stock_reservado) || stock_real < 0 || stock_reservado < 0) {
         return false;
@@ -694,6 +694,7 @@ function confirmarCargaExcelSAP(file) {
 
 </body>
 </html>
+
 
 
 
