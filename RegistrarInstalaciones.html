@@ -371,6 +371,7 @@ async function procesarExcelInstalados(archivo) {
 	}
 	
 	if (!codigo || !centro || !almacen || !sot || !cliente || !fechaStr || !esFechaValidaDDMMYYYY(fechaStr)) {
+	    console.warn("Fila inválida. Falta campo obligatorio o fecha mal formateada:", fila);
 	  fallos++;
 	  continue;
 	}
@@ -502,6 +503,7 @@ function confirmarCargaInstalados(file) {
 </body>
 
 </html>
+
 
 
 
