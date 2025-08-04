@@ -339,13 +339,13 @@ async function procesarExcelInstalados(archivo) {
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const registros = XLSX.utils.sheet_to_json(sheet);
     const fechaActual = new Date().toISOString().split("T")[0];
-	const empresa = localStorage.getItem("empresa") || "DESCONOCIDO";
-	
-    const estadosValidos = ["PENDIENTE", "DESCARGADO", "OBSERVADO", "EN PROCESO", "RECHAZADO"];
+    const empresa = localStorage.getItem("empresa") || "DESCONOCIDO";
+
     let exitos = 0;
     let fallos = 0;
+    const registrosValidos = [];
 
-      for (const fila of registros) {
+    for (const fila of registros) {
       const {
         codigo,
         sot,
@@ -355,78 +355,56 @@ async function procesarExcelInstalados(archivo) {
         centro,
         almacen,
         fecha_instalacion,
-        comentario_contrata,
-        estado_soporte,
-        comentario_soporte,
+        comentario_contrata
       } = fila;
-	  
-	let fechaStr = fecha_instalacion;
-	
-	// Si viene como número (fecha serial de Excel), convertirlo a fecha
-	if (typeof fecha_instalacion === "number") {
-	  const excelEpoch = new Date(Date.UTC(1899, 11, 30)); // Base de fechas en Excel
-	  const fechaDate = new Date(excelEpoch.getTime() + fecha_instalacion * 86400000);
-	  const dia = String(fechaDate.getUTCDate()).padStart(2, "0");
-	  const mes = String(fechaDate.getUTCMonth() + 1).padStart(2, "0");
-	  const anio = fechaDate.getUTCFullYear();
-	  fechaStr = `${dia}/${mes}/${anio}`;
-	} else if (fecha_instalacion instanceof Date) {
-	  const dia = String(fecha_instalacion.getDate()).padStart(2, "0");
-	  const mes = String(fecha_instalacion.getMonth() + 1).padStart(2, "0");
-	  const anio = fecha_instalacion.getFullYear();
-	  fechaStr = `${dia}/${mes}/${anio}`;
-	}
-	
-	if (!codigo || !centro || !almacen || !sot || !cliente || !fechaStr || !esFechaValidaDDMMYYYY(fechaStr)) {
-	    console.warn("Fila inválida. Falta campo obligatorio o fecha mal formateada:", fila);
-	  fallos++;
-	  continue;
-	}
 
-	console.log("Insertando fila:", {
-  codigo,
-  centro,
-  almacen,
-  nro_serie: nro_serie || "-",
-  sot,
-  py_cid: py_cid || null,
-  cliente,
-  fecha_instalacion: convertirFecha(fechaStr),
-  comentario_contrata: comentario_contrata || null,
-  estado_soporte: "PENDIENTE",
-  comentario_soporte: "-",
-  responsable: "-", 
-  fecha_carga: fechaActual,
-  fecha_estado_soporte: fechaActual,
-  empresa,
-  contabilizado: "PENDIENTE"
-});      
-      const { error } = await supabaseClient
-		.from("registro_instalaciones")
-		.insert([{
-		  codigo,
-		  centro,
-		  almacen,
-		  nro_serie: nro_serie || "-",
-		  sot,
-		  py_cid: py_cid || null,
-		  cliente,
-		  fecha_instalacion: convertirFecha(fechaStr),
-		  comentario_contrata: comentario_contrata || null,
-		  estado_soporte: "PENDIENTE",
-		  comentario_soporte: "-",
-		  responsable: "-", 
-		  fecha_carga: fechaActual,
-		  fecha_estado_soporte: fechaActual,
-		  empresa,
-		  contabilizado: "PENDIENTE"
-        }]);
+      let fechaStr = fecha_instalacion;
 
-if (error) {
-  console.warn("Error al insertar:", error.message, error.details);
-  fallos++;
-}else {
-        exitos++;
+      if (typeof fecha_instalacion === "number") {
+        const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+        const fechaDate = new Date(excelEpoch.getTime() + fecha_instalacion * 86400000);
+        const dia = String(fechaDate.getUTCDate()).padStart(2, "0");
+        const mes = String(fechaDate.getUTCMonth() + 1).padStart(2, "0");
+        const anio = fechaDate.getUTCFullYear();
+        fechaStr = `${dia}/${mes}/${anio}`;
+      } else if (fecha_instalacion instanceof Date) {
+        const dia = String(fecha_instalacion.getDate()).padStart(2, "0");
+        const mes = String(fecha_instalacion.getMonth() + 1).padStart(2, "0");
+        const anio = fecha_instalacion.getFullYear();
+        fechaStr = `${dia}/${mes}/${anio}`;
+      }
+
+      if (!codigo || !centro || !almacen || !sot || !cliente || !fechaStr || !esFechaValidaDDMMYYYY(fechaStr)) {
+        console.warn("Fila inválida:", fila);
+        fallos++;
+        continue;
+      }
+
+      registrosValidos.push({
+        codigo,
+        centro,
+        almacen,
+        nro_serie: nro_serie || "-",
+        sot,
+        py_cid: py_cid || null,
+        cliente,
+        fecha_instalacion: convertirFecha(fechaStr),
+        comentario_contrata: comentario_contrata || null,
+        empresa
+      });
+    }
+
+    // ⚠️ Ejecutar el insert solo una vez, fuera del bucle
+    if (registrosValidos.length > 0) {
+      const { error } = await supabaseClient.rpc("insertar_registro_instalacion", {
+        datos: registrosValidos
+      });
+
+      if (error) {
+        console.warn("Error al insertar por RPC:", error.message);
+        fallos += registrosValidos.length;
+      } else {
+        exitos += registrosValidos.length;
       }
     }
 
@@ -508,8 +486,8 @@ function confirmarCargaInstalados(file) {
   <script src="Js/Sesion.js"></script>
 
 </body>
-
 </html>
+
 
 
 
