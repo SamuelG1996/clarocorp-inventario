@@ -374,6 +374,25 @@ async function procesarExcelInstalados(archivo) {
 	  fallos++;
 	  continue;
 	}
+
+	console.log("Insertando fila:", {
+  codigo,
+  centro,
+  almacen,
+  nro_serie: nro_serie || "-",
+  sot,
+  py_cid: py_cid || null,
+  cliente,
+  fecha_instalacion: convertirFecha(fechaStr),
+  comentario_contrata: comentario_contrata || null,
+  estado_soporte: "PENDIENTE",
+  comentario_soporte: "-",
+  responsable: "-", 
+  fecha_carga: fechaActual,
+  fecha_estado_soporte: fechaActual,
+  empresa,
+  contabilizado: "PENDIENTE"
+});      
       const { error } = await supabaseClient
 		.from("registro_instalaciones")
 		.insert([{
@@ -395,10 +414,10 @@ async function procesarExcelInstalados(archivo) {
 		  contabilizado: "PENDIENTE"
         }]);
 
-      if (error) {
-        console.warn("Error al insertar:", error.message);
-        fallos++;
-      } else {
+if (error) {
+  console.warn("Error al insertar:", error.message, error.details);
+  fallos++;
+}else {
         exitos++;
       }
     }
@@ -483,5 +502,6 @@ function confirmarCargaInstalados(file) {
 </body>
 
 </html>
+
 
 
