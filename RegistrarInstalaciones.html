@@ -361,12 +361,20 @@ async function procesarExcelInstalados(archivo) {
         comentario_soporte,
       } = fila;
 	  
-	// Validar campos obligatorios
-	  if (!codigo || !centro || !almacen || !sot || !cliente || !fecha_instalacion || !esFechaValidaDDMMYYYY(fecha_instalacion)) {
-		fallos++;
-		continue;
-	  }
+	let fechaStr = fecha_instalacion;
 
+	// Si viene como Date (de Excel), formatearla a "dd/mm/yyyy"
+	if (fecha_instalacion instanceof Date) {
+	  const dia = String(fecha_instalacion.getDate()).padStart(2, "0");
+	  const mes = String(fecha_instalacion.getMonth() + 1).padStart(2, "0");
+	  const anio = fecha_instalacion.getFullYear();
+	  fechaStr = `${dia}/${mes}/${anio}`;
+	}
+	
+	if (!codigo || !centro || !almacen || !sot || !cliente || !fechaStr || !esFechaValidaDDMMYYYY(fechaStr)) {
+	  fallos++;
+	  continue;
+	}
       const { error } = await supabaseClient
 		.from("registro_instalaciones")
 		.insert([{
@@ -377,7 +385,7 @@ async function procesarExcelInstalados(archivo) {
 		  sot,
 		  py_cid: py_cid || null,
 		  cliente,
-		  fecha_instalacion: convertirFecha(fecha_instalacion),
+		  fecha_instalacion: convertirFecha(fechaStr),
 		  comentario_contrata: comentario_contrata || null,
 		  estado_soporte: "PENDIENTE",
 		  comentario_soporte: "-",
@@ -443,7 +451,6 @@ function descargarPlantillaInstalados() {
       cliente: "",
       fecha_instalacion: "01/01/9999",
       comentario_contrata: "",
-      responsable: ""
     }
   ];
   const ws = XLSX.utils.json_to_sheet(datos);
@@ -477,3 +484,4 @@ function confirmarCargaInstalados(file) {
 </body>
 
 </html>
+
