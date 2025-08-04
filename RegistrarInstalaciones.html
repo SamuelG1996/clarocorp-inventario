@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Portal Inventario || Registrar Instalaciones </title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.6/dist/umd/supabase.min.js"></script>
+  <link rel="icon" type="image/x-icon" href="Imagenes/favicon.ico">
+</head>
+<body class="menu-page formulario-traspaso backlog-page">
+    <div class="content">
+	  <div class="contenedor">
+    
+    <a href="/Stock" class="volver">
+	      <i class="fas fa-arrow-left"></i> Volver a Stock Contrata
+    </a>
+	
+    <h2><i class="fas fa-chart-bar"></i> Seguimiento de Instalaciones</h2>
+
+    <div class="acciones-tabla acciones-series">
+      <button onclick="descargarExcel()">
+        <i class="fas fa-file-excel"></i> Descargar Excel
+      </button>
+
+	<button onclick="mostrarMenuCargaInstalados()">
+	  <i class="fas fa-upload"></i> Actualizar Inventario Instalado
+	</button>
+	<input type="file" id="excelInput" accept=".xlsx, .xls" style="display:none" onchange="confirmarCargaInstalados(this.files[0])">    
+      </div>
+ <div class="search-bar-paginacion">
+  <input type="text" id="inputBuscar" placeholder="Buscar por código, descripción, serie o SOT..." autocomplete="off" />
+  <div class="paginacion">
+    <button id="prevPage" onclick="cambiarPagina(-1)">Anterior</button>
+    <span id="pageIndicator">Página 1</span>
+    <button id="nextPage" onclick="cambiarPagina(1)">Siguiente</button>
+  </div>
+</div>
+<div id="resumenResultados" class="resumen-resultados"></div>
+
+      <div class="tabla-scroll">
+      <table id="tablaSeries">
+        <thead>	
+          <tr>
+		    <th>ID</th>
+            <th>Código</th>
+            <th>Descripción</th>
+			<th>Centro</th>
+            <th>Almacén</th>
+            <th>N° Serie</th>
+            <th>Empresa</th>
+            <th>Tipo Material</th>      
+            <th>SOT</th>      
+			<th>PY/CID</th>      
+            <th>Cliente</th>       
+            <th>Fecha Instalación</th> 
+            <th>Comentario Contrata</th>
+			<th>Fecha Carga</th>
+			<th>Días Pendientes</th>
+			<th>Responsable</th>
+            <th>Estado Soporte</th>
+            <th>Comentario Soporte</th>
+            <th>Fecha Estado Soporte</th>
+			<th>Contabilizado</th>
+          </tr>
+        </thead>
+        <tbody id="series-body">
+          <!-- Se llenará dinámicamente -->
+        </tbody>
+      </table>
+    </div>
+
+  <div id="loader" class="loader-overlay">
+    <div class="spinner"></div>
+  </div>
+		  
+  <script>
+	
+    const supabaseUrl = "https://bsrtuievwjtzwejuxqee.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzcnR1aWV2d2p0endlanV4cWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1NTEyNjYsImV4cCI6MjA2NDEyNzI2Nn0.A9tCs-Zi-7jw5LUFs7ViIR2vHb9tNMj6c7YeeNOdmWI";
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+	  
+  document.addEventListener("DOMContentLoaded", () => {
+    const tabla = document.getElementById("series-body");
+    const inputBuscar = document.getElementById("inputBuscar");
+	  
+let timeout = null;
+  inputBuscar.addEventListener("input", () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      paginaActual = 1; // reinicia a la primera página al hacer nueva búsqueda
+      cargarInstalados();
+    }, 300); // espera 300ms después de dejar de escribir
+  });
+
+
+    function formatearFecha(fecha) {
+      return fecha ? fecha.split("-").reverse().join("/") : "-";
+    }
+let paginaActual = 1;
+let totalResultados = 0;
+const elementosPorPagina = 300;
+ async function cargarInstalados(pagina = 1) {
+  mostrarLoader();
+
+  const termino = document.getElementById("inputBuscar").value.trim();
+  const desde = (pagina - 1) * elementosPorPagina;
+  const limite = elementosPorPagina;
+
+  // 1. Obtener cantidad total
+  totalResultados = await contarResultados(termino);
+
+  // 2. Obtener registros de la página actual
+  const { data, error } = await supabaseClient.rpc("buscar_registro_instalaciones", {
+    termino,
+    offset_val: desde,
+    limit_val: limite
+  });
+
+  if (error) {
+    console.error("Error al buscar:", error);
+    ocultarLoader();
+    return;
+  }
+
+  // 3. Llenar tabla
+  const tabla = document.getElementById("series-body");
+  tabla.innerHTML = "";
+
+ data.forEach(item => {
+  const fila = document.createElement("tr");
+  fila.innerHTML = `
+    <td>${item.id}</td>
+    <td>${item.codigo || "-"}</td>
+    <td class="descripcion">${item.descripcion || "-"}</td>
+    <td>${item.centro || "-"}</td>
+    <td>${item.almacen || "-"}</td>
+    <td>${item.nro_serie || "-"}</td>
+    <td>${item.empresa || "-"}</td>
+    <td>${item.tipo_material || "-"}</td>
+    <td>${item.sot || "-"}</td>
+    <td>${item.py_cid || "-"}</td>
+    <td>${item.cliente || "-"}</td>
+    <td>${item.fecha_instalacion ? formatearFecha(item.fecha_instalacion) : "-"}</td>
+    <td>${item.comentario_contrata || "-"}</td>
+    <td>${item.fecha_carga ? formatearFecha(item.fecha_carga) : "-"}</td>
+    <td>${item.dias_pendientes ?? "-"}</td>
+    <td>${item.responsable || "-"}</td>
+    <td>${item.estado_soporte || "PENDIENTE"}</td>
+    <td>${item.comentario_soporte || "-"}</td>
+    <td>${item.fecha_estado_soporte ? formatearFecha(item.fecha_estado_soporte) : "-"}</td>
+    <td>${item.contabilizado || "-"}</td>
+  `;
+  tabla.appendChild(fila);
+});
+
+  // 4. Actualizar resumen
+  const hasta = Math.min(desde + elementosPorPagina, totalResultados);
+  const resumenDiv = document.getElementById("resumenResultados");
+  resumenDiv.textContent = `Mostrando ${desde + 1}–${hasta} de ${totalResultados} resultados para '${termino || "todos"}'`;
+
+  // 5. Actualizar paginador
+  paginaActual = pagina;
+  document.getElementById("pageIndicator").textContent = `Página ${pagina}`;
+ // Desactivar botones si corresponde
+document.getElementById("prevPage").disabled = paginaActual === 1;
+document.getElementById("nextPage").disabled = (paginaActual * elementosPorPagina) >= totalResultados;
+  ocultarLoader();
+}
+	function cambiarPagina(direccion) {
+
+  const nuevaPagina = paginaActual + direccion;
+  if (nuevaPagina < 1) return;
+  cargarInstalados(nuevaPagina);
+}
+
+window.cambiarPagina = cambiarPagina;
+	  
+async function contarResultados(termino) {
+  const { data, error } = await supabaseClient
+    .rpc("contar_registro_instalaciones", { termino });
+
+  if (error) {
+    console.error("Error al contar:", error);
+    return 0;
+  }
+
+  return data;
+}
+
+
+async function descargarExcel() {
+  try {
+    mostrarLoader();
+
+   const encabezados = [
+      "ID",
+      "Código",
+      "Descripción",
+      "Centro",
+      "Almacén",
+      "N° Serie",
+      "Empresa",
+      "Tipo Material",
+      "SOT",
+      "PY/CID",
+      "Cliente",
+      "Fecha Instalación",
+      "Comentario Contrata",
+      "Fecha Carga",
+      "Días Pendientes",
+      "Responsable",
+      "Estado Soporte",
+      "Comentario Soporte",
+      "Fecha Estado Soporte",
+      "Contabilizado"
+    ];
+
+    let offset = 0;
+    const limit = 1000;
+    let todasFilas = [];
+
+    while (true) {
+      const { data, error } = await supabaseClient.rpc("buscar_registro_instalaciones", {
+        termino: "",
+        offset_val: offset,
+        limit_val: limit
+      });
+
+      if (error) {
+        throw new Error("Error al obtener datos del servidor: " + error.message);
+      }
+
+      if (!data || data.length === 0) break;
+
+		const filas = data.map(item => [
+		  item.id,
+		  item.codigo || "-",
+		  item.descripcion || "-",
+		  item.centro || "-",
+		  item.almacen || "-",
+		  item.nro_serie || "-",
+		  item.empresa || "-",
+		  item.tipo_material || "-",
+		  item.sot || "-",
+		  item.py_cid || "-",
+		  item.cliente || "-",
+		  item.fecha_instalacion ? new Date(item.fecha_instalacion) : null,
+		  item.comentario_contrata || "-",
+		  item.fecha_carga ? new Date(item.fecha_carga) : null,
+		  item.dias_pendientes ?? "-",
+		  item.responsable || "-",
+		  item.estado_soporte || "PENDIENTE",
+		  item.comentario_soporte || "-",
+		  item.fecha_estado_soporte ? new Date(item.fecha_estado_soporte) : null,
+		  item.contabilizado || "-"
+		]);
+
+      todasFilas.push(...filas);
+
+      if (data.length < limit) break;
+      offset += limit;
+    }
+
+    const hoja = [encabezados, ...todasFilas];
+    const ws = XLSX.utils.aoa_to_sheet(hoja);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Instalados");
+    XLSX.writeFile(wb, "Seguimiento_Instalaciones.xlsx");
+
+  } catch (err) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al descargar',
+      text: err.message,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12',
+      timer: 3000,
+      showConfirmButton: false,
+      position: 'bottom-end',
+      toast: true,
+      timerProgressBar: true
+    });
+  } finally {
+    ocultarLoader();
+  }
+}
+
+
+window.descargarExcel = descargarExcel;
+window.cargarInstalados = cargarInstalados;  
+
+    // Cargar datos al iniciar  
+    cargarInstalados();
+
+  });
+
+  </script>
+
+ <script>
+function mostrarMenuCargaInstalados() {
+  Swal.fire({
+    title: 'Actualizar Inventario Instalado',
+    text: '¿Qué deseas hacer?',
+    icon: 'question',
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: 'Subir carga',
+    denyButtonText: 'Descargar plantilla',
+    cancelButtonText: 'Cancelar',
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      document.getElementById('excelInput').click(); // tu input hidden de tipo file
+    } else if (result.isDenied) {
+      descargarPlantillaInstalados(); // esta función debe generar la plantilla
+    }
+  });
+}
+
+function convertirFecha(fechaStr) {
+  const [dia, mes, anio] = fechaStr.split("/");
+  return `${anio}-${mes}-${dia}`;
+}
+function esFechaValidaDDMMYYYY(fechaStr) {
+  return /^\d{2}\/\d{2}\/\d{4}$/.test(fechaStr);
+}
+
+async function procesarExcelInstalados(archivo) {
+  try {
+    mostrarLoader();
+
+    const data = await archivo.arrayBuffer();
+    const workbook = XLSX.read(data, { type: 'buffer' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const registros = XLSX.utils.sheet_to_json(sheet);
+    const fechaActual = new Date().toISOString().split("T")[0];
+	const empresa = localStorage.getItem("empresa") || "DESCONOCIDO";
+	
+    const estadosValidos = ["PENDIENTE", "DESCARGADO", "OBSERVADO", "EN PROCESO", "RECHAZADO"];
+    let exitos = 0;
+    let fallos = 0;
+
+      for (const fila of registros) {
+      const {
+        codigo,
+        sot,
+        py_cid,
+        cliente,
+        nro_serie,
+        centro,
+        almacen,
+        fecha_instalacion,
+        comentario_contrata,
+        estado_soporte,
+        comentario_soporte,
+        responsable
+      } = fila;
+	  
+	// Validar campos obligatorios
+	  if (!codigo || !centro || !almacen || !sot || !cliente || !fecha_instalacion || !esFechaValidaDDMMYYYY(fecha_instalacion)) {
+		fallos++;
+		continue;
+	  }
+
+      const { error } = await supabaseClient
+		.from("registro_instalaciones")
+		.insert([{
+		  codigo,
+		  centro,
+		  almacen,
+		  nro_serie: nro_serie || "-",
+		  sot,
+		  py_cid: py_cid || null,
+		  cliente,
+		  fecha_instalacion: convertirFecha(fecha_instalacion),
+		  comentario_contrata: comentario_contrata || null,
+		  estado_soporte: "PENDIENTE",
+		  comentario_soporte: "-",
+		  responsable: "-", 
+		  fecha_carga: fechaActual,
+		  fecha_estado_soporte: fechaActual,
+		  empresa,
+		  contabilizado: "PENDIENTE"
+        }]);
+
+      if (error) {
+        console.warn("Error al insertar:", error.message);
+        fallos++;
+      } else {
+        exitos++;
+      }
+    }
+
+    Swal.fire({
+      icon: 'info',
+      title: 'Carga finalizada',
+      html: `✅ Registros insertados: <b>${exitos}</b><br>❌ Fallidos: <b>${fallos}</b>`,
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 5000,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
+    });
+
+    cargarInstalados();
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al procesar archivo',
+      text: err.message,
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 4000,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#e74c3c'
+    });
+  } finally {
+    ocultarLoader();
+  }
+}
+
+	 
+function descargarPlantillaInstalados() {
+  const wb = XLSX.utils.book_new();
+ const datos = [
+    {
+      codigo: "",
+      centro: "",
+      almacen: "",
+      nro_serie: "",
+      sot: "",
+      py_cid: "",
+      cliente: "",
+      fecha_instalacion: "01/01/9999",
+      comentario_contrata: "",
+      responsable: ""
+    }
+  ];
+  const ws = XLSX.utils.json_to_sheet(datos);
+  XLSX.utils.book_append_sheet(wb, ws, "Plantilla");
+  XLSX.writeFile(wb, "Plantilla_Registro_Instalaciones.xlsx");
+}
+
+function confirmarCargaInstalados(file) {
+  Swal.fire({
+    title: '¿Deseas continuar con la carga?',
+    text: 'Se actualizará el inventario instalado según el archivo que selecciones.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, cargar',
+    cancelButtonText: 'Cancelar',
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      procesarExcelInstalados(file);
+    }
+  });
+}
+	 
+</script>
+  
+  <script src="Js/Loader.js"></script>
+  <script src="Js/Sesion.js"></script>
+
+</body>
+</html>
