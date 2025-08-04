@@ -25,6 +25,10 @@
       "destination": "/Backlog.html"
     },
     {
+      "source": "/RegistrarInstalaciones",
+      "destination": "/RegistrarInstalaciones.html"
+    },
+    {
       "source": "/Traspaso",
       "destination": "/Traspaso.html"
     },
