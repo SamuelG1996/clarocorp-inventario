@@ -3,7 +3,7 @@
 const excludedPages = [
   "Perfil.html", "Stock.html", "Series.html",
   "FormularioTraspaso.html", "index.html", 
-  "DetalleSolicitud.html", "CentroAyuda.html", "/Compras.html", "/Backlog.html", "/Perfil", "/Stock", "/Series", "/FormularioTraspaso", "/DetalleSolicitud", "/CentroAyuda", "/Backlog",
+  "DetalleSolicitud.html", "CentroAyuda.html", "/Compras.html", "/Backlog.html", "/RegistrarInstalaciones.html", "/Perfil", "/Stock", "/Series", "/FormularioTraspaso", "/DetalleSolicitud", "/CentroAyuda", "/RegistrarInstalaciones", "/Backlog",
   "/Compras"
 ];
 
@@ -102,3 +102,4 @@ document.querySelectorAll(".menu a").forEach(enlace => {
     });
   }
 });
+
