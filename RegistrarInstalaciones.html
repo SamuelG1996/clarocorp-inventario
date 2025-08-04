@@ -375,7 +375,7 @@ async function procesarExcelInstalados(archivo) {
 	  const mes = String(fecha_instalacion.getMonth() + 1).padStart(2, "0");
 	  const anio = fecha_instalacion.getFullYear();
 	  fechaStr = `${dia}/${mes}/${anio}`;
-	
+	}
 	
 	if (!codigo || !centro || !almacen || !sot || !cliente || !fechaStr || !esFechaValidaDDMMYYYY(fechaStr)) {
 	    console.warn("Fila inválida. Falta campo obligatorio o fecha mal formateada:", fila);
@@ -510,6 +510,7 @@ function confirmarCargaInstalados(file) {
 </body>
 
 </html>
+
 
 
 
