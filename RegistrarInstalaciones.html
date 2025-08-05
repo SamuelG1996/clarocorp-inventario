@@ -386,8 +386,8 @@ async function procesarExcelInstalados(archivo) {
 	  fechaStr = fecha_instalacion;
 	}
 
-   	const codigoValido = codigo && /^\d{7}$/.test(codigo);
-	const sotValido = sot && (/^\d+$/.test(sot) || sot.trim().toUpperCase() === "PENDIENTE");
+   	const codigoValido = codigo && /^\d{7}$/.test(String(codigo));
+	const sotValido = sot && (/^\d+$/.test(String(sot)) || String(sot).trim().toUpperCase() === "PENDIENTE");
 	const centroValido = centro && /^[A-Z]\d[A-Z]\d$/.test(centro.trim().toUpperCase());
 	const almacenValido = almacen && /^[A-Z]\d[A-Z]\d$/.test(almacen.trim().toUpperCase());
 	
@@ -512,6 +512,7 @@ function confirmarCargaInstalados(file) {
 
 </body>
 </html>
+
 
 
 
