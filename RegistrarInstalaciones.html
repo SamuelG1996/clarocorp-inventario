@@ -391,7 +391,13 @@ async function procesarExcelInstalados(archivo) {
 	const centroValido = centro && /^[A-Z]\d[A-Z]\d$/.test(centro.trim().toUpperCase());
 	const almacenValido = almacen && /^[A-Z]\d{3}$/.test(almacen.trim().toUpperCase());
 	    
-	console.log("🎯 fecha_instalacion:", fecha_instalacion, "→ fechaStr:", fechaStr);
+	console.log({
+	  codigo, codigoValido,
+	  sot, sotValido,
+	  centro, centroValido,
+	  almacen, almacenValido,
+	  fechaStr, fechaValida: esFechaValidaDDMMYYYY(fechaStr)
+	});
 	    
 	if (
 	  !codigoValido ||
@@ -514,9 +520,6 @@ function confirmarCargaInstalados(file) {
 
 </body>
 </html>
-
-
-
 
 
 
