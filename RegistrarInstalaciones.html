@@ -357,27 +357,32 @@ async function procesarExcelInstalados(archivo) {
         comentario_contrata
       } = fila;
 
-     let fechaStr = fecha_instalacion;
+    let fechaStr = null;
 
-	if (typeof fecha_instalacion === "number") {
-	  // formato Excel serial number
-	  const excelEpoch = new Date(Date.UTC(1899, 11, 30));
-	  const fechaDate = new Date(excelEpoch.getTime() + fecha_instalacion * 86400000);
-	  const dia = String(fechaDate.getUTCDate()).padStart(2, "0");
-	  const mes = String(fechaDate.getUTCMonth() + 1).padStart(2, "0");
-	  const anio = fechaDate.getUTCFullYear();
-	  fechaStr = `${dia}/${mes}/${anio}`;
-	} else if (fecha_instalacion instanceof Date) {
+	// Caso 1: viene como Date
+	if (fecha_instalacion instanceof Date) {
 	  const dia = String(fecha_instalacion.getDate()).padStart(2, "0");
 	  const mes = String(fecha_instalacion.getMonth() + 1).padStart(2, "0");
 	  const anio = fecha_instalacion.getFullYear();
 	  fechaStr = `${dia}/${mes}/${anio}`;
-	} else if (typeof fecha_instalacion === "string" && /^\d{4}-\d{2}-\d{2}/.test(fecha_instalacion)) {
-	  // tipo ISO: 2025-08-04T00:00:00.000Z
+	}
+	// Caso 2: viene como número tipo Excel serial
+	else if (!isNaN(fecha_instalacion)) {
+	  const numero = parseFloat(fecha_instalacion);
+	  const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+	  const fechaDate = new Date(excelEpoch.getTime() + numero * 86400000);
+	  const dia = String(fechaDate.getUTCDate()).padStart(2, "0");
+	  const mes = String(fechaDate.getUTCMonth() + 1).padStart(2, "0");
+	  const anio = fechaDate.getUTCFullYear();
+	  fechaStr = `${dia}/${mes}/${anio}`;
+	}
+	// Caso 3: viene como string tipo ISO
+	else if (typeof fecha_instalacion === "string" && /^\d{4}-\d{2}-\d{2}/.test(fecha_instalacion)) {
 	  const [anio, mes, dia] = fecha_instalacion.split("T")[0].split("-");
 	  fechaStr = `${dia}/${mes}/${anio}`;
-	} else if (typeof fecha_instalacion === "string" && /^\d{2}\/\d{2}\/\d{4}$/.test(fecha_instalacion)) {
-	  // ya está bien
+	}
+	// Caso 4: ya está en formato dd/mm/yyyy
+	else if (typeof fecha_instalacion === "string" && /^\d{2}\/\d{2}\/\d{4}$/.test(fecha_instalacion)) {
 	  fechaStr = fecha_instalacion;
 	}
 
@@ -507,6 +512,7 @@ function confirmarCargaInstalados(file) {
 
 </body>
 </html>
+
 
 
 
