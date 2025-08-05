@@ -456,6 +456,15 @@ async function procesarExcelInstalados(archivo) {
     exitos += insertados;
     fallos += rechazados;
 
+// 🔁 Añadir los registros rechazados por duplicado al log de errores:
+  if (rechazados > 0) {
+    const fallidosPorRPC = registrosValidos.slice(-rechazados).map(f => ({
+      ...f,
+      motivo: "Duplicado u otro error en base de datos"
+    }));
+    fallidosData.push(...fallidosPorRPC);
+  }
+	  
     Swal.fire({
       icon: 'info',
       title: 'Carga finalizada',
@@ -555,6 +564,7 @@ function confirmarCargaInstalados(file) {
 
 </body>
 </html>
+
 
 
 
