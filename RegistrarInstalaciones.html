@@ -340,8 +340,7 @@ async function procesarExcelInstalados(archivo) {
     const fechaActual = new Date().toISOString().split("T")[0];
     const empresa = localStorage.getItem("empresa") || "DESCONOCIDO";
 
-    let exitos = 0;
-    let fallos = 0;
+
     const registrosValidos = [];
 
     for (const fila of registros) {
@@ -427,24 +426,27 @@ async function procesarExcelInstalados(archivo) {
       });
     }
 
-    // ⚠️ Ejecutar el insert solo una vez, fuera del bucle
-    if (registrosValidos.length > 0) {
-      const { error } = await supabaseClient.rpc("insertar_registro_instalacion", {
-        datos: registrosValidos
-      });
+   if (registrosValidos.length > 0) {
+  const enviados = registrosValidos.length;
 
-      if (error) {
-        console.warn("Error al insertar por RPC:", error.message);
-        fallos += registrosValidos.length;
-      } else {
-        exitos += registrosValidos.length;
-      }
-    }
+  const { data, error } = await supabaseClient.rpc("insertar_registro_instalacion", {
+    datos: registrosValidos
+  });
+
+  if (error) {
+    console.warn("❌ Error al insertar por RPC:", error.message);
+    fallos += enviados;
+  } else {
+    const insertados = data.insertados || 0;
+    const rechazados = enviados - insertados;
+
+    exitos += insertados;
+    fallos += rechazados;
 
     Swal.fire({
       icon: 'info',
       title: 'Carga finalizada',
-      html: `✅ Registros insertados: <b>${exitos}</b><br>❌ Fallidos: <b>${fallos}</b>`,
+      html: `✅ Registros insertados: <b>${insertados}</b><br>❌ Rechazados: <b>${rechazados}</b>`,
       toast: true,
       position: 'bottom-end',
       showConfirmButton: false,
@@ -453,6 +455,8 @@ async function procesarExcelInstalados(archivo) {
       color: '#ffffff',
       iconColor: '#f39c12'
     });
+  }
+}
 
     cargarInstalados();
   } catch (err) {
@@ -520,6 +524,7 @@ function confirmarCargaInstalados(file) {
 
 </body>
 </html>
+
 
 
 
