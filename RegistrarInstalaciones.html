@@ -344,6 +344,7 @@ async function procesarExcelInstalados(archivo) {
     let fallos = 0;
 
     const registrosValidos = [];
+    const fallidosData = [];
 
     for (const fila of registros) {
       const {
@@ -359,7 +360,7 @@ async function procesarExcelInstalados(archivo) {
       } = fila;
 
     let fechaStr = null;
-
+    let motivoFallo = "";
 	// Caso 1: viene como Date
 	if (fecha_instalacion instanceof Date) {
 	  const dia = String(fecha_instalacion.getDate()).padStart(2, "0");
@@ -400,20 +401,30 @@ async function procesarExcelInstalados(archivo) {
 	  fechaStr, fechaValida: esFechaValidaDDMMYYYY(fechaStr)
 	});
 	    
-	if (
-	  !codigoValido ||
-	  !centroValido ||
-	  !almacenValido ||
-	  !sotValido ||
-	  !cliente ||
-	  !fechaStr ||
-	  !esFechaValidaDDMMYYYY(fechaStr)
-	) {
-	  console.warn("Fila inválida. Error en código/SOT/centro/almacén/fecha:", fila);
+	let errores = [];
+	if (!codigoValido) errores.push("Código inválido");
+	if (!centroValido) errores.push("Centro inválido");
+	if (!almacenValido) errores.push("Almacén inválido");
+	if (!sotValido) errores.push("SOT inválido");
+	if (!cliente) errores.push("Cliente vacío");
+	if (!fechaStr || !esFechaValidaDDMMYYYY(fechaStr)) errores.push("Fecha inválida");
+	
+	if (errores.length > 0) {
+	  fallidosData.push({
+	    codigo,
+	    centro,
+	    almacen,
+	    nro_serie: nro_serie || "-",
+	    sot,
+	    py_cid,
+	    cliente,
+	    fecha_instalacion: fechaStr || fecha_instalacion,
+	    comentario_contrata,
+	    motivo: errores.join(", ")
+	  });
 	  fallos++;
 	  continue;
 	}
-
       registrosValidos.push({
         codigo,
         centro,
@@ -460,6 +471,24 @@ async function procesarExcelInstalados(archivo) {
   }
 }
 
+	// ⬇️ Aquí va la descarga del Excel de errores
+if (fallidosData.length > 0) {
+  const ws = XLSX.utils.json_to_sheet(fallidosData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Errores");
+  const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+
+  const blob = new Blob([wbout], { type: "application/octet-stream" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "Rechazados_Plantilla.xlsx";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}  
     cargarInstalados();
   } catch (err) {
     console.error(err);
@@ -526,6 +555,7 @@ function confirmarCargaInstalados(file) {
 
 </body>
 </html>
+
 
 
 
