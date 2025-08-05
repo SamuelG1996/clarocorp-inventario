@@ -44,10 +44,10 @@
       <table id="tablaSeries">
         <thead>	
           <tr>
-		    <th>ID</th>
+	    <th>ID</th>
             <th>Código</th>
             <th>Descripción</th>
-			<th>Centro</th>
+	    <th>Centro</th>
             <th>Almacén</th>
             <th>N° Serie</th>
             <th>Empresa</th>
@@ -169,7 +169,8 @@ document.getElementById("prevPage").disabled = paginaActual === 1;
 document.getElementById("nextPage").disabled = (paginaActual * elementosPorPagina) >= totalResultados;
   ocultarLoader();
 }
-	function cambiarPagina(direccion) {
+	  
+function cambiarPagina(direccion) {
 
   const nuevaPagina = paginaActual + direccion;
   if (nuevaPagina < 1) return;
@@ -189,7 +190,6 @@ async function contarResultados(termino) {
 
   return data;
 }
-
 
 async function descargarExcel() {
   try {
@@ -289,11 +289,10 @@ async function descargarExcel() {
   }
 }
 
-
 window.descargarExcel = descargarExcel;
 window.cargarInstalados = cargarInstalados;  
 
-    cargarInstalados();
+cargarInstalados();
 
   });
 
@@ -374,11 +373,24 @@ async function procesarExcelInstalados(archivo) {
         fechaStr = `${dia}/${mes}/${anio}`;
       }
 
-      if (!codigo || !centro || !almacen || !sot || !cliente || !fechaStr || !esFechaValidaDDMMYYYY(fechaStr)) {
-        console.warn("Fila inválida:", fila);
-        fallos++;
-        continue;
-      }
+   	const codigoValido = codigo && /^\d{7}$/.test(codigo);
+	const sotValido = sot && (/^\d+$/.test(sot) || sot.trim().toUpperCase() === "PENDIENTE");
+	const centroValido = centro && /^[A-Z]\d[A-Z]\d$/.test(centro.trim().toUpperCase());
+	const almacenValido = almacen && /^[A-Z]\d[A-Z]\d$/.test(almacen.trim().toUpperCase());
+	
+	if (
+	  !codigoValido ||
+	  !centroValido ||
+	  !almacenValido ||
+	  !sotValido ||
+	  !cliente ||
+	  !fechaStr ||
+	  !esFechaValidaDDMMYYYY(fechaStr)
+	) {
+	  console.warn("Fila inválida. Error en código/SOT/centro/almacén/fecha:", fila);
+	  fallos++;
+	  continue;
+	}
 
       registrosValidos.push({
         codigo,
@@ -487,6 +499,7 @@ function confirmarCargaInstalados(file) {
 
 </body>
 </html>
+
 
 
 
