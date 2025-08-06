@@ -114,11 +114,13 @@ const elementosPorPagina = 300;
   totalResultados = await contarResultados(termino);
 
   // 2. Obtener registros de la página actual
-  const { data, error } = await supabaseClient.rpc("buscar_registro_instalaciones", {
-    termino,
-    offset_val: desde,
-    limit_val: limite
-  });
+ const empresa = localStorage.getItem("empresa") || "";
+const { data, error } = await supabaseClient.rpc("buscar_registro_instalaciones", {
+  termino,
+  offset_val: desde,
+  limit_val: limite,
+  empresa_usuario: empresa
+});
 
   if (error) {
     console.error("Error al buscar:", error);
@@ -226,12 +228,13 @@ async function descargarExcel() {
     let todasFilas = [];
 
     while (true) {
-      const { data, error } = await supabaseClient.rpc("buscar_registro_instalaciones", {
-        termino: "",
-        offset_val: offset,
-        limit_val: limit
-      });
-
+	const empresa = localStorage.getItem("empresa") || "";
+	const { data, error } = await supabaseClient.rpc("buscar_registro_instalaciones", {
+	  termino,
+	  offset_val: desde,
+	  limit_val: limite,
+	  empresa_usuario: empresa
+	});
       if (error) {
         throw new Error("Error al obtener datos del servidor: " + error.message);
       }
@@ -578,6 +581,7 @@ function confirmarCargaInstalados(file) {
 
 </body>
 </html>
+
 
 
 
