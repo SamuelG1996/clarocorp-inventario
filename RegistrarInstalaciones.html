@@ -345,6 +345,7 @@ async function procesarExcelInstalados(archivo) {
 
     const registrosValidos = [];
     const fallidosData = [];
+    const clavesUnicas = new Set();
 
     for (const fila of registros) {
       const {
@@ -394,12 +395,31 @@ async function procesarExcelInstalados(archivo) {
       if (!cliente) errores.push("Cliente vacío");
       if (!fechaStr || !esFechaValidaDDMMYYYY(fechaStr)) errores.push("Fecha inválida");
 
+      const codigoStr = String(codigo);
+      const sotStr = (sot || "").toString().trim().toUpperCase();
+      const nroSerieFinal = nro_serie || "-";
+
+      let clave;
+      if (/^[47]/.test(codigoStr)) {
+        clave = `${codigoStr}|${centro}|${almacen}|${nroSerieFinal}`;
+      } else if (/^1/.test(codigoStr) && sotStr !== "-" && sotStr !== "PENDIENTE") {
+        clave = `${codigoStr}|${centro}|${almacen}|${sotStr}`;
+      } else {
+        clave = null; // se permite duplicado
+      }
+
+      if (clave && clavesUnicas.has(clave)) {
+        errores.push("Duplicado dentro del archivo");
+      } else if (clave) {
+        clavesUnicas.add(clave);
+      }
+
       if (errores.length > 0) {
         fallidosData.push({
           codigo,
           centro,
           almacen,
-          nro_serie: nro_serie || "-",
+          nro_serie: nroSerieFinal,
           sot,
           py_cid,
           cliente,
@@ -415,7 +435,7 @@ async function procesarExcelInstalados(archivo) {
         codigo,
         centro,
         almacen,
-        nro_serie: nro_serie || "-",
+        nro_serie: nroSerieFinal,
         sot,
         py_cid: py_cid || null,
         cliente,
@@ -451,7 +471,6 @@ async function procesarExcelInstalados(archivo) {
       }
     }
 
-    // Siempre mostrar el resumen con SweetAlert
     Swal.fire({
       icon: 'info',
       title: 'Carga finalizada',
@@ -503,7 +522,7 @@ async function procesarExcelInstalados(archivo) {
   }
 }
 
-	 
+ 
 function descargarPlantillaInstalados() {
   const wb = XLSX.utils.book_new();
  const datos = [
@@ -549,6 +568,7 @@ function confirmarCargaInstalados(file) {
 
 </body>
 </html>
+
 
 
 
