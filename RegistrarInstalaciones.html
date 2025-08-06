@@ -295,6 +295,20 @@ async function descargarExcel() {
     XLSX.utils.book_append_sheet(wb, ws, "Instalados");
     XLSX.writeFile(wb, "Seguimiento_Instalaciones.xlsx");
 
+Swal.fire({
+    icon: "success",
+    title: "¡Descarga exitosa!",
+    toast: true,
+    position: "bottom-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    background: "#1e2022",
+    color: "#ffffff",
+    iconColor: "#11a24e"
+  });
+
+
   } catch (err) {
     Swal.fire({
       icon: 'error',
@@ -657,24 +671,24 @@ async function procesarExcelSoporte(file) {
 
     if (error) throw new Error("Error al actualizar: " + error.message);
 
-    Swal.fire({
-      icon: "success",
-      title: "Carga completada",
-      html: `
-        <p><b>${resumen.actualizados}</b> registros actualizados como DESCARGADO</p>
-        <p><b>${resumen.observados}</b> registros observados</p>
-        <p><b>${resumen.omitidos}</b> registros omitidos (vacíos)</p>
-      `,
-      background: '#1e2022',
-      color: '#ffffff',
-      iconColor: '#f39c12',
-      timer: 4000,
-      showConfirmButton: false,
-      position: "bottom-end",
-      toast: true,
-      timerProgressBar: true
-    });
-
+Swal.fire({
+  icon: "success",
+  title: "Carga completada",
+  html: `
+    <p><b>${resumen.actualizados}</b> ${resumen.actualizados === 1 ? "registro descargado" : "registros descargados"}</p>
+    <p><b>${resumen.observados}</b> ${resumen.observados === 1 ? "registro observado" : "registros observados"}</p>
+    <p><b>${resumen.omitidos}</b> ${resumen.omitidos === 1 ? "registro omitido (vacío)" : "registros omitidos (vacíos)"}</p>
+  `,
+  background: '#1e2022',
+  color: '#ffffff',
+  iconColor: "#11a24e",
+  timer: 4000,
+  showConfirmButton: false,
+  position: "bottom-end",
+  toast: true,
+  timerProgressBar: true
+});
+	  
     cargarInstalados();
 
   } catch (err) {
@@ -731,6 +745,7 @@ function descargarPlantillaSoporte() {
 
 </body>
 </html>
+
 
 
 
