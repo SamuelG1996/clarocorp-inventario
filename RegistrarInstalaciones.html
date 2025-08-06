@@ -138,7 +138,7 @@ const elementosPorPagina = 300;
     <td class="descripcion">${item.descripcion || "-"}</td>
     <td>${item.centro || "-"}</td>
     <td>${item.almacen || "-"}</td>
-    <td>${item.cantidad != null ? item.cantidad : "-"}</td>
+    <td>${item.cantidad != null && item.cantidad !== "" ? item.cantidad : "-"}</td>
     <td>${item.nro_serie || "-"}</td>
     <td>${item.empresa || "-"}</td>
     <td>${item.tipo_material || "-"}</td>
@@ -577,6 +577,7 @@ function confirmarCargaInstalados(file) {
 
 </body>
 </html>
+
 
 
 
