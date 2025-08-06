@@ -196,10 +196,14 @@ async function contarResultados(termino) {
 }
 
 async function descargarExcel() {
+  const termino = "";
+  let offset = 0;
+  const limit = 1000;
+
   try {
     mostrarLoader();
 
-   const encabezados = [
+    const encabezados = [
       "ID",
       "Código",
       "Descripción",
@@ -223,47 +227,46 @@ async function descargarExcel() {
       "Contabilizado"
     ];
 
-    let offset = 0;
-    const limit = 1000;
     let todasFilas = [];
+    const empresa = localStorage.getItem("empresa") || "";
 
     while (true) {
-	const empresa = localStorage.getItem("empresa") || "";
-	const { data, error } = await supabaseClient.rpc("buscar_registro_instalaciones", {
-	  termino,
-	  offset_val: desde,
-	  limit_val: limite,
-	  empresa_usuario: empresa
-	});
+      const { data, error } = await supabaseClient.rpc("buscar_registro_instalaciones", {
+        termino,
+        offset_val: offset,
+        limit_val: limit,
+        empresa_usuario: empresa
+      });
+
       if (error) {
         throw new Error("Error al obtener datos del servidor: " + error.message);
       }
 
       if (!data || data.length === 0) break;
 
-		const filas = data.map(item => [
-		  item.id,
-		  item.codigo || "-",
-		  item.descripcion || "-",
-		  item.centro || "-",
-		  item.almacen || "-",
-		  item.cantidad || "-",
-		  item.nro_serie || "-",
-		  item.empresa || "-",
-		  item.tipo_material || "-",
-		  item.sot || "-",
-		  item.py_cid || "-",
-		  item.cliente || "-",
-		  item.fecha_instalacion ? new Date(item.fecha_instalacion) : null,
-		  item.comentario_contrata || "-",
-		  item.fecha_carga ? new Date(item.fecha_carga) : null,
-		  item.dias_pendientes ?? "-",
-		  item.responsable || "-",
-		  item.estado_soporte || "PENDIENTE",
-		  item.comentario_soporte || "-",
-		  item.fecha_estado_soporte ? new Date(item.fecha_estado_soporte) : null,
-		  item.contabilizado || "-"
-		]);
+      const filas = data.map(item => [
+        item.id,
+        item.codigo || "-",
+        item.descripcion || "-",
+        item.centro || "-",
+        item.almacen || "-",
+        item.cantidad ?? "-",
+        item.nro_serie || "-",
+        item.empresa || "-",
+        item.tipo_material || "-",
+        item.sot || "-",
+        item.py_cid || "-",
+        item.cliente || "-",
+        item.fecha_instalacion ? new Date(item.fecha_instalacion) : null,
+        item.comentario_contrata || "-",
+        item.fecha_carga ? new Date(item.fecha_carga) : null,
+        item.dias_pendientes ?? "-",
+        item.responsable || "-",
+        item.estado_soporte || "PENDIENTE",
+        item.comentario_soporte || "-",
+        item.fecha_estado_soporte ? new Date(item.fecha_estado_soporte) : null,
+        item.contabilizado || "-"
+      ]);
 
       todasFilas.push(...filas);
 
@@ -581,6 +584,7 @@ function confirmarCargaInstalados(file) {
 
 </body>
 </html>
+
 
 
 
