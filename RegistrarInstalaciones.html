@@ -29,7 +29,13 @@
 	  <i class="fas fa-upload"></i> Actualizar Inventario Instalado
 	</button>
 	<input type="file" id="excelInput" accept=".xlsx, .xls" style="display:none" onchange="confirmarCargaInstalados(this.files[0])">    
+
+	<button onclick="mostrarMenuActualizarSoporte()">
+	  <i class="fas fa-upload"></i> Actualizar Contabilizados
+	</button>
+	<input type="file" id="excelInputSoporte" accept=".xls,.xlsx" style="display: none;" onchange="confirmarCargaSoporte(this.files[0])">
       </div>
+		
  <div class="search-bar-paginacion">
   <input type="text" id="inputBuscar" placeholder="Buscar por código, descripción, serie o SOT..." autocomplete="off" />
   <div class="paginacion">
@@ -113,6 +119,15 @@ const elementosPorPagina = 300;
   // 1. Obtener cantidad total
   totalResultados = await contarResultados(termino);
 
+
+  const rol = localStorage.getItem("rol");
+  if (rol !== "soporte" && rol !== "administrador") {
+    const botonSoporte = document.querySelector('button[onclick="mostrarMenuActualizarSoporte()"]');
+    if (botonSoporte) {
+      botonSoporte.style.display = "none";
+    }
+  }
+	 
   // 2. Obtener registros de la página actual
  const empresa = localStorage.getItem("empresa") || "";
 const { data, error } = await supabaseClient.rpc("buscar_registro_instalaciones", {
@@ -598,6 +613,88 @@ function mostrarMenuActualizarSoporte() {
     }
   });
 }
+
+async function procesarExcelSoporte(file) {
+  try {
+    mostrarLoader();
+
+    const data = await file.arrayBuffer();
+    const workbook = XLSX.read(data, { type: "array" });
+    const hoja = workbook.Sheets[workbook.SheetNames[0]];
+    const filas = XLSX.utils.sheet_to_json(hoja);
+
+    const registros = [];
+    let descargados = 0, observados = 0, omitidos = 0;
+
+    filas.forEach((fila) => {
+      const id = parseInt(fila.ID);
+      const contabilizado = fila.Contabilizado !== "" ? Number(fila.Contabilizado) : null;
+      const comentario_soporte = fila.Comentario_Soporte || "";
+
+      if (isNaN(id)) {
+        omitidos++;
+        return;
+      }
+
+      if (contabilizado !== null) {
+        descargados++;
+      } else if (comentario_soporte.trim() !== "") {
+        observados++;
+      } else {
+        omitidos++;
+      }
+
+      registros.push({ id, contabilizado, comentario_soporte });
+    });
+
+    if (registros.length === 0) {
+      throw new Error("No hay registros válidos en el archivo.");
+    }
+
+    const { data: resumen, error } = await supabaseClient.rpc("actualizar_estado_soporte_registro_instalaciones", {
+      registros
+    });
+
+    if (error) throw new Error("Error al actualizar: " + error.message);
+
+    Swal.fire({
+      icon: "success",
+      title: "Carga completada",
+      html: `
+        <p><b>${resumen.actualizados}</b> registros actualizados como DESCARGADO</p>
+        <p><b>${resumen.observados}</b> registros observados</p>
+        <p><b>${resumen.omitidos}</b> registros omitidos (vacíos)</p>
+      `,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12',
+      timer: 4000,
+      showConfirmButton: false,
+      position: "bottom-end",
+      toast: true,
+      timerProgressBar: true
+    });
+
+    cargarInstalados();
+
+  } catch (err) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al procesar',
+      text: err.message,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12',
+      timer: 4000,
+      showConfirmButton: false,
+      position: "bottom-end",
+      toast: true,
+      timerProgressBar: true
+    });
+  } finally {
+    ocultarLoader();
+  }
+}
 	 
 function confirmarCargaSoporte(file) {
   Swal.fire({
@@ -621,10 +718,10 @@ function descargarPlantillaSoporte() {
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet([
     ["ID", "Contabilizado", "Comentario_Soporte"],
-    [1, 49xxxxxxxx, "Para observar un registro coloca un comentario y no llenes el campo contabilizado"]
+    [1, 4999999999, "Para observar un registro coloca un comentario y no llenes el campo contabilizado"]
   ]);
   XLSX.utils.book_append_sheet(wb, ws, "Plantilla");
-  XLSX.writeFile(wb, "Plantilla_Actualizar_Soporte.xls");
+  XLSX.writeFile(wb, "Plantilla_Actualizar_Contabilizados.xls");
 }
 	 
 </script>
@@ -634,6 +731,7 @@ function descargarPlantillaSoporte() {
 
 </body>
 </html>
+
 
 
 
