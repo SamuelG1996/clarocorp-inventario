@@ -729,7 +729,10 @@ function confirmarCargaSoporte(file) {
 }
 	 
 function descargarPlantillaSoporte() {
-  window.open('/Imagenes/Plantilla_Actualizar_Contabilizados.xls', '_blank');
+  const enlace = document.createElement("a");
+  enlace.href = "https://raw.githubusercontent.com/SamuelG1996/clarocorp-inventario/main/Imagenes/Plantilla_Actualizar_Contabilizados.xls";
+  enlace.download = "Plantilla_Actualizar_Contabilizados.xls";
+  enlace.click();
 }
 	 
 </script>
@@ -739,6 +742,7 @@ function descargarPlantillaSoporte() {
 
 </body>
 </html>
+
 
 
 
