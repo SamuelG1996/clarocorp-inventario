@@ -49,6 +49,7 @@
             <th>Descripción</th>
 	    <th>Centro</th>
             <th>Almacén</th>
+	    <th>Cantidad</th>  
             <th>N° Serie</th>
             <th>Empresa</th>
             <th>Tipo Material</th>      
@@ -137,6 +138,7 @@ const elementosPorPagina = 300;
     <td class="descripcion">${item.descripcion || "-"}</td>
     <td>${item.centro || "-"}</td>
     <td>${item.almacen || "-"}</td>
+    <td>${item.cantidad || "-"}</td>
     <td>${item.nro_serie || "-"}</td>
     <td>${item.empresa || "-"}</td>
     <td>${item.tipo_material || "-"}</td>
@@ -241,6 +243,7 @@ async function descargarExcel() {
 		  item.descripcion || "-",
 		  item.centro || "-",
 		  item.almacen || "-",
+		  item.cantidad || "-",
 		  item.nro_serie || "-",
 		  item.empresa || "-",
 		  item.tipo_material || "-",
@@ -356,6 +359,7 @@ async function procesarExcelInstalados(archivo) {
         nro_serie,
         centro,
         almacen,
+	cantidad,
         fecha_instalacion,
         comentario_contrata
       } = fila;
@@ -386,6 +390,8 @@ async function procesarExcelInstalados(archivo) {
       const sotValido = sot && (/^\d+$/.test(String(sot)) || String(sot).trim().toUpperCase() === "PENDIENTE");
       const centroValido = centro && /^[A-Z]\d[A-Z]\d$/.test(centro.trim().toUpperCase());
       const almacenValido = almacen && /^[A-Z]\d{3}$/.test(almacen.trim().toUpperCase());
+      const cantidadValida = !isNaN(fila.cantidad) && parseInt(fila.cantidad) > 0;
+      const cantidadFinal = cantidadValida ? parseInt(fila.cantidad) : 1;
 
       let errores = [];
       if (!codigoValido) errores.push("Código inválido");
@@ -419,6 +425,7 @@ async function procesarExcelInstalados(archivo) {
           codigo,
           centro,
           almacen,
+	  cantidad,
           nro_serie: nroSerieFinal,
           sot,
           py_cid,
@@ -435,6 +442,7 @@ async function procesarExcelInstalados(archivo) {
         codigo,
         centro,
         almacen,
+	cantidad: cantidadFinal,
         nro_serie: nroSerieFinal,
         sot,
         py_cid: py_cid || null,
@@ -530,6 +538,7 @@ function descargarPlantillaInstalados() {
       codigo: "",
       centro: "",
       almacen: "",
+      cantidad: "",  
       nro_serie: "",
       sot: "",
       py_cid: "",
@@ -568,9 +577,6 @@ function confirmarCargaInstalados(file) {
 
 </body>
 </html>
-
-
-
 
 
 
