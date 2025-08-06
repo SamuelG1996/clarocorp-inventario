@@ -339,7 +339,7 @@ async function procesarExcelInstalados(archivo) {
     const registros = XLSX.utils.sheet_to_json(sheet);
     const fechaActual = new Date().toISOString().split("T")[0];
     const empresa = localStorage.getItem("empresa") || "DESCONOCIDO";
-	  
+
     let exitos = 0;
     let fallos = 0;
 
@@ -359,72 +359,58 @@ async function procesarExcelInstalados(archivo) {
         comentario_contrata
       } = fila;
 
-    let fechaStr = null;
-    let motivoFallo = "";
-	// Caso 1: viene como Date
-	if (fecha_instalacion instanceof Date) {
-	  const dia = String(fecha_instalacion.getDate()).padStart(2, "0");
-	  const mes = String(fecha_instalacion.getMonth() + 1).padStart(2, "0");
-	  const anio = fecha_instalacion.getFullYear();
-	  fechaStr = `${dia}/${mes}/${anio}`;
-	}
-	// Caso 2: viene como número tipo Excel serial
-	else if (!isNaN(fecha_instalacion)) {
-	  const numero = parseFloat(fecha_instalacion);
-	  const excelEpoch = new Date(Date.UTC(1899, 11, 30));
-	  const fechaDate = new Date(excelEpoch.getTime() + numero * 86400000);
-	  const dia = String(fechaDate.getUTCDate()).padStart(2, "0");
-	  const mes = String(fechaDate.getUTCMonth() + 1).padStart(2, "0");
-	  const anio = fechaDate.getUTCFullYear();
-	  fechaStr = `${dia}/${mes}/${anio}`;
-	}
-	// Caso 3: viene como string tipo ISO
-	else if (typeof fecha_instalacion === "string" && /^\d{4}-\d{2}-\d{2}/.test(fecha_instalacion)) {
-	  const [anio, mes, dia] = fecha_instalacion.split("T")[0].split("-");
-	  fechaStr = `${dia}/${mes}/${anio}`;
-	}
-	// Caso 4: ya está en formato dd/mm/yyyy
-	else if (typeof fecha_instalacion === "string" && /^\d{2}\/\d{2}\/\d{4}$/.test(fecha_instalacion)) {
-	  fechaStr = fecha_instalacion;
-	}
+      let fechaStr = null;
 
-   	const codigoValido = codigo && /^\d{7}$/.test(String(codigo));
-	const sotValido = sot && (/^\d+$/.test(String(sot)) || String(sot).trim().toUpperCase() === "PENDIENTE");
-	const centroValido = centro && /^[A-Z]\d[A-Z]\d$/.test(centro.trim().toUpperCase());
-	const almacenValido = almacen && /^[A-Z]\d{3}$/.test(almacen.trim().toUpperCase());
-	    
-	console.log({
-	  codigo, codigoValido,
-	  sot, sotValido,
-	  centro, centroValido,
-	  almacen, almacenValido,
-	  fechaStr, fechaValida: esFechaValidaDDMMYYYY(fechaStr)
-	});
-	    
-	let errores = [];
-	if (!codigoValido) errores.push("Código inválido");
-	if (!centroValido) errores.push("Centro inválido");
-	if (!almacenValido) errores.push("Almacén inválido");
-	if (!sotValido) errores.push("SOT inválido");
-	if (!cliente) errores.push("Cliente vacío");
-	if (!fechaStr || !esFechaValidaDDMMYYYY(fechaStr)) errores.push("Fecha inválida");
-	
-	if (errores.length > 0) {
-	  fallidosData.push({
-	    codigo,
-	    centro,
-	    almacen,
-	    nro_serie: nro_serie || "-",
-	    sot,
-	    py_cid,
-	    cliente,
-	    fecha_instalacion: fechaStr || fecha_instalacion,
-	    comentario_contrata,
-	    motivo: errores.join(", ")
-	  });
-	  fallos++;
-	  continue;
-	}
+      if (fecha_instalacion instanceof Date) {
+        const dia = String(fecha_instalacion.getDate()).padStart(2, "0");
+        const mes = String(fecha_instalacion.getMonth() + 1).padStart(2, "0");
+        const anio = fecha_instalacion.getFullYear();
+        fechaStr = `${dia}/${mes}/${anio}`;
+      } else if (!isNaN(fecha_instalacion)) {
+        const numero = parseFloat(fecha_instalacion);
+        const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+        const fechaDate = new Date(excelEpoch.getTime() + numero * 86400000);
+        const dia = String(fechaDate.getUTCDate()).padStart(2, "0");
+        const mes = String(fechaDate.getUTCMonth() + 1).padStart(2, "0");
+        const anio = fechaDate.getUTCFullYear();
+        fechaStr = `${dia}/${mes}/${anio}`;
+      } else if (typeof fecha_instalacion === "string" && /^\d{4}-\d{2}-\d{2}/.test(fecha_instalacion)) {
+        const [anio, mes, dia] = fecha_instalacion.split("T")[0].split("-");
+        fechaStr = `${dia}/${mes}/${anio}`;
+      } else if (typeof fecha_instalacion === "string" && /^\d{2}\/\d{2}\/\d{4}$/.test(fecha_instalacion)) {
+        fechaStr = fecha_instalacion;
+      }
+
+      const codigoValido = codigo && /^\d{7}$/.test(String(codigo));
+      const sotValido = sot && (/^\d+$/.test(String(sot)) || String(sot).trim().toUpperCase() === "PENDIENTE");
+      const centroValido = centro && /^[A-Z]\d[A-Z]\d$/.test(centro.trim().toUpperCase());
+      const almacenValido = almacen && /^[A-Z]\d{3}$/.test(almacen.trim().toUpperCase());
+
+      let errores = [];
+      if (!codigoValido) errores.push("Código inválido");
+      if (!centroValido) errores.push("Centro inválido");
+      if (!almacenValido) errores.push("Almacén inválido");
+      if (!sotValido) errores.push("SOT inválido");
+      if (!cliente) errores.push("Cliente vacío");
+      if (!fechaStr || !esFechaValidaDDMMYYYY(fechaStr)) errores.push("Fecha inválida");
+
+      if (errores.length > 0) {
+        fallidosData.push({
+          codigo,
+          centro,
+          almacen,
+          nro_serie: nro_serie || "-",
+          sot,
+          py_cid,
+          cliente,
+          fecha_instalacion: fechaStr || fecha_instalacion,
+          comentario_contrata,
+          motivo: errores.join(", ")
+        });
+        fallos++;
+        continue;
+      }
+
       registrosValidos.push({
         codigo,
         centro,
@@ -439,36 +425,37 @@ async function procesarExcelInstalados(archivo) {
       });
     }
 
-   if (registrosValidos.length > 0) {
-  const enviados = registrosValidos.length;
+    if (registrosValidos.length > 0) {
+      const enviados = registrosValidos.length;
+      const { data, error } = await supabaseClient.rpc("insertar_registro_instalacion", {
+        datos: registrosValidos
+      });
 
-  const { data, error } = await supabaseClient.rpc("insertar_registro_instalacion", {
-    datos: registrosValidos
-  });
+      if (error) {
+        console.warn("❌ Error al insertar por RPC:", error.message);
+        fallos += enviados;
+      } else {
+        const insertados = data.insertados || 0;
+        const rechazados = enviados - insertados;
 
-  if (error) {
-    console.warn("❌ Error al insertar por RPC:", error.message);
-    fallos += enviados;
-  } else {
-    const insertados = data.insertados || 0;
-    const rechazados = enviados - insertados;
+        exitos += insertados;
+        fallos += rechazados;
 
-    exitos += insertados;
-    fallos += rechazados;
+        if (rechazados > 0) {
+          const fallidosPorRPC = registrosValidos.slice(-rechazados).map(f => ({
+            ...f,
+            motivo: "Duplicado u otro error en base de datos"
+          }));
+          fallidosData.push(...fallidosPorRPC);
+        }
+      }
+    }
 
-// 🔁 Añadir los registros rechazados por duplicado al log de errores:
-  if (rechazados > 0) {
-    const fallidosPorRPC = registrosValidos.slice(-rechazados).map(f => ({
-      ...f,
-      motivo: "Duplicado u otro error en base de datos"
-    }));
-    fallidosData.push(...fallidosPorRPC);
-  }
-	  
+    // Siempre mostrar el resumen con SweetAlert
     Swal.fire({
       icon: 'info',
       title: 'Carga finalizada',
-      html: `✅ Registros insertados: <b>${insertados}</b><br>❌ Rechazados: <b>${rechazados}</b>`,
+      html: `✅ Registros insertados: <b>${exitos}</b><br>❌ Rechazados: <b>${fallos}</b>`,
       toast: true,
       position: 'bottom-end',
       showConfirmButton: false,
@@ -477,27 +464,25 @@ async function procesarExcelInstalados(archivo) {
       color: '#ffffff',
       iconColor: '#f39c12'
     });
-  }
-}
 
-	// ⬇️ Aquí va la descarga del Excel de errores
-if (fallidosData.length > 0) {
-  const ws = XLSX.utils.json_to_sheet(fallidosData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Errores");
-  const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    if (fallidosData.length > 0) {
+      const ws = XLSX.utils.json_to_sheet(fallidosData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Errores");
+      const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
 
-  const blob = new Blob([wbout], { type: "application/octet-stream" });
-  const url = URL.createObjectURL(blob);
+      const blob = new Blob([wbout], { type: "application/octet-stream" });
+      const url = URL.createObjectURL(blob);
 
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "Rechazados_Plantilla.xlsx";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}  
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Rechazados_Plantilla.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
     cargarInstalados();
   } catch (err) {
     console.error(err);
@@ -564,6 +549,7 @@ function confirmarCargaInstalados(file) {
 
 </body>
 </html>
+
 
 
 
