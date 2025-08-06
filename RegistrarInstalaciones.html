@@ -140,7 +140,7 @@ const { data, error } = await supabaseClient.rpc("buscar_registro_instalaciones"
     <td class="descripcion">${item.descripcion || "-"}</td>
     <td>${item.centro || "-"}</td>
     <td>${item.almacen || "-"}</td>
-    <td>${Number.isFinite(Number(item.cantidad)) ? item.cantidad : 1}</td>
+    <td class="cantidad">${Number.isFinite(Number(item.cantidad)) ? item.cantidad : 1}</td>
     <td>${item.nro_serie || "-"}</td>
     <td>${item.empresa || "-"}</td>
     <td>${item.tipo_material || "-"}</td>
@@ -150,8 +150,8 @@ const { data, error } = await supabaseClient.rpc("buscar_registro_instalaciones"
     <td>${item.fecha_instalacion ? formatearFecha(item.fecha_instalacion) : "-"}</td>
     <td>${item.comentario_contrata || "-"}</td>
     <td>${item.fecha_carga ? formatearFecha(item.fecha_carga) : "-"}</td>
-    <td>${item.dias_pendientes ?? "-"}</td>
-    <td>${item.responsable || "-"}</td>
+    <td class="diasPendientes">${item.dias_pendientes ?? "-"}</td>
+    <td class="responsable">${item.responsable || "-"}</td>
     <td>${item.estado_soporte || "PENDIENTE"}</td>
     <td>${item.comentario_soporte || "-"}</td>
     <td>${item.fecha_estado_soporte ? formatearFecha(item.fecha_estado_soporte) : "-"}</td>
@@ -584,6 +584,7 @@ function confirmarCargaInstalados(file) {
 
 </body>
 </html>
+
 
 
 
