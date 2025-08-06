@@ -1145,3 +1145,11 @@ body[data-modulo="compras"] #tablaStock td {
 #tablaStock th.stock-lima {
   text-align: center !important;
 }
+
+/* --- ESTILOS PARA EL SUBMóDULO DE REGISTRAR INSTALACIONES --- */
+td.cantidad,
+td.responsable,
+td.diasPendientes {
+  text-align: center;
+  vertical-align: middle;
+}
