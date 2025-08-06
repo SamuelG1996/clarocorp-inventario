@@ -121,7 +121,7 @@ const elementosPorPagina = 300;
 
 
   const rol = localStorage.getItem("rol");
-  if (rol !== "soporte" && rol !== "administrador") {
+  if (rol !== "soporte" && rol !== "Administrador") {
     const botonSoporte = document.querySelector('button[onclick="mostrarMenuActualizarSoporte()"]');
     if (botonSoporte) {
       botonSoporte.style.display = "none";
@@ -731,6 +731,7 @@ function descargarPlantillaSoporte() {
 
 </body>
 </html>
+
 
 
 
