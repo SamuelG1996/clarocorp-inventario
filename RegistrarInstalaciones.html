@@ -337,7 +337,7 @@ async function procesarExcelInstalados(archivo) {
     const workbook = XLSX.read(data, { type: 'buffer' });
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const registros = XLSX.utils.sheet_to_json(sheet);
-    const fechaActual = new Date().toISOString().split("T")[0];
+    const fechaActual = new Date().toLocaleDateString("es-PE").split("/").reverse().join("-");
     const empresa = localStorage.getItem("empresa") || "DESCONOCIDO";
 
     let exitos = 0;
@@ -568,6 +568,7 @@ function confirmarCargaInstalados(file) {
 
 </body>
 </html>
+
 
 
 
