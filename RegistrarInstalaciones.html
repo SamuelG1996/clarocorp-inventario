@@ -576,6 +576,56 @@ function confirmarCargaInstalados(file) {
     }
   });
 }
+
+function mostrarMenuActualizarSoporte() {
+  Swal.fire({
+    title: 'Ingresar números de contabilizados',
+    text: '¿Qué deseas hacer?',
+    icon: 'question',
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: 'Subir carga',
+    denyButtonText: 'Descargar plantilla',
+    cancelButtonText: 'Cancelar',
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      document.getElementById('excelInputSoporte').click();
+    } else if (result.isDenied) {
+      descargarPlantillaSoporte();
+    }
+  });
+}
+	 
+function confirmarCargaSoporte(file) {
+  Swal.fire({
+    title: '¿Deseas continuar con la carga?',
+    text: 'Se actualizarán los contabilizados y/o estados según el archivo que selecciones.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, cargar',
+    cancelButtonText: 'Cancelar',
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      procesarExcelSoporte(file);
+    }
+  });
+}
+	 
+function descargarPlantillaSoporte() {
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet([
+    ["ID", "Contabilizado", "Comentario_Soporte"],
+    [1, 49xxxxxxxx, "Para observar un registro coloca un comentario y no llenes el campo contabilizado"]
+  ]);
+  XLSX.utils.book_append_sheet(wb, ws, "Plantilla");
+  XLSX.writeFile(wb, "Plantilla_Actualizar_Soporte.xls");
+}
 	 
 </script>
   
@@ -584,6 +634,7 @@ function confirmarCargaInstalados(file) {
 
 </body>
 </html>
+
 
 
 
