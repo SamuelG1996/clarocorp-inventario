@@ -729,13 +729,7 @@ function confirmarCargaSoporte(file) {
 }
 	 
 function descargarPlantillaSoporte() {
-  const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.aoa_to_sheet([
-    ["ID", "Contabilizado", "Comentario_Soporte"],
-    [1, 4999999999, "Para observar un registro coloca un comentario y no llenes el campo contabilizado"]
-  ]);
-  XLSX.utils.book_append_sheet(wb, ws, "Plantilla");
-  XLSX.writeFile(wb, "Plantilla_Actualizar_Contabilizados.xls");
+  window.open('/Imagenes/Plantilla_Actualizar_Contabilizados.xls', '_blank');
 }
 	 
 </script>
@@ -745,6 +739,7 @@ function descargarPlantillaSoporte() {
 
 </body>
 </html>
+
 
 
 
