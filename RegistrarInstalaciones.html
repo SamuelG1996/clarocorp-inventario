@@ -149,6 +149,12 @@ const { data, error } = await supabaseClient.rpc("buscar_registro_instalaciones"
 
  data.forEach(item => {
   const fila = document.createElement("tr");
+
+  // Verifica si el estado_soporte es OBSERVADO
+  if ((item.estado_soporte || "").toUpperCase() === "OBSERVADO") {
+    fila.classList.add("rojo-suave");
+  }
+
   fila.innerHTML = `
     <td>${item.id}</td>
     <td>${item.codigo || "-"}</td>
@@ -742,6 +748,7 @@ function descargarPlantillaSoporte() {
 
 </body>
 </html>
+
 
 
 
