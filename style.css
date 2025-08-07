@@ -1157,3 +1157,8 @@ td.diasPendientes {
 #botonActualizarContabilizados {
   display: none;
 }
+
+#tablaSeries {
+  width: 100% !important;
+  border-collapse: collapse; /* evita espacios entre celdas */
+}
