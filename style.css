@@ -1153,3 +1153,7 @@ td.diasPendientes {
   text-align: center;
   vertical-align: middle;
 }
+
+#botonActualizarContabilizados {
+  display: none;
+}
