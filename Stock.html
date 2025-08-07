@@ -43,7 +43,10 @@
       <div class="acciones-tabla">
         <button onclick="descargarExcel()">Descargar Excel</button>
         <button onclick="mostrarMenuCargaStock()"><i class="fas fa-upload"></i> Actualizar Datos</button>
+        
          <button onclick="irASeries()">Ver Series</button>
+         <button onclick="irAInstalados()">Registrar Instalaciones</button>
+        
         <button id="btnActualizarSAP" style="display: none;" onclick="mostrarMenuCargaSAP()">
         <i class="fas fa-file-upload"></i> Actualizar SAP
       </button>
@@ -97,8 +100,12 @@
       window.location.href = "/index";
     }
 
-    function irASeries() {
+  function irASeries() {
   window.location.href = "/Series"; 
+}
+    
+  function irAInstalados() {
+  window.location.href = "/RegistrarInstalaciones";
 }
 
   </script>
@@ -694,6 +701,7 @@ function confirmarCargaExcelSAP(file) {
 
 </body>
 </html>
+
 
 
 
