@@ -30,14 +30,15 @@
 	</button>
 	<input type="file" id="excelInput" accept=".xlsx, .xls" style="display:none" onchange="confirmarCargaInstalados(this.files[0])">    
 
+	<button onclick="mostrarAlertaModificacionRegistro()">
+	<i class="fas fa-exclamation-circle"></i> Modificar Registros
+	</button>    
+	
 	<button onclick="mostrarMenuActualizarSoporte()">
 	  <i class="fas fa-upload"></i> Actualizar Contabilizados
 	</button>
 	<input type="file" id="excelInputSoporte" accept=".xls,.xlsx" style="display: none;" onchange="confirmarCargaSoporte(this.files[0])">
 
-	<button onclick="mostrarAlertaModificacionRegistro()">
-	<i class="fas fa-exclamation-circle"></i> Modificar Registros
-	</button>    
       </div>
 		
  <div class="search-bar-paginacion">
@@ -773,6 +774,7 @@ function mostrarAlertaModificacionRegistro() {
 
 </body>
 </html>
+
 
 
 
