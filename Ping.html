@@ -46,6 +46,7 @@
         await client.from('backlog_compras').select('id').limit(1);
         await client.from('stock_claro').select('id').limit(1);
         await client.from('ordenes_compra').select('id').limit(1);
+        await client.from('registro_instalaciones').select('id').limit(1);
 
         // Registrar el ping (opcional)
         await client.from('ping_log').insert({ origen: 'cronjob.org' });
@@ -69,3 +70,4 @@
   </script>
 </body>
 </html>
+
