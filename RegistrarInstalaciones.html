@@ -34,6 +34,10 @@
 	  <i class="fas fa-upload"></i> Actualizar Contabilizados
 	</button>
 	<input type="file" id="excelInputSoporte" accept=".xls,.xlsx" style="display: none;" onchange="confirmarCargaSoporte(this.files[0])">
+
+	<button onclick="mostrarAlertaModificacion()">
+	<i class="fas fa-exclamation-circle"></i> Modificar Registros
+	</button>    
       </div>
 		
  <div class="search-bar-paginacion">
@@ -742,12 +746,39 @@ function descargarPlantillaSoporte() {
 }
 	 
 </script>
+
+<script>
+function mostrarAlertaModificacion() {
+  Swal.fire({
+    icon: 'info',
+    title: '¿Necesitas modificar un registro?',
+    html: `
+      <p>Por motivos de seguridad, los registros no pueden ser modificados directamente desde el sistema una vez cargados.</p>
+      <p>Si necesitas hacer una corrección, por favor comunícate con el administrador del sistema y proporciona el detalle exacto de los registros que deben ser corregidos.</p>
+      <hr>
+      <p><b>Administrador:</b> Samuel Guardia</p>
+      <p><b>Teléfono:</b> <a href="tel:+51953517272" style="color: #f39c12;">+51 953 517 272</a></p>
+      <p><b>Correo:</b> <a href="mailto:portalgestioninventario@gmail.com" style="color: #f39c12;">portalgestioninventario@gmail.com</a></p>
+    `,
+    background: '#1e2022',
+    color: '#ffffff',
+    iconColor: '#f39c12',
+    confirmButtonText: 'Entendido',
+    customClass: {
+      title: 'swal-titulo-pequeno',
+      popup: 'swal-popup-reducido',
+      htmlContainer: 'swal-contenido-reducido'
+    }
+  });
+}
+</script>
   
   <script src="Js/Loader.js"></script>
   <script src="Js/Sesion.js"></script>
 
 </body>
 </html>
+
 
 
 
