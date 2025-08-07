@@ -139,6 +139,7 @@ const { data, error } = await supabaseClient.rpc("buscar_registro_instalaciones"
   termino,
   offset_val: desde,
   limit_val: limite,
+  rol_usuario: rol,
   empresa_usuario: empresa
 });
 
@@ -774,6 +775,7 @@ function mostrarAlertaModificacionRegistro() {
 
 </body>
 </html>
+
 
 
 
