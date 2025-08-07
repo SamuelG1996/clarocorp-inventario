@@ -135,7 +135,6 @@ const elementosPorPagina = 300;
 	 
   // 2. Obtener registros de la página actual
 const empresa = localStorage.getItem("empresa") || "";
-const rol = localStorage.getItem("rol") || "";	 
 const { data, error } = await supabaseClient.rpc("buscar_registro_instalaciones", {
   termino,
   offset_val: desde,
@@ -775,6 +774,7 @@ function mostrarAlertaModificacionRegistro() {
 
 </body>
 </html>
+
 
 
 
