@@ -97,6 +97,14 @@
   document.addEventListener("DOMContentLoaded", () => {
     const tabla = document.getElementById("series-body");
     const inputBuscar = document.getElementById("inputBuscar");
+
+  const rol = localStorage.getItem("rol");
+  if (rol !== "soporte" && rol !== "Administrador") {
+    const botonSoporte = document.querySelector('button[onclick="mostrarMenuActualizarSoporte()"]');
+    if (botonSoporte) {
+      botonSoporte.style.display = "none";
+    }
+  }
 	  
 let timeout = null;
   inputBuscar.addEventListener("input", () => {
@@ -123,15 +131,6 @@ const elementosPorPagina = 300;
 
   // 1. Obtener cantidad total
   totalResultados = await contarResultados(termino);
-
-
-  const rol = localStorage.getItem("rol");
-  if (rol !== "soporte" && rol !== "Administrador") {
-    const botonSoporte = document.querySelector('button[onclick="mostrarMenuActualizarSoporte()"]');
-    if (botonSoporte) {
-      botonSoporte.style.display = "none";
-    }
-  }
 	 
   // 2. Obtener registros de la página actual
 const empresa = localStorage.getItem("empresa") || "";
@@ -774,6 +773,7 @@ function mostrarAlertaModificacionRegistro() {
 
 </body>
 </html>
+
 
 
 
