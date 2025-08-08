@@ -499,31 +499,72 @@ async function procesarExcelInstalados(archivo) {
       });
     }
 
-    if (registrosValidos.length > 0) {
-      const enviados = registrosValidos.length;
-      const { data, error } = await supabaseClient.rpc("insertar_registro_instalacion", {
-        datos: registrosValidos
-      });
+   if (registrosValidos.length > 0) {
+  const enviados = registrosValidos.length;
+  const { data, error } = await supabaseClient.rpc("insertar_registro_instalacion", {
+    datos: registrosValidos
+  });
 
-      if (error) {
-        console.warn("❌ Error al insertar por RPC:", error.message);
-        fallos += enviados;
-      } else {
-        const insertados = data.insertados || 0;
-        const rechazados = enviados - insertados;
+  if (error) {
+    console.warn("❌ Error al insertar por RPC:", error.message);
+    // Marca todos como fallidos con el motivo
+    const fallidosPorErrorRPC = registrosValidos.map(f => ({
+      codigo: f.codigo,
+      centro: f.centro,
+      almacen: f.almacen,
+      cantidad: f.cantidad,
+      nro_serie: f.nro_serie,
+      sot: f.sot,
+      py_cid: f.py_cid ?? "",
+      cliente: f.cliente,
+      fecha_instalacion: f.fecha_instalacion,
+      comentario_contrata: f.comentario_contrata ?? "",
+      motivo: "Error RPC: " + error.message
+    }));
+    fallidosData.push(...fallidosPorErrorRPC);
+    fallos += enviados;
+  } else {
+    const insertados = data.insertados || 0;
+    const rechazados = enviados - insertados;
 
-        exitos += insertados;
-        fallos += rechazados;
+    exitos += insertados;
+    fallos += rechazados;
 
-        if (rechazados > 0) {
-          const fallidosPorRPC = registrosValidos.slice(-rechazados).map(f => ({
-            ...f,
-            motivo: "Duplicado u otro error en base de datos"
-          }));
-          fallidosData.push(...fallidosPorRPC);
-        }
-      }
+    if (rechazados > 0) {
+      const candidatos = registrosValidos.slice(-rechazados); // heurística
+      const fallidosPorRPC = candidatos.map(f => ({
+        codigo: f.codigo,
+        centro: f.centro,
+        almacen: f.almacen,
+        cantidad: f.cantidad,
+        nro_serie: f.nro_serie,
+        sot: f.sot,
+        py_cid: f.py_cid ?? "",
+        cliente: f.cliente,
+        fecha_instalacion: f.fecha_instalacion,
+        comentario_contrata: f.comentario_contrata ?? "",
+        motivo: "Duplicado u otro conflicto en BD"
+      }));
+      fallidosData.push(...fallidosPorRPC);
     }
+  }
+}
+
+// Failsafe: si hubo fallos pero no hay detalle, igual genera reporte
+if (fallos > 0 && fallidosData.length === 0) {
+  const fallback = registrosValidos.map(f => ({
+    codigo: f.codigo,
+    centro: f.centro,
+    almacen: f.almacen,
+    cantidad: f.cantidad,
+    nro_serie: f.nro_serie,
+    sot: f.sot,
+    cliente: f.cliente,
+    fecha_instalacion: f.fecha_instalacion,
+    motivo: "Fallo sin detalle (ver consola / RPC)"
+  }));
+  fallidosData.push(...fallback);
+}
 
     Swal.fire({
       icon: 'info',
@@ -773,6 +814,7 @@ function mostrarAlertaModificacionRegistro() {
 
 </body>
 </html>
+
 
 
 
