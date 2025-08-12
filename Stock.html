@@ -47,11 +47,13 @@
          <button onclick="irASeries()"><i class="fa-solid fa-box"></i> Ver Series</button>
          <button onclick="irAInstalados()"><i class="fa-solid fa-plug-circle-plus"></i> Registrar Instalaciones</button>
         
+        <!--
         <button id="btnActualizarSAP" style="display: none;" onclick="mostrarMenuCargaSAP()">
         <i class="fas fa-file-upload"></i> Actualizar SAP
-      </button>
+       </button>
+        -->
         <input type="file" id="excelInput" accept=".xlsx" style="display:none;" onchange="confirmarCargaExcelStock(this.files[0])">
-        <input type="file" id="excelSAPInput" accept=".xlsx" style="display: none;" onchange="confirmarCargaExcelSAP(this.files[0])">
+         <!--<input type="file" id="excelSAPInput" accept=".xlsx" style="display: none;" onchange="confirmarCargaExcelSAP(this.files[0])"> -->
       </div>
     </div>
 <div class="search-bar-paginacion">
@@ -708,6 +710,7 @@ function confirmarCargaExcelSAP(file) {
 
 </body>
 </html>
+
 
 
 
