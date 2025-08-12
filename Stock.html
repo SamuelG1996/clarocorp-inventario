@@ -262,7 +262,9 @@ renderizarControlesPaginacion();
         return false;
       }
 
- const fecha_actualizacion = new Date().toISOString();
+ const fecha_actualizacion = new Date()
+  .toLocaleString("sv-SE", { timeZone: "America/Lima", hour12: false })
+  .replace(" ", "T");
 
       const { error } = await supabase
         .from('stock_contrata')
@@ -701,6 +703,7 @@ function confirmarCargaExcelSAP(file) {
 
 </body>
 </html>
+
 
 
 
