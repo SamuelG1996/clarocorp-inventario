@@ -47,11 +47,10 @@
          <button onclick="irASeries()"><i class="fa-solid fa-box"></i> Ver Series</button>
          <button onclick="irAInstalados()"><i class="fa-solid fa-plug-circle-plus"></i> Registrar Instalaciones</button>
         
-        <!--
         <button id="btnActualizarSAP" style="display: none;" onclick="mostrarMenuCargaSAP()">
         <i class="fas fa-file-upload"></i> Actualizar SAP
        </button>
-        -->
+
         <input type="file" id="excelInput" accept=".xlsx" style="display:none;" onchange="confirmarCargaExcelStock(this.files[0])">
         <input type="file" id="excelSAPInput" accept=".xlsx" style="display: none;" onchange="confirmarCargaExcelSAP(this.files[0])">
       </div>
@@ -128,10 +127,6 @@
     let totalPaginas = 1;
 
  document.addEventListener("DOMContentLoaded", () => {
-  const rolUsuario = localStorage.getItem("rol");
-  if (rolUsuario === "Administrador" || rolUsuario === "Soporte") {
-    document.getElementById("btnActualizarSAP").style.display = "inline-block";
-  }
 
      // 🧹 Limpia el buscador al cargar
   document.getElementById("searchInput").value = "";
@@ -710,6 +705,7 @@ function confirmarCargaExcelSAP(file) {
 
 </body>
 </html>
+
 
 
 
