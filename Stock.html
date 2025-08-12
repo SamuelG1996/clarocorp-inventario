@@ -108,6 +108,7 @@
   window.location.href = "/RegistrarInstalaciones";
 }
 
+
   </script>
 
 
@@ -300,6 +301,10 @@ renderizarControlesPaginacion();
 
     await window.cargarStockContrata();
     document.getElementById("loader").style.display = "none";
+
+    // 🔽 Resetear el input para permitir re-subir el mismo archivo
+    const el = document.getElementById('excelInput'); // usa el ID real de tu <input type="file">
+    if (el) el.value = "";
   };
 
   reader.readAsBinaryString(file);
@@ -703,6 +708,7 @@ function confirmarCargaExcelSAP(file) {
 
 </body>
 </html>
+
 
 
 
