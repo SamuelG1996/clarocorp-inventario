@@ -150,38 +150,44 @@ async function eliminarSeleccionados() {
 
   if (!confirmar.isConfirmed) return;
 
-  const { error } = await supabaseClient
-    .from("traspasos")
-    .update({ estado: "Anulado", fecha_estado: new Date().toISOString() })
-    .in("id", idsAAnular);
+  try {
+    mostrarLoader();
 
-  if (error) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error al anular',
-      text: error.message,
-      toast: true,
-      position: 'bottom-end',
-      showConfirmButton: false,
-      timer: 3000,
-      background: '#1e2022',
-      color: '#ffffff',
-      iconColor: '#e74c3c'
-    });
-  } else {
-    Swal.fire({
-      icon: 'success',
-      title: 'Anulación exitosa',
-      text: 'Solicitudes actualizadas correctamente.',
-      toast: true,
-      position: 'bottom-end',
-      showConfirmButton: false,
-      timer: 3000,
-      background: '#1e2022',
-      color: '#ffffff',
-      iconColor: '#2ecc71'
-    });
-    setTimeout(() => location.reload(), 1000);
+    const { error } = await supabaseClient
+      .from("traspasos")
+      .update({ estado: "Anulado", fecha_estado: new Date().toISOString() })
+      .in("id", idsAAnular);
+
+    if (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al anular',
+        text: error.message,
+        toast: true,
+        position: 'bottom-end',
+        showConfirmButton: false,
+        timer: 3000,
+        background: '#1e2022',
+        color: '#ffffff',
+        iconColor: '#e74c3c'
+      });
+    } else {
+      Swal.fire({
+        icon: 'success',
+        title: 'Anulación exitosa',
+        text: 'Solicitudes actualizadas correctamente.',
+        toast: true,
+        position: 'bottom-end',
+        showConfirmButton: false,
+        timer: 3000,
+        background: '#1e2022',
+        color: '#ffffff',
+        iconColor: '#2ecc71'
+      });
+      setTimeout(() => location.reload(), 1000);
+    }
+  } finally {
+    ocultarLoader();
   }
 }
 </script>
@@ -261,3 +267,4 @@ async function eliminarSeleccionados() {
 <script src="Js/Sesion.js"></script>
 </body>
 </html>
+
