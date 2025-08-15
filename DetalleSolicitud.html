@@ -356,24 +356,24 @@ const contenidoCorreo = `
 
 
 <script>
-async function editarDetalle() {
-const codigoUsuario = localStorage.getItem("codigo_usuario") || "";
-const rol = localStorage.getItem("rol") || "";
+window.editarDetalle = async function editarDetalle() {
+  const codigoUsuario = localStorage.getItem("codigo_usuario") || "";
+  const rol = localStorage.getItem("rol") || "";
 
-const { data: solicitud, error } = await supabase
-  .from("traspasos")
-  .select("estado, codigo_solicitante, responsable_codigo")
-  .eq("id", id)
-  .single();
+  const { data: solicitud, error } = await supabase
+    .from("traspasos")
+    .select("estado, codigo_solicitante, responsable_codigo")
+    .eq("id", id)
+    .single();
 
-if (error) {
-  Swal.fire({ icon: 'error', title: 'Error al consultar solicitud', text: error.message });
-  return;
-}
+  if (error) {
+    Swal.fire({ icon: 'error', title: 'Error al consultar solicitud', text: error.message });
+    return;
+  }
 
-const estado = solicitud.estado;
-const esCreador = solicitud.codigo_solicitante === codigoUsuario;
-const esResponsable = solicitud.responsable_codigo === codigoUsuario;
+  const estado = solicitud.estado;
+  const esCreador = solicitud.codigo_solicitante === codigoUsuario;
+  const esResponsable = solicitud.responsable_codigo === codigoUsuario;
   const tieneRolPermitido = ["Administrador", "Supervisor"].includes(rol);
 
   if (estado === "Atendido" || estado === "Anulado" || estado === "En proceso") {
@@ -381,8 +381,8 @@ const esResponsable = solicitud.responsable_codigo === codigoUsuario;
     Swal.fire({
       icon: 'info',
       title: `La solicitud tiene estado ${estado}`,
-      text: 'No se puede editar una solicitud que ya fue atendida, anulada o que se encuentra en proceso.'
-      toast: true,
+      text: 'No se puede editar una solicitud que ya fue atendida, anulada o que se encuentra en proceso.',
+      toast: true,             // 👈 ESTA COMA FALTABA
       position: 'bottom-end',
       showConfirmButton: false,
       timer: 3000,
@@ -396,12 +396,9 @@ const esResponsable = solicitud.responsable_codigo === codigoUsuario;
   if (estado === "Observado" && (esCreador || esResponsable || tieneRolPermitido)) {
     // 👉 Solo permitir carga por Excel, sin edición celda a celda
     const btnEditar = document.getElementById('btnEditar');
-btnEditar.innerHTML = '<i class="fas fa-times"></i> Cancelar edición';
-btnEditar.classList.add('boton-edicion');
-// Reasignar evento para cancelar
-btnEditar.onclick = () => {
-  location.reload(); // recarga la página para restaurar todo
-};
+    btnEditar.innerHTML = '<i class="fas fa-times"></i> Cancelar edición';
+    btnEditar.classList.add('boton-edicion');
+    btnEditar.onclick = () => { location.reload(); };
 
     const btnCargarExcel = document.getElementById('btnCargarExcel');
     btnCargarExcel.style.display = 'inline-block';
@@ -411,7 +408,6 @@ btnEditar.onclick = () => {
     btnActualizarGuia.style.display = 'inline-block';
     btnActualizarGuia.classList.add('boton-edicion');
 
-    // Desactivar posibles inputs si los hubiera
     const inputs = document.querySelectorAll("#tablaDetalle input");
     inputs.forEach(input => input.disabled = true);
 
@@ -430,8 +426,6 @@ btnEditar.onclick = () => {
     });
   }
 }
-
-
 </script>
 
 <script>
@@ -931,4 +925,5 @@ document.addEventListener("DOMContentLoaded", () => {
   <script src="Js/Sesion.js"></script>
 </body>
 </html>
+
 
