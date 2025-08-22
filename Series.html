@@ -380,9 +380,9 @@ async function descargarExcelSeries() {
         "Tipo Material": serie.tipo_material || '',
         "Valor": preciosMaterial[serie.codigo]?.precio || 0,
         "Fecha Ingreso": fechaIngreso,
-        Antiguamiento: serie.fecha_ingreso ? calcularAntiguamiento(serie.fecha_ingreso) + ' días' : '',
+        Antiguamiento: serie.fecha_ingreso ? calcularAntiguamiento(serie.fecha_ingreso) : null,
         "Fecha Compra": fechaCompra,
-        "Antiguamiento Compra": serie.fecha_compra ? calcularAntiguamiento(serie.fecha_compra) + ' días' : '',
+        "Antiguamiento Compra": serie.fecha_compra ? calcularAntiguamiento(serie.fecha_compra) : null,
         "Estado Contrata": serie.estado_contrata,
         SOT: serie.proyecto_sot,
         Cliente: serie.cliente,
@@ -1038,6 +1038,7 @@ async function procesarCargaSoporte(file) {
   <script src="Js/Sesion.js"></script>
 </body>
 </html>
+
 
 
 
