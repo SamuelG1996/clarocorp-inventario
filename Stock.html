@@ -141,7 +141,6 @@
     return Number.isInteger(numero) ? numero.toString() : numero.toFixed(2);
   }
 
-
 async function cargarStockContrata(filtro = "", pagina = 0) {
   mostrarLoader();
   const tbody = document.getElementById("stock-body");
@@ -154,13 +153,23 @@ async function cargarStockContrata(filtro = "", pagina = 0) {
   const rolUsuario = localStorage.getItem("rol");
   const desde = pagina * registrosPorPagina;
 
-  const { data, error } = await supabase.rpc("obtener_stock_contrata", {
+  // Dispara ambas llamadas en paralelo
+  const listPromise = supabase.rpc("obtener_stock_contrata", {
     rol_usuario: rolUsuario,
     empresa_usuario: empresaUsuario,
     filtro: filtro.trim(),
     offset_val: desde,
     limit_val: registrosPorPagina
   });
+
+  const countPromise = supabase.rpc("contar_stock_contrata", {
+    rol_usuario: rolUsuario,
+    empresa_usuario: empresaUsuario,
+    filtro: filtro.trim()
+  });
+
+  // Espera primero al listado y renderiza ASAP
+  const { data, error } = await listPromise;
 
   if (error) {
     console.error("Error al cargar stock con RPC:", error);
@@ -175,62 +184,54 @@ async function cargarStockContrata(filtro = "", pagina = 0) {
     return;
   }
 
-  data.forEach((item) => {
-    if (!item.cantidad_sap || parseFloat(item.cantidad_sap) === 0) return;
-    const disponible = item.stock_real != null && item.stock_reservado != null
+  const frag = document.createDocumentFragment();
+  for (const item of data) {
+    if (!item.cantidad_sap || parseFloat(item.cantidad_sap) === 0) continue;
+
+    const disponible = (item.stock_real != null && item.stock_reservado != null)
       ? item.stock_real - item.stock_reservado
       : "—";
 
     const fechaSAP = item.fecha_carga_sap
-      ? new Date(item.fecha_carga_sap).toLocaleString("es-PE", {
-          day: "2-digit", month: "2-digit", year: "numeric",
-          hour: "2-digit", minute: "2-digit", hour12: false
-        }).replace(",", "")
+      ? new Date(item.fecha_carga_sap).toLocaleString("es-PE", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit", hour12:false }).replace(",", "")
       : "—";
 
-const fechaEditada = item.fecha_actualizacion
-  ? new Date(item.fecha_actualizacion).toLocaleString("es-PE", {
-      timeZone: "America/Lima",
-      day: "2-digit", month: "2-digit", year: "numeric",
-      hour: "2-digit", minute: "2-digit", hour12: false
-    }).replace(",", "")
-  : "—";
+    const fechaEditada = item.fecha_actualizacion
+      ? new Date(item.fecha_actualizacion).toLocaleString("es-PE", { timeZone:"America/Lima", day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit", hour12:false }).replace(",", "")
+      : "—";
 
-    const fila = `
-      <tr>
-        <td>${item.codigo}</td>
-        <td>${item.descripcion}</td>
-        <td>${item.centro}</td>
-        <td>${item.almacen}</td>
-        <td>${formatearNumero(item.cantidad_sap)}</td>
-        <td>${item.lote}</td>
-        <td>${fechaSAP}</td>
-        <td>${item.empresa}</td>
-        <td>${item.zona}</td>
-        <td>${formatearNumero(item.stock_real ?? "")}</td>
-        <td>${formatearNumero(item.stock_reservado ?? "")}</td>
-        <td>${formatearNumero(disponible)}</td>
-        <td>${fechaEditada}</td>
-      </tr>`;
-    tbody.insertAdjacentHTML("beforeend", fila);
-  });
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${item.codigo}</td>
+      <td>${item.descripcion}</td>
+      <td>${item.centro}</td>
+      <td>${item.almacen}</td>
+      <td>${formatearNumero(item.cantidad_sap)}</td>
+      <td>${item.lote}</td>
+      <td>${fechaSAP}</td>
+      <td>${item.empresa}</td>
+      <td>${item.zona}</td>
+      <td>${formatearNumero(item.stock_real ?? "")}</td>
+      <td>${formatearNumero(item.stock_reservado ?? "")}</td>
+      <td>${formatearNumero(disponible)}</td>
+      <td>${fechaEditada}</td>`;
+    frag.appendChild(tr);
+  }
+  document.getElementById("stock-body").appendChild(frag);
 
-  // RPC para contar el total exacto de registros con filtro aplicado
-const { data: totalCount, error: errorCount } = await supabase.rpc("contar_stock_contrata", {
-  rol_usuario: rolUsuario,
-  empresa_usuario: empresaUsuario,
-  filtro: filtro.trim()
-});
+  // Ahora resuelve el conteo (si falla, degradamos)
+  try {
+    const { data: totalCount } = await countPromise;
+    totalPaginas = Math.ceil(totalCount / registrosPorPagina);
+  } catch (e) {
+    console.warn("No se pudo obtener el total de registros:", e);
+    totalPaginas = pagina + 2;
+  }
 
-if (errorCount) {
-  console.warn("No se pudo obtener el total de registros:", errorCount);
-  totalPaginas = data.length < registrosPorPagina && pagina > 0 ? pagina + 1 : pagina + 2;
-} else {
-  totalPaginas = Math.ceil(totalCount / registrosPorPagina);
-}
-renderizarControlesPaginacion();
+  renderizarControlesPaginacion();
   ocultarLoader();
 }
+
     window.cargarStockContrata = cargarStockContrata;
 
   window.procesarExcelStock = async function(file) {
@@ -705,6 +706,7 @@ function confirmarCargaExcelSAP(file) {
 
 </body>
 </html>
+
 
 
 
