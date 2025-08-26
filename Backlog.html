@@ -313,7 +313,7 @@ async function procesarExcelSoporte(archivo) {
     const registros = XLSX.utils.sheet_to_json(sheet);
     const fechaActual = new Date().toISOString().split("T")[0];
 
-    const estadosValidos = ["PENDIENTE", "INSTALADO", "ABASTECIDO", "ATENDIDO", "RECHAZADO"];
+    const estadosValidos = ["PENDIENTE", "INSTALADO", "ABASTECIDO", "ATENDIDO", "RECHAZADO", "LARGO PLAZO"];
     let exitos = 0;
     let fallos = 0;
 
@@ -425,5 +425,6 @@ function confirmarCargaSoporte(file) {
 
 </body>
 </html>
+
 
 
