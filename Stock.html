@@ -551,14 +551,28 @@ let eliminados = 0;
     return;
   }
 
-  const hoja = bloques.map((item) => ({
+ const hoja = bloques.map((item) => {
+  // formatear Fecha SAP
+  const fechaSAP = item.fecha_carga_sap
+    ? new Date(item.fecha_carga_sap).toLocaleDateString("es-PE", { 
+        day: "2-digit", month: "2-digit", year: "numeric" 
+      })
+    : null;
+
+  const fechaActualizacion = item.fecha_actualizacion
+    ? new Date(item.fecha_actualizacion).toLocaleDateString("es-PE", { 
+        day: "2-digit", month: "2-digit", year: "numeric" 
+      })
+    : null;
+
+  return {
     Código: item.codigo,
     Descripción: item.descripcion,
     Centro: item.centro,
     Almacén: item.almacen,
     "Stock SAP": item.cantidad_sap,
     Lote: item.lote,
-    "Fecha SAP": item.fecha_carga_sap,
+    "Fecha SAP": fechaSAP,  // ← ahora en formato 17/08/2025
     Empresa: item.empresa,
     Zona: item.zona,
     "Stock Real": item.stock_real,
@@ -566,8 +580,9 @@ let eliminados = 0;
     "Stock Disponible": item.stock_real != null && item.stock_reservado != null
       ? item.stock_real - item.stock_reservado
       : null,
-    "Fecha Actualización": item.fecha_actualizacion
-  }));
+    "Fecha Actualización": fechaActualizacion
+  };
+});
 
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.json_to_sheet(hoja);
@@ -706,6 +721,7 @@ function confirmarCargaExcelSAP(file) {
 
 </body>
 </html>
+
 
 
 
