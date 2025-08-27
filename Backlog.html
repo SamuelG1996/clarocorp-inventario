@@ -342,7 +342,7 @@ async function procesarExcelSoporte(archivo) {
     }
 
     // Una sola llamada RPC, igual que haces en Series
-    const { data: resp, error } = await supabase.rpc("actualizar_soporte_masivo", { registros });
+    const { data: resp, error } = await supabaseClient.rpc("actualizar_backlog_soporte_masivo", { registros });
     if (error) throw new Error(error.message);
 
     const { actualizados, no_encontrados, invalidos } = resp[0];
@@ -408,6 +408,7 @@ function confirmarCargaSoporte(file) {
 
 </body>
 </html>
+
 
 
 
