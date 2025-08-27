@@ -303,82 +303,65 @@ function mostrarMenuCargaSoporte() {
     }
   });
 }
+	 
 async function procesarExcelSoporte(archivo) {
   try {
     mostrarLoader();
 
     const data = await archivo.arrayBuffer();
-    const workbook = XLSX.read(data, { type: 'buffer' });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const registros = XLSX.utils.sheet_to_json(sheet);
-    const fechaActual = new Date().toISOString().split("T")[0];
+    const wb = XLSX.read(data, { type: "buffer" });
+    const sheet = wb.Sheets[wb.SheetNames[0]];
+    const filas = XLSX.utils.sheet_to_json(sheet);
 
-    const estadosValidos = ["PENDIENTE", "INSTALADO", "ABASTECIDO", "ATENDIDO", "RECHAZADO", "LARGO PLAZO"];
-    let exitos = 0;
-    let fallos = 0;
+    const ESTADOS_VALIDOS = ["PENDIENTE","INSTALADO","ABASTECIDO","ATENDIDO","RECHAZADO","LARGO PLAZO"];
 
-    for (const fila of registros) {
-      const { codigo_sap, sot } = fila;
-      let { estado_soporte, comentario_soporte } = fila;
+    const registros = [];
+    let omitidos = 0;
 
-      if (!codigo_sap || !sot) {
-        fallos++;
+    for (const f of filas) {
+      const codigo_sap = (f.codigo_sap ?? f.CODIGO_SAP ?? f.CODIGO ?? f["Código"] ?? "").toString().trim();
+      const sot        = (f.sot ?? f.SOT ?? "").toString().trim();
+      const estado     = (f.estado_soporte ?? f.ESTADO_SOPORTE ?? "").toString().trim().toUpperCase();
+      const comentario = (f.comentario_soporte ?? f.COMENTARIO_SOPORTE ?? "-").toString().trim();
+
+      if (!codigo_sap || !sot || !ESTADOS_VALIDOS.includes(estado)) {
+        omitidos++;
         continue;
       }
-
-      estado_soporte = (estado_soporte || "").toString().trim().toUpperCase();
-
-      if (!estadosValidos.includes(estado_soporte)) {
-        fallos++;
-        continue;
-      }
-
-	 const { error, count } = await supabaseClient
-	  .from("backlog_compras")
-	  .update({
-	    estado_soporte,
-	    comentario_soporte: comentario_soporte || "-",
-	    fecha_estado_soporte: fechaActual
-	  }, { count: "exact" })
-	  .eq("nuevo_codigo", codigo_sap)
-	  .eq("codsolot", sot);
-	
-	if (error || count === 0) {
-	  console.warn("Error o fila no encontrada:", error?.message || "No se encontró combinación código_sap + SOT");
-	  fallos++;
-	} else {
-	  exitos++;
-	}
+      registros.push({ codigo_sap, sot, estado_soporte: estado, comentario_soporte: comentario });
     }
 
+    if (registros.length === 0) {
+      Swal.fire({
+        icon:'info', title:'Sin filas válidas',
+        text:'Revisa columnas: codigo_sap, sot y estado_soporte.',
+        toast:true, position:'bottom-end', showConfirmButton:false, timer:3500,
+        background:'#1e2022', color:'#ffffff', iconColor:'#f39c12'
+      });
+      return;
+    }
+
+    // Una sola llamada RPC, igual que haces en Series
+    const { data: resp, error } = await supabase.rpc("actualizar_soporte_masivo", { registros });
+    if (error) throw new Error(error.message);
+
+    const { actualizados, no_encontrados, invalidos } = resp[0];
+
     Swal.fire({
-      icon: 'info',
-      title: 'Carga finalizada',
-      html: `✅ Registros actualizados: <b>${exitos}</b><br>❌ Registros fallidos: <b>${fallos}</b>`,
-      toast: true,
-      position: 'bottom-end',
-      showConfirmButton: false,
-      timer: 5000,
-      timerProgressBar: true,
-      background: '#1e2022',
-      color: '#ffffff',
-      iconColor: '#f39c12'
+      icon:'info', title:'Carga finalizada',
+      html:`✅ Actualizados: <b>${actualizados}</b><br>❌ No encontrados (código+SOT): <b>${no_encontrados}</b><br>⚠️ Inválidos en servidor: <b>${invalidos}</b><br><hr style="opacity:.2"><small>Omitidos (validación cliente): <b>${omitidos}</b></small>`,
+      toast:true, position:'bottom-end', showConfirmButton:false, timer:5500, timerProgressBar:true,
+      background:'#1e2022', color:'#ffffff', iconColor:'#f39c12'
     });
 
-    cargarBacklog();
+    if (typeof cargarBacklog === "function") cargarBacklog();
+
   } catch (err) {
     console.error(err);
     Swal.fire({
-      icon: 'error',
-      title: 'Error al procesar archivo',
-      text: err.message,
-      toast: true,
-      position: 'bottom-end',
-      showConfirmButton: false,
-      timer: 4000,
-      background: '#1e2022',
-      color: '#ffffff',
-      iconColor: '#e74c3c'
+      icon:'error', title:'Error al procesar archivo', text: err.message,
+      toast:true, position:'bottom-end', showConfirmButton:false, timer:4500,
+      background:'#1e2022', color:'#ffffff', iconColor:'#e74c3c'
     });
   } finally {
     ocultarLoader();
@@ -425,6 +408,7 @@ function confirmarCargaSoporte(file) {
 
 </body>
 </html>
+
 
 
 
