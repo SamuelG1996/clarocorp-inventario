@@ -30,7 +30,7 @@
 	<input type="file" id="excelInputSoporte" accept=".xlsx, .xls" style="display:none" onchange="confirmarCargaSoporte(this.files[0])">    
       </div>
  <div class="search-bar-paginacion">
-  <input type="text" id="inputBuscar" placeholder="Buscar por código, descripción, SOT o cliente..." autocomplete="off" />
+  <input type="text" id="inputBuscar" placeholder="Buscar por código, descripción, SOT o ..." autocomplete="off" />
   <div class="paginacion">
     <button id="prevPage" onclick="cambiarPagina(-1)">Anterior</button>
     <span id="pageIndicator">Página 1</span>
@@ -46,7 +46,7 @@
             <th>Proyecto</th>
             <th>SOT</th>
             <th>Estado SOT</th>
-            <th>Cliente</th>
+            <th></th>
              <th class = "tipotrabajo">Tipo Trabajo</th>
             <th>Tipo Proyecto</th>
             <th>Sede</th>
@@ -130,7 +130,7 @@ const elementosPorPagina = 300;
       <td>${item.proyecto || "-"}</td>
       <td>${item.codsolot || "-"}</td>
       <td class="estado_sot">${item.estado_sot || "-"}</td>
-      <td class="cliente">${item.cliente || "-"}</td>
+      <td class="">${item. || "-"}</td>
       <td class="tipotrabajo">${item.tipotrabajo || "-"}</td>
       <td>${item.tipoproyecto || "-"}</td>
       <td class="sede">${item.sede || "-"}</td>
@@ -199,7 +199,7 @@ async function descargarExcel() {
     mostrarLoader();
 
     const encabezados = [
-      "Proyecto", "SOT", "Estado SOT", "Cliente", "Tipo Trabajo", "Tipo Proyecto",
+      "Proyecto", "SOT", "Estado SOT", "", "Tipo Trabajo", "Tipo Proyecto",
       "Sede", "Código SAP", "Descripción", "Cantidad", "F. Generación",
       "F. Compromiso", "Estado Backlog", "Estado Soporte", "Comentario Soporte", "F. Estado Soporte"
     ];
@@ -225,7 +225,7 @@ async function descargarExcel() {
         item.proyecto || "-",
         item.codsolot !== null ? Number(item.codsolot) : null, // ✅ convertido a número
         item.estado_sot || "-",
-        item.cliente || "-",
+        item. || "-",
         item.tipotrabajo || "-",
         item.tipoproyecto || "-",
         item.sede || "-",
@@ -341,20 +341,38 @@ async function procesarExcelSoporte(archivo) {
       return;
     }
 
-    // Una sola llamada RPC, igual que haces en Series
+    // 👇 Llamada al RPC (deja el nombre que tengas en BD)
     const { data: resp, error } = await supabaseClient.rpc("actualizar_backlog_soporte_masivo", { registros });
     if (error) throw new Error(error.message);
 
-    const { actualizados, no_encontrados, invalidos } = resp[0];
+    // 👇 Tomar contadores del RPC
+    const { actualizados = 0, no_encontrados = 0, invalidos = 0 } = (resp && resp[0]) || {};
+    const a  = Number(actualizados);
+    const ne = Number(no_encontrados);
+    const inv= Number(invalidos);
+    const om = Number(omitidos);
+    const noActualizados = ne + inv;
 
     Swal.fire({
-      icon:'info', title:'Carga finalizada',
-      html:`✅ Actualizados: <b>${actualizados}</b><br>❌ Rechazados: <b>${no_encontrados}</b><br>⚠️ Omitidos: <b>${invalidos}</b><br><hr style="opacity:.2"><small>Omitidos (validación cliente): <b>${omitidos}</b></small>`,
-      toast:true, position:'bottom-end', showConfirmButton:false, timer:5500, timerProgressBar:true,
-      background:'#1e2022', color:'#ffffff', iconColor:'#f39c12'
+      icon: 'info',
+      title: 'Carga finalizada',
+      html: `✅ Registros actualizados: <b>${a}</b><br>❌ No actualizados (enviados): <b>${noActualizados}</b><br>🗂️ Omitidos: <b>${om}</b>`,
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: '#f39c12'
     });
 
+    // 👇 Si ya tienes cargarBacklog funcionando, déjalo igual:
     if (typeof cargarBacklog === "function") cargarBacklog();
+
+    // (Opcional) resetear el input para permitir re-subir el mismo archivo
+    const el = document.getElementById('excelInputSoporte');
+    if (el) el.value = "";
 
   } catch (err) {
     console.error(err);
@@ -367,7 +385,6 @@ async function procesarExcelSoporte(archivo) {
     ocultarLoader();
   }
 }
-	 
 function descargarPlantillaSoporte() {
   const wb = XLSX.utils.book_new();
   const datos = [
@@ -408,6 +425,7 @@ function confirmarCargaSoporte(file) {
 
 </body>
 </html>
+
 
 
 
