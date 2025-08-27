@@ -349,7 +349,7 @@ async function procesarExcelSoporte(archivo) {
 
     Swal.fire({
       icon:'info', title:'Carga finalizada',
-      html:`✅ Actualizados: <b>${actualizados}</b><br>❌ No encontrados (código+SOT): <b>${no_encontrados}</b><br>⚠️ Inválidos en servidor: <b>${invalidos}</b><br><hr style="opacity:.2"><small>Omitidos (validación cliente): <b>${omitidos}</b></small>`,
+      html:`✅ Actualizados: <b>${actualizados}</b><br>❌ Rechazados: <b>${no_encontrados}</b><br>⚠️ Omitidos: <b>${invalidos}</b><br><hr style="opacity:.2"><small>Omitidos (validación cliente): <b>${omitidos}</b></small>`,
       toast:true, position:'bottom-end', showConfirmButton:false, timer:5500, timerProgressBar:true,
       background:'#1e2022', color:'#ffffff', iconColor:'#f39c12'
     });
@@ -408,6 +408,7 @@ function confirmarCargaSoporte(file) {
 
 </body>
 </html>
+
 
 
 
