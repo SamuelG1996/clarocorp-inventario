@@ -686,28 +686,28 @@ async function procesarExcelSoporte(file) {
     const data = await file.arrayBuffer();
     const workbook = XLSX.read(data, { type: "array" });
     const hoja = workbook.Sheets[workbook.SheetNames[0]];
-    const filas = XLSX.utils.sheet_to_json(hoja);
+    const filas = XLSX.utils.sheet_to_json(hoja, { defval: "" }); // evita undefined
 
     const registros = [];
-    let descargados = 0, observados = 0, omitidos = 0;
+    // (Opcional) ya no usamos estos contadores locales para el popup
+    // let descargados = 0, observados = 0, omitidos = 0;
 
     filas.forEach((fila) => {
-      const id = parseInt(fila.ID);
-      const contabilizado = fila.Contabilizado !== "" ? Number(fila.Contabilizado) : null;
-      const comentario_soporte = fila.Comentario_Soporte || "";
+      const id = parseInt(fila.ID, 10);
+      const contabilizado =
+        fila.Contabilizado !== "" && fila.Contabilizado !== null && fila.Contabilizado !== undefined
+          ? Number(fila.Contabilizado)
+          : null;
+      const comentario_soporte = (fila.Comentario_Soporte || "").toString();
 
       if (isNaN(id)) {
-        omitidos++;
+        // omitidos++;
         return;
       }
 
-      if (contabilizado !== null) {
-        descargados++;
-      } else if (comentario_soporte.trim() !== "") {
-        observados++;
-      } else {
-        omitidos++;
-      }
+      // if (contabilizado !== null) descargados++;
+      // else if (comentario_soporte.trim() !== "") observados++;
+      // else omitidos++;
 
       registros.push({ id, contabilizado, comentario_soporte });
     });
@@ -716,30 +716,38 @@ async function procesarExcelSoporte(file) {
       throw new Error("No hay registros válidos en el archivo.");
     }
 
-    const { data: resumen, error } = await supabaseClient.rpc("actualizar_estado_soporte_registro_instalaciones", {
-      registros
-    });
-
+    const { data: resumen, error } = await supabaseClient.rpc(
+      "actualizar_estado_soporte_registro_instalaciones",
+      { registros }
+    );
     if (error) throw new Error("Error al actualizar: " + error.message);
 
-Swal.fire({
-  icon: "success",
-  title: "Carga completada",
-  html: `
-    <p><b>${resumen.actualizados}</b> ${resumen.actualizados === 1 ? "registro descargado" : "registros descargados"}</p>
-    <p><b>${resumen.observados}</b> ${resumen.observados === 1 ? "registro comentado" : "registros comentados"}</p>
-    <p><b>${resumen.omitidos}</b> ${resumen.omitidos === 1 ? "registro omitido (vacío)" : "registros omitidos (vacíos)"}</p>
-  `,
-  background: '#1e2022',
-  color: '#ffffff',
-  iconColor: "#11a24e",
-  timer: 4000,
-  showConfirmButton: false,
-  position: "bottom-end",
-  toast: true,
-  timerProgressBar: true
-});
-	  
+    // ⇩⇩ NUEVO: tomar del RPC los campos nuevos con fallback al antiguo 'actualizados'
+    const d = resumen || {};
+    const descargados = typeof d.descargados === "number" ? d.descargados : (d.actualizados || 0);
+    const reasignados = typeof d.reasignados === "number" ? d.reasignados : 0;
+    const observados  = typeof d.observados  === "number" ? d.observados  : 0;
+    const omitidos    = typeof d.omitidos    === "number" ? d.omitidos    : 0;
+
+    Swal.fire({
+      icon: "success",
+      title: "Carga completada",
+      html: `
+        <p><b>${descargados}</b> ${descargados === 1 ? "registro descargado" : "registros descargados"}</p>
+        <p><b>${reasignados}</b> ${reasignados === 1 ? "registro reasignado" : "registros reasignados"}</p>
+        <p><b>${observados}</b> ${observados === 1 ? "registro comentado" : "registros comentados"}</p>
+        <p><b>${omitidos}</b> ${omitidos === 1 ? "registro omitido (vacío)" : "registros omitidos (vacíos)"}</p>
+      `,
+      background: '#1e2022',
+      color: '#ffffff',
+      iconColor: "#11a24e",
+      timer: 4000,
+      showConfirmButton: false,
+      position: "bottom-end",
+      toast: true,
+      timerProgressBar: true
+    });
+
     cargarInstalados();
 
   } catch (err) {
@@ -814,6 +822,7 @@ function mostrarAlertaModificacionRegistro() {
 
 </body>
 </html>
+
 
 
 
