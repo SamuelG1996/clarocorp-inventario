@@ -274,7 +274,6 @@ async function mostrarPrecioCompra(codigo) {
     console.error("Error al consultar precio compra:", error);
     Swal.fire({
       toast: true, position: 'bottom-end', timer: 3000, showConfirmButton: false,
-      icon: 'error',
       title: 'No se pudo cargar el precio',
       background: '#1e2022', color: '#ffffff', timerProgressBar: true
     });
@@ -284,7 +283,6 @@ async function mostrarPrecioCompra(codigo) {
   if (!data || data.length === 0) {
     Swal.fire({
       toast: true, position: 'bottom-end', timer: 3000, showConfirmButton: false,
-      icon: 'info',
       title: `Código ${codigo}`,
       html: 'Sin registro de compra.',
       background: '#1e2022', color: '#ffffff', timerProgressBar: true
@@ -319,7 +317,6 @@ async function mostrarPrecioCompra(codigo) {
       </div>
     `,
     width: '50%',              // ocupa buen espacio; ajusta si quieres
-    icon: 'info',
     confirmButtonText: 'Cerrar',
     confirmButtonColor: '#f39c12',
     background: '#1e2022',
