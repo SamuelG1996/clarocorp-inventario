@@ -369,9 +369,15 @@ data.forEach(row => {
 });
     tablaHTML += `</tbody></table>`;
 
+// ➜ footer solo con el código
+const footerHTML = `
+  <div style="margin-top:10px; font-size:12px; opacity:.85;">
+    <b>Código:</b> ${codigo}
+  </div>
+`;
     Swal.fire({
       title: `Detalle de Stock – ${tipoAlmacen}`,
-      html: tablaHTML,
+      html: tablaHTML + footerHTML, 
       width: "50%",
       background: "#1e2022",
       color: "#ffffff",
