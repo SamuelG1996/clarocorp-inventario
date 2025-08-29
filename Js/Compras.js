@@ -122,7 +122,11 @@ async function mostrarDetalleCompras(codigo) {
         <td class="columna-descripcion" title="${item.descripcion}">${item.descripcion}</td>
         <td class="tipo-producto">${item.grupo_material || "-"}</td>
         <td>${item.tipo_compra || "-"}</td>
-        <td>${item.proveedor || "-"}</td>
+        <td>
+      <a href="#" style="color: #007bff; text-decoration: none;" onclick="mostrarPrecioCompra('${item.codigo}')">
+        ${item.proveedor || "-"}
+      </a>
+    </td>
         <td class="columna-consumo">${formatearNumero(consumo)}</td>
         <td>
     <a href="#" style="color: #007bff; text-decoration: none;" onclick="mostrarStockDetalle('${item.codigo}', 'LIMA')">
@@ -261,6 +265,71 @@ fila.appendChild(backlogTd);
   }
 }
 
+async function mostrarPrecioCompra(codigo) {
+  const { data, error } = await supabaseClient.rpc("obtener_precio_compra_ultimo", {
+    _codigo: codigo
+  });
+
+  if (error) {
+    console.error("Error al consultar precio compra:", error);
+    Swal.fire({
+      toast: true, position: 'bottom-end', timer: 3000, showConfirmButton: false,
+      icon: 'error',
+      title: 'No se pudo cargar el precio',
+      background: '#1e2022', color: '#ffffff', timerProgressBar: true
+    });
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    Swal.fire({
+      toast: true, position: 'bottom-end', timer: 3000, showConfirmButton: false,
+      icon: 'info',
+      title: `Código ${codigo}`,
+      html: 'Sin registro de compra.',
+      background: '#1e2022', color: '#ffffff', timerProgressBar: true
+    });
+    return;
+  }
+
+  const row = data[0];
+  const f     = row.fecha_compra ? new Date(row.fecha_compra).toLocaleDateString('es-PE') : '-';
+  const mon   = row.moneda || '-';
+  const precio = (row.precio_compra ?? 0).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  Swal.fire({
+    title: 'Precio de compra',
+    html: `
+      <table style="width:100%; border-collapse:collapse; margin-top:6px;">
+        <thead>
+          <tr>
+            <th class="th-popup">Precio de compra</th>
+            <th class="th-popup">Moneda</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-mini" style="text-align:right;">${precio}</td>
+            <td class="td-mini" style="text-align:center;">${mon}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px; font-size:12px; opacity:.85;">
+        <b>Código:</b> ${codigo} &nbsp;•&nbsp; <b>Fecha:</b> ${f}
+      </div>
+    `,
+    width: '50%',              // ocupa buen espacio; ajusta si quieres
+    icon: 'info',
+    confirmButtonText: 'Cerrar',
+    confirmButtonColor: '#f39c12',
+    background: '#1e2022',
+    color: '#ffffff',
+    customClass: { title: 'swal-titulo-pequeno', popup: 'swal2-modal-custom' }
+  });
+}
+
+window.mostrarPrecioCompra = mostrarPrecioCompra;
+  
 async function mostrarStockDetalle(codigo, tipoAlmacen) {
   const { data, error } = await supabaseClient.rpc("obtener_stock_claro_detalle", {
     _codigo: codigo,
@@ -330,6 +399,7 @@ data.forEach(row => {
 }
 
    window.mostrarStockDetalle = mostrarStockDetalle;
+  
 
   // Llamada inicial
   cargarCompras();
