@@ -376,7 +376,7 @@ const footerHTML = `
   </div>
 `;
     Swal.fire({
-      title: `Detalle de Stock – ${tipoAlmacen}`,
+      title: `Detalle de stock`,
       html: tablaHTML + footerHTML, 
       width: "50%",
       background: "#1e2022",
